@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>재무회계 실습 앱 — 분개에서 SAP FI까지</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#32363A; --sub:#6A6D70; --line:#E5E5E5; --soft:#F7F7F7;
+  --navy:#354A5F; --navy2:#0A6ED1; --navy3:#BFD9F2;
+  --ok:#107E3E; --okbg:#F1FDF6; --ng:#BB0000; --ngbg:#FFEBEB;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;color:var(--ink);font-family:"Noto Sans KR","Malgun Gothic",system-ui,sans-serif;font-size:15px;line-height:1.6}
+button,select,input{font:inherit;color:inherit}
+header{padding:20px 18px 10px;max-width:1080px;margin:0 auto}
+header .eyebrow{font-size:12px;letter-spacing:.08em;color:var(--navy2);font-weight:700}
+header h1{margin:4px 0 2px;font-size:24px;font-weight:900;letter-spacing:-.02em}
+header p{margin:0;color:var(--sub);font-size:14px}
+header{max-width:none;background:#354A5F;color:#fff;padding:16px max(18px,calc((100% - 1044px)/2)) 14px}
+header .eyebrow{color:#BCD4EA}
+header h1{color:#fff}
+header p{color:#D5E1EC}
+nav{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line)}
+nav .in{max-width:1080px;margin:0 auto;display:flex;gap:4px;overflow-x:auto;padding:0 12px;scrollbar-width:none}
+nav .in::-webkit-scrollbar{display:none}
+nav a{flex:none;padding:12px 12px;text-decoration:none;color:var(--sub);font-weight:500;border-bottom:3px solid transparent;white-space:nowrap}
+nav a.on{color:var(--navy);border-color:var(--navy);font-weight:700}
+main{max-width:1080px;margin:0 auto;padding:18px}
+section.view{display:none}
+section.view.on{display:block}
+h2{font-size:20px;margin:6px 0 4px;font-weight:900;letter-spacing:-.01em}
+h3{font-size:16px;margin:0 0 8px;font-weight:700}
+.lead{color:var(--sub);margin:0 0 16px}
+.card{border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px;background:#fff}
+.grid{display:grid;gap:14px}
+@media(min-width:760px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}}
+.eq{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;font-weight:900;font-size:20px;padding:10px 0}
+.eq .box{padding:10px 16px;border-radius:10px;border:2px solid var(--navy);min-width:88px;text-align:center}
+.eq .box.f{background:var(--navy);color:#fff}
+.eq small{display:block;font-size:12px;font-weight:500;opacity:.8}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--soft);font-weight:700;color:var(--navy)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tw{overflow-x:auto}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border-radius:99px;border:1px solid var(--navy3);color:var(--navy);background:#f3f6fb}
+.dr{color:var(--navy);font-weight:700}
+.cr{color:#7a4b00;font-weight:700}
+.btn{border:1px solid var(--navy);background:var(--navy);color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--navy)}
+.btn.sm{padding:5px 10px;font-size:13px}
+.btn:disabled{opacity:.4;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch}
+.flow .st{flex:1 1 120px;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--soft)}
+.flow .st b{display:block;color:var(--navy)}
+.flow .st span{font-size:13px;color:var(--sub)}
+.flow .ar{align-self:center;color:var(--navy2);font-weight:900}
+.chip{display:inline-block;font-family:Consolas,"Courier New",monospace;font-size:12px;background:#fff;border:1px solid var(--navy3);border-radius:6px;padding:0 6px;margin:2px 2px 0 0;color:var(--navy)}
+/* judge */
+.judge{display:grid;gap:10px}
+@media(min-width:620px){.judge{grid-template-columns:1fr 1fr auto;align-items:end}}
+label.f{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+select,input[type=number],input[type=text]{width:100%;padding:9px 10px;border:1px solid #cfd4dd;border-radius:8px;background:#fff}
+.result{margin-top:10px;font-weight:900;font-size:18px}
+/* journal */
+.prog{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.prog button{width:30px;height:30px;border-radius:50%;border:1px solid #cfd4dd;background:#fff;font-size:12px;font-weight:700;cursor:pointer}
+.prog button.done{background:var(--navy);border-color:var(--navy);color:#fff}
+.prog button.cur{outline:2px solid var(--navy2);outline-offset:2px}
+.scene{font-size:17px;font-weight:500;padding:14px;background:var(--soft);border-left:4px solid var(--navy);border-radius:6px;margin:8px 0 14px}
+.entry{display:grid;gap:10px}
+@media(min-width:620px){.entry{grid-template-columns:1fr 1fr}}
+.side{border:1px solid var(--line);border-radius:10px;padding:12px}
+.side h4{margin:0 0 8px;font-size:14px}
+.fb{margin-top:12px;border-radius:10px;padding:12px 14px;display:none}
+.fb.ok{display:block;background:var(--okbg);border:1px solid #bfe3cd}
+.fb.ng{display:block;background:var(--ngbg);border:1px solid #f2c6c2}
+.fb .t{font-weight:900;margin-bottom:4px}
+.sapbox{margin-top:10px;border:1px dashed var(--navy2);border-radius:10px;padding:12px;background:#fafbfe}
+.sapbox .hd{font-weight:700;color:var(--navy);margin-bottom:6px}
+/* T accounts */
+.tgrid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.tacc{border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:13px}
+.tacc .nm{text-align:center;font-weight:700;padding:6px;border-bottom:2px solid var(--ink);background:var(--soft)}
+.tacc .bd{display:grid;grid-template-columns:1fr 1fr}
+.tacc .bd>div{padding:4px 8px;min-height:40px}
+.tacc .bd>div:first-child{border-right:2px solid var(--ink)}
+.tacc .ln{display:flex;justify-content:space-between;gap:6px;font-variant-numeric:tabular-nums}
+.tacc .ln i{color:var(--sub);font-style:normal}
+.tacc .bal{border-top:1px solid var(--line);padding:5px 8px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.tot td{font-weight:900;border-top:2px solid var(--ink)}
+.chk{font-weight:700;padding:8px 12px;border-radius:8px;margin-top:8px;display:inline-block}
+.chk.ok{background:var(--okbg);color:var(--ok)}
+.chk.ng{background:var(--ngbg);color:var(--ng)}
+.empty{color:var(--sub);text-align:center;padding:20px}
+/* quiz */
+.opt{display:block;width:100%;text-align:left;border:1px solid #cfd4dd;border-radius:10px;background:#fff;padding:11px 14px;margin:8px 0;cursor:pointer}
+.opt.ok{border-color:var(--ok);background:var(--okbg)}
+.opt.ng{border-color:var(--ng);background:var(--ngbg)}
+.opt:disabled{cursor:default}
+.score{font-size:36px;font-weight:900;color:var(--navy)}
+.drill{font-family:Consolas,"Courier New",monospace;font-size:44px;font-weight:900;color:var(--navy);text-align:center;margin:6px 0}
+/* structure */
+.steps{counter-reset:s;display:grid;gap:10px}
+@media(min-width:760px){.steps{grid-template-columns:repeat(3,1fr)}}
+.steps>div{border:1px solid var(--line);border-radius:10px;padding:12px 12px 12px 48px;position:relative}
+.steps>div::before{counter-increment:s;content:counter(s);position:absolute;left:12px;top:12px;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:900;display:grid;place-items:center;font-size:13px}
+.steps b{display:block;margin-bottom:2px}
+.steps span{font-size:14px;color:var(--sub)}
+.bsd{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--ink);border-radius:10px;overflow:hidden;font-size:14px}
+.bsd .col{display:flex;flex-direction:column}
+.bsd .col+.col{border-left:2px solid var(--ink)}
+.bsd .hd{background:var(--navy);color:#fff;font-weight:700;text-align:center;padding:6px;font-size:13px}
+.bsd .blk{padding:10px;border-bottom:1px solid var(--line);flex:1}
+.bsd .blk:last-child{border-bottom:none}
+.bsd .blk b{display:block;color:var(--navy)}
+.bsd .blk span{color:var(--sub);font-size:13px}
+.bsd .blk.hl{background:#f3f6fb}
+.bsd .ft{grid-column:1/3;border-top:2px solid var(--ink);text-align:center;padding:8px;font-weight:900}
+.stair{display:grid;gap:4px;font-size:14px}
+.stair>div{display:flex;justify-content:space-between;gap:10px;padding:7px 12px;border-radius:6px;background:var(--soft)}
+.stair>div.sum{background:var(--navy);color:#fff;font-weight:700}
+.stair>div.sum.fin{background:var(--ink)}
+.stair>div em{font-style:normal;font-size:12px;opacity:.85}
+.link3{display:grid;gap:8px;align-items:center}
+@media(min-width:760px){.link3{grid-template-columns:1fr auto 1fr auto 1fr}}
+.link3 .bx{border:1px solid var(--navy3);border-radius:10px;padding:12px;text-align:center}
+.link3 .bx b{display:block;color:var(--navy)}
+.link3 .bx span{font-size:13px;color:var(--sub)}
+.link3 .ar{text-align:center;color:var(--navy2);font-weight:900}
+/* accounts */
+.filt{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.filt button{border:1px solid #cfd4dd;background:#fff;border-radius:99px;padding:6px 14px;font-weight:700;cursor:pointer;font-size:14px}
+.filt button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.elhd{border-left:5px solid var(--navy);background:var(--soft);border-radius:8px;padding:12px 14px;margin:18px 0 10px}
+.elhd h3{margin:0 0 4px;font-size:18px}
+.elhd .meta{font-size:13px;color:var(--sub);margin:4px 0}
+.elhd ul{margin:6px 0 0;padding-left:18px;font-size:14px}
+.agrid{display:grid;gap:10px}
+@media(min-width:760px){.agrid{grid-template-columns:1fr 1fr}}
+.acard{border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.acard .t{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.acard .t b{font-size:16px}
+.acard .t i{font-style:normal;font-size:12px;color:var(--sub)}
+.acard p{margin:6px 0 0;font-size:14px}
+.acard .ft{font-size:13px;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
+.acard .sp{font-size:13px;margin-top:6px;color:var(--navy);background:#f6f8fc;border-radius:6px;padding:6px 8px}
+footer{max-width:1080px;margin:0 auto;padding:10px 18px 40px;color:var(--sub);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">곰선비의 ERP 실무노트 · FINANCIAL ACCOUNTING LAB</div>
+  <h1>재무회계 실습 앱</h1>
+  <p>거래를 분개하고, 장부에 전기하고, 재무제표까지 — 그리고 SAP FI 전표로 다시 봄</p>
+</header>
+<nav><div class="in" id="tabs">
+  <a href="#basics" data-v="basics">① 회계 기초</a>
+  <a href="#structure" data-v="structure">② 재무제표 구조</a>
+  <a href="#accounts" data-v="accounts">③ 계정 사전</a>
+  <a href="#fixed" data-v="fixed">④ 고정자산</a>
+  <a href="#fta" data-v="fta">⑤ FTA 회계</a>
+  <a href="#journal" data-v="journal">⑥ 분개 연습</a>
+  <a href="#ledger" data-v="ledger">⑦ 장부·재무제표</a>
+  <a href="#sap" data-v="sap">⑧ SAP FI 연결</a>
+  <a href="#quiz" data-v="quiz">⑨ 퀴즈</a>
+</div></nav>
+
+<main>
+<!-- ============ 1. BASICS ============ -->
+<section class="view" id="v-basics">
+  <h2>회계는 등식 하나로 움직임</h2>
+  <p class="lead">모든 거래는 등식의 양쪽 균형을 깨지 않음. 그래서 차변 합계 = 대변 합계.</p>
+
+  <div class="card">
+    <h3>회계등식</h3>
+    <div class="eq">
+      <div class="box f">자산<small>Assets</small></div>=
+      <div class="box">부채<small>Liabilities</small></div>+
+      <div class="box">자본<small>Equity</small></div>
+    </div>
+    <p style="text-align:center;color:var(--sub);margin:4px 0 10px">손익을 넣어 펼치면 차변·대변 위치가 그대로 보임</p>
+    <div class="eq" style="font-size:17px">
+      <div class="box f">자산</div>+<div class="box f">비용</div>=
+      <div class="box">부채</div>+<div class="box">자본</div>+<div class="box">수익</div>
+    </div>
+    <div class="row" style="justify-content:center;gap:24px;margin-top:6px">
+      <span class="dr">◀ 왼쪽 = 차변(Debit) 증가</span><span class="cr">대변(Credit) 증가 = 오른쪽 ▶</span>
+    </div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>5요소와 증감 위치</h3>
+      <div class="tw"><table>
+        <tr><th>요소</th><th>증가</th><th>감소</th><th>예시 계정</th></tr>
+        <tr><td><b>자산</b></td><td class="dr">차변</td><td class="cr">대변</td><td>현금, 매출채권, 재고, 비품</td></tr>
+        <tr><td><b>부채</b></td><td class="cr">대변</td><td class="dr">차변</td><td>매입채무, 차입금, 미지급비용</td></tr>
+        <tr><td><b>자본</b></td><td class="cr">대변</td><td class="dr">차변</td><td>자본금, 이익잉여금</td></tr>
+        <tr><td><b>수익</b></td><td class="cr">대변</td><td class="dr">차변</td><td>매출, 이자수익</td></tr>
+        <tr><td><b>비용</b></td><td class="dr">차변</td><td class="cr">대변</td><td>매출원가, 급여, 임차료</td></tr>
+      </table></div>
+    </div>
+    <div class="card">
+      <h3>차변? 대변? 판단기</h3>
+      <div class="judge">
+        <div><label class="f">요소</label>
+          <select id="jEl"><option value="A">자산</option><option value="L">부채</option><option value="E">자본</option><option value="R">수익</option><option value="X">비용</option></select></div>
+        <div><label class="f">변화</label>
+          <select id="jCh"><option value="up">증가</option><option value="dn">감소</option></select></div>
+        <button class="btn" id="jGo">판단</button>
+      </div>
+      <div class="result" id="jRes"></div>
+      <p style="color:var(--sub);font-size:13px;margin:6px 0 0">규칙: 등식 왼쪽(자산·비용)은 증가가 차변, 오른쪽(부채·자본·수익)은 증가가 대변.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>회계 순환과 SAP</h3>
+    <div class="flow">
+      <div class="st"><b>거래 발생</b><span>현금·재고·채권 변동</span><br><span class="chip">VA01</span><span class="chip">ME21N</span></div><div class="ar">→</div>
+      <div class="st"><b>분개</b><span>차변/대변 결정</span><br><span class="chip">FB50</span><span class="chip">F-02</span></div><div class="ar">→</div>
+      <div class="st"><b>전기</b><span>원장에 반영</span><br><span class="chip">FBL3N</span><span class="chip">FS10N</span></div><div class="ar">→</div>
+      <div class="st"><b>시산표</b><span>차대 합계 검증</span><br><span class="chip">S_ALR_87012277</span></div><div class="ar">→</div>
+      <div class="st"><b>결산정리</b><span>감가상각·발생주의</span><br><span class="chip">AFAB</span><span class="chip">FBS1</span></div><div class="ar">→</div>
+      <div class="st"><b>재무제표</b><span>B/S · P/L</span><br><span class="chip">F.01</span></div>
+    </div>
+    <p style="color:var(--sub);font-size:13px;margin:10px 0 0">SAP에서는 영업·구매·재고 문서가 생성되는 순간 회계전표가 자동으로 함께 생김. 분개를 알면 자동전표가 읽힘.</p>
+  </div>
+</section>
+
+<!-- ============ STRUCTURE ============ -->
+<section class="view" id="v-structure">
+  <h2>재무제표는 두 장의 그림으로 읽음</h2>
+  <p class="lead">재무상태표는 특정 <b>시점</b>의 잔액(사진), 손익계산서는 일정 <b>기간</b>의 흐름(영상). 둘은 당기순이익 → 이익잉여금으로 이어짐.</p>
+
+  <div class="card">
+    <h3>이해하는 3단계</h3>
+    <div class="steps">
+      <div><b>질문으로 읽기</b><span>재무상태표: 무엇을 갖고 있고(자산), 그 돈은 어디서 왔나(부채·자본)?<br>손익계산서: 이번 기간 얼마 벌고 얼마 썼나?</span></div>
+      <div><b>큰 덩어리 → 세부</b><span>5요소 → 유동/비유동 → 계정 순서로 내려감. 계정 하나보다 덩어리의 비중과 변화를 먼저 봄.</span></div>
+      <div><b>연결해서 보기</b><span>순이익이 자본을 키움. 이익과 현금이 다른 이유는 현금흐름표가 설명함.</span></div>
+    </div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>재무상태표 (B/S) — 시점</h3>
+      <div class="bsd">
+        <div class="col">
+          <div class="hd">차변 · 자금의 운용</div>
+          <div class="blk"><b>유동자산</b><span>1년(정상영업주기) 내 현금화<br>현금, 매출채권, 재고, 선급비용</span></div>
+          <div class="blk"><b>비유동자산</b><span>1년 넘게 사용·보유<br>유형자산, 무형자산, 장기투자</span></div>
+        </div>
+        <div class="col">
+          <div class="hd">대변 · 자금의 조달</div>
+          <div class="blk"><b>유동부채</b><span>1년 내 상환<br>매입채무, 미지급비용, 단기차입금</span></div>
+          <div class="blk"><b>비유동부채</b><span>장기차입금, 사채, 퇴직급여부채</span></div>
+          <div class="blk hl"><b>자본</b><span>자본금, 자본잉여금, <b style="display:inline">이익잉여금</b></span></div>
+        </div>
+        <div class="ft">자산 총계 = 부채 총계 + 자본 총계</div>
+      </div>
+      <p style="font-size:13px;color:var(--sub);margin:8px 0 0">유동성이 높은 항목부터 배열함. 부채는 남의 돈(타인자본), 자본은 주주의 돈(자기자본).</p>
+    </div>
+    <div class="card">
+      <h3>손익계산서 (P/L) — 기간</h3>
+      <div class="stair">
+        <div><span>매출액</span><em>본업 수익</em></div>
+        <div><span>− 매출원가</span><em>팔린 물건의 원가</em></div>
+        <div class="sum"><span>= 매출총이익</span><em>제품의 마진</em></div>
+        <div><span>− 판매비와관리비</span><em>급여·임차료·감가상각비</em></div>
+        <div class="sum"><span>= 영업이익</span><em>본업 실력</em></div>
+        <div><span>± 기타수익·비용, 금융수익·원가</span><em>이자·환차손익·처분손익</em></div>
+        <div class="sum"><span>= 법인세비용차감전순이익</span><em></em></div>
+        <div><span>− 법인세비용</span><em></em></div>
+        <div class="sum fin"><span>= 당기순이익</span><em>→ 이익잉여금</em></div>
+      </div>
+      <p style="font-size:13px;color:var(--sub);margin:8px 0 0">위에서 아래로 "무엇을 빼고 남았나"를 단계별로 보여줌. 어느 단계에서 이익이 줄었는지가 분석 포인트.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>두 표의 연결 — Global Bike 첫 달</h3>
+    <div class="link3">
+      <div class="bx"><b>기초 재무상태표</b><span>설립 전 · 이익잉여금 0</span></div>
+      <div class="ar">→</div>
+      <div class="bx"><b>손익계산서 (1개월)</b><span>수익 30,000 − 비용 23,950<br>= 당기순이익 6,050</span></div>
+      <div class="ar">→</div>
+      <div class="bx"><b>기말 재무상태표</b><span>이익잉여금 0 + 6,050 = 6,050<br>자산 156,300 = 부채 50,250 + 자본 106,050</span></div>
+    </div>
+    <p style="font-size:13px;color:var(--sub);margin:10px 0 0">기말 이익잉여금 = 기초 이익잉여금 + 당기순이익 − 배당. ⑦ 장부 탭에서 13개 거래를 전기하면 같은 숫자가 나옴.</p>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>재무제표 5종</h3>
+      <div class="tw"><table>
+        <tr><th>재무제표</th><th>답하는 질문</th></tr>
+        <tr><td><b>재무상태표</b></td><td>기말 현재 재산과 빚은 얼마인가</td></tr>
+        <tr><td><b>포괄손익계산서</b></td><td>기간 동안 얼마를 벌었나 (당기순이익 + 기타포괄손익)</td></tr>
+        <tr><td><b>자본변동표</b></td><td>자본이 왜 늘고 줄었나 (증자·배당·이익)</td></tr>
+        <tr><td><b>현금흐름표</b></td><td>현금이 어디서 들어오고 나갔나 (영업·투자·재무)</td></tr>
+        <tr><td><b>주석</b></td><td>숫자 뒤의 회계정책·세부내역·우발상황</td></tr>
+      </table></div>
+    </div>
+    <div class="card">
+      <h3>읽기 체크포인트 — 핵심 비율</h3>
+      <div class="tw"><table>
+        <tr><th>비율</th><th>계산</th><th>보는 것</th></tr>
+        <tr><td><b>유동비율</b></td><td>유동자산 ÷ 유동부채</td><td>1년 내 갚을 능력</td></tr>
+        <tr><td><b>부채비율</b></td><td>부채 ÷ 자본</td><td>남의 돈 의존도</td></tr>
+        <tr><td><b>영업이익률</b></td><td>영업이익 ÷ 매출액</td><td>본업의 수익성</td></tr>
+        <tr><td><b>ROE</b></td><td>당기순이익 ÷ 자본</td><td>주주 돈의 수익률</td></tr>
+      </table></div>
+      <p style="font-size:13px;color:var(--sub);margin:8px 0 0">적정 수준은 업종마다 다름 — 같은 업종 회사, 같은 회사의 전년과 비교해서 봄.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ACCOUNTS ============ -->
+<section class="view" id="v-accounts">
+  <h2>계정 사전 — 5요소별 설명과 특징</h2>
+  <p class="lead">계정마다 무엇인지, 무엇을 주의할지, SAP에서는 어떻게 다루는지 정리함.</p>
+  <div class="filt" id="aF"></div>
+  <input type="text" id="aQ" placeholder="계정 검색 (예: 선급, 채권, 감가)" style="margin-bottom:6px">
+  <div id="aList"></div>
+  <div class="card" style="margin-top:18px">
+    <h3>헷갈리는 짝</h3>
+    <div class="tw"><table>
+      <tr><th>짝</th><th>구분 기준</th></tr>
+      <tr><td><b>매출채권</b> vs <b>미수금</b></td><td>본업(상품·제품 판매)의 외상이면 매출채권, 본업 외(비품 매각 등)면 미수금</td></tr>
+      <tr><td><b>매입채무</b> vs <b>미지급금</b></td><td>본업(원재료·상품 매입)의 외상이면 매입채무, 본업 외(설비 구입 등)면 미지급금</td></tr>
+      <tr><td><b>미지급금</b> vs <b>미지급비용</b></td><td>청구서를 받아 금액이 확정된 채무 vs 기간이 지나 발생했지만 아직 청구되지 않은 비용(이자·급여)</td></tr>
+      <tr><td><b>선급금</b> vs <b>선급비용</b></td><td>물건을 받을 권리(계약금) vs 기간(서비스)을 누릴 권리(보험료·임차료 선지급)</td></tr>
+      <tr><td><b>선수금</b> vs <b>선수수익</b></td><td>물건을 넘겨줄 의무 vs 기간 서비스를 제공할 의무</td></tr>
+      <tr><td><b>감가상각비</b> vs <b>감가상각누계액</b></td><td>이번 기간 비용(P/L) vs 지금까지 쌓인 차감액(B/S)</td></tr>
+      <tr><td><b>자본적지출</b> vs <b>수익적지출</b></td><td>가치·내용연수를 늘리면 자산(자본적지출), 원상회복·유지면 비용(수익적지출)</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- ============ FIXED ASSETS ============ -->
+<section class="view" id="v-fixed">
+  <h2>고정자산 — 사서, 쓰고, 나누고, 판다</h2>
+  <p class="lead">1년 넘게 영업에 쓰는 자산은 산 날 한꺼번에 비용이 되지 않음. 쓰는 기간에 나눠 비용으로 넘기는 것이 고정자산 회계의 핵심.</p>
+
+  <div class="card">
+    <h3>생애주기 한눈에</h3>
+    <div class="flow">
+      <div class="st"><b>① 취득</b><span>취득원가 결정</span><br><span class="chip">AS01</span><span class="chip">F-90</span><span class="chip">ABZON</span></div><div class="ar">→</div>
+      <div class="st"><b>② 후속지출</b><span>자산이냐 비용이냐</span><br><span class="chip">ABZON</span><span class="chip">FB60</span></div><div class="ar">→</div>
+      <div class="st"><b>③ 감가상각</b><span>기간별 비용 배분</span><br><span class="chip">AFAB</span></div><div class="ar">→</div>
+      <div class="st"><b>④ 손상</b><span>가치 급락 시 감액</span><br><span class="chip">ABAA</span></div><div class="ar">→</div>
+      <div class="st"><b>⑤ 처분</b><span>매각·폐기 손익</span><br><span class="chip">ABAON</span><span class="chip">F-92</span><span class="chip">ABAVN</span></div>
+    </div>
+    <p style="font-size:13px;color:var(--sub);margin:10px 0 0">대상: 유형자산(토지·건물·기계장치·차량·비품), 무형자산(소프트웨어·특허권·개발비), 사용권자산(리스). 아래 예시는 Global Bike의 조립 기계.</p>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>① 취득 — 원가에 무엇을 넣나</h3>
+      <div class="tw"><table>
+        <tr><th>포함 (자산)</th><th>제외 (비용)</th></tr>
+        <tr><td>구입가격(할인·리베이트 차감)<br>운반비·하역비<br>설치·시운전비<br>취득세 등 취득 부대세금<br>전문가 수수료(설계·등기)</td>
+            <td>사용 개시 후 수선유지비<br>직원 교육훈련비<br>광고·개업 행사비<br>재산세(보유 중 세금)<br>시운전 이후 초기 가동 손실</td></tr>
+      </table></div>
+      <p style="margin:10px 0 4px"><b>예시</b> · 본체 46,000 + 운반 1,500 + 설치 2,500 = <b>취득원가 50,000</b></p>
+      <div><span class="dr">(차) 기계장치 50,000</span> &nbsp; <span class="cr">(대) 현금 50,000</span></div>
+      <p style="font-size:13px;color:var(--sub);margin:6px 0 0">기준: "자산을 쓸 수 있는 상태로 만드는 데 직접 들어간 원가"까지만 포함.</p>
+    </div>
+    <div class="card">
+      <h3>② 후속지출 — 자본적 vs 수익적</h3>
+      <div class="tw"><table>
+        <tr><th></th><th>자본적지출</th><th>수익적지출</th></tr>
+        <tr><td><b>판단</b></td><td>성능 향상, 내용연수 연장, 생산능력 증가</td><td>원래 상태 유지·회복</td></tr>
+        <tr><td><b>처리</b></td><td>자산에 더함 → 남은 기간 상각</td><td>즉시 비용(수선비)</td></tr>
+        <tr><td><b>예시</b></td><td>엔진 교체 오버홀 6,000</td><td>정기점검·소모 부품 800</td></tr>
+      </table></div>
+      <div style="margin-top:8px;font-size:14px">
+        <div><span class="dr">(차) 기계장치 6,000</span> &nbsp; <span class="cr">(대) 현금 6,000</span></div>
+        <div><span class="dr">(차) 수선비 800</span> &nbsp; <span class="cr">(대) 현금 800</span></div>
+      </div>
+      <p style="font-size:13px;color:var(--sub);margin:6px 0 0">자본적지출을 비용으로 처리하면 이익 과소·자산 과소, 반대면 이익 과대. 감사의 단골 지적 사항.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>③ 감가상각 — 3요소와 방법</h3>
+    <div class="grid g3" style="gap:10px;margin-bottom:12px">
+      <div class="side"><b>취득원가</b><div style="font-size:13px;color:var(--sub)">배분할 총액의 출발점</div></div>
+      <div class="side"><b>잔존가치</b><div style="font-size:13px;color:var(--sub)">다 쓰고 팔 때 예상 회수액 — 배분에서 제외</div></div>
+      <div class="side"><b>내용연수</b><div style="font-size:13px;color:var(--sub)">경제적으로 쓸 기간(물리적 수명 아님)</div></div>
+    </div>
+    <div class="tw"><table>
+      <tr><th>방법</th><th>계산</th><th>비용 패턴</th><th>어울리는 자산</th></tr>
+      <tr><td><b>정액법</b></td><td>(취득원가 − 잔존가치) ÷ 내용연수</td><td>매년 같음</td><td>건물, 일반 설비</td></tr>
+      <tr><td><b>정률법</b></td><td>기초 장부금액 × 상각률</td><td>초기에 크고 점점 감소</td><td>기술 변화가 빠른 장비</td></tr>
+      <tr><td><b>연수합계법</b></td><td>(원가 − 잔존) × 남은 연수 ÷ 연수 합계</td><td>초기 큼, 일정하게 감소</td><td>초기 효율이 높은 설비</td></tr>
+      <tr><td><b>이중체감법</b></td><td>기초 장부금액 × (2 ÷ 내용연수)</td><td>초기 매우 큼</td><td>IT 장비</td></tr>
+      <tr><td><b>생산량비례법</b></td><td>(원가 − 잔존) × 당기 생산량 ÷ 총 예정 생산량</td><td>사용량 따라 변동</td><td>광산, 차량(주행거리)</td></tr>
+    </table></div>
+    <p style="font-size:13px;color:var(--sub);margin:8px 0 0">분개는 방법과 무관하게 같음 — <span class="dr">(차) 감가상각비</span> / <span class="cr">(대) 감가상각누계액</span>. 기중 취득이면 사용한 달만큼 월할 계산. 토지는 상각하지 않음.</p>
+  </div>
+
+  <div class="card">
+    <h3>감가상각 계산기</h3>
+    <div class="grid g3" style="gap:10px">
+      <div><label class="f">취득원가</label><input type="number" id="dCost" value="50000" inputmode="numeric"></div>
+      <div><label class="f">잔존가치</label><input type="number" id="dRes" value="5000" inputmode="numeric"></div>
+      <div><label class="f">내용연수(년)</label><input type="number" id="dLife" value="5" min="1" max="40" inputmode="numeric"></div>
+    </div>
+    <div class="filt" id="dM" style="margin-top:12px"></div>
+    <div id="dOut"></div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>④ 손상 — 가치가 급락하면</h3>
+      <p style="margin:0 0 6px;font-size:14px">매 보고기간 말 손상 징후(시장가치 급락, 진부화, 유휴화)를 검토함. 징후가 있으면 <b>회수가능액</b>(순공정가치와 사용가치 중 큰 금액)을 계산해 장부금액보다 낮으면 차액을 손상차손으로 인식.</p>
+      <p style="margin:0 0 6px;font-size:14px"><b>예시</b> · 2년차 말 장부금액 32,000, 회수가능액 28,000</p>
+      <div><span class="dr">(차) 유형자산손상차손 4,000</span> &nbsp; <span class="cr">(대) 손상차손누계액 4,000</span></div>
+      <p style="font-size:13px;color:var(--sub);margin:6px 0 0">이후 상각은 줄어든 장부금액 28,000 기준으로 다시 계산. 회복되면 손상 전 상각 후 금액까지만 환입.</p>
+    </div>
+    <div class="card">
+      <h3>⑤ 처분 — 장부금액과 받은 돈의 차이</h3>
+      <p style="margin:0 0 6px;font-size:14px"><b>예시</b> (손상 없음 가정) · 3년차 말 25,000에 매각<br>장부금액 = 50,000 − 누계액 27,000 = <b>23,000</b> → 처분이익 2,000</p>
+      <div class="tw"><table>
+        <tr><th>차변</th><th class="n">금액</th><th>대변</th><th class="n">금액</th></tr>
+        <tr><td class="dr">현금</td><td class="n">25,000</td><td class="cr">기계장치</td><td class="n">50,000</td></tr>
+        <tr><td class="dr">감가상각누계액</td><td class="n">27,000</td><td class="cr">유형자산처분이익</td><td class="n">2,000</td></tr>
+      </table></div>
+      <p style="font-size:13px;color:var(--sub);margin:6px 0 0">원가와 누계액을 함께 없애는 것이 포인트. 처분 시점까지의 감가상각을 먼저 반영한 뒤 처분 분개함.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>SAP FI-AA — 자산회계 구조</h3>
+    <div class="tw"><table>
+      <tr><th>구성요소</th><th>역할</th><th>설정·T-Code</th></tr>
+      <tr><td><b>자산클래스</b></td><td>자산 종류별 묶음 — 계정결정·번호범위·화면배치·기본 감가상각값을 결정</td><td><span class="chip">OAOA</span></td></tr>
+      <tr><td><b>계정결정</b></td><td>자산클래스별 취득원가·누계액·감가상각비·처분손익 G/L 연결</td><td><span class="chip">AO90</span></td></tr>
+      <tr><td><b>감가상각영역</b></td><td>같은 자산을 여러 기준으로 동시 평가 (예: 01 장부, 세무, 그룹 IFRS)</td><td><span class="chip">OADB</span></td></tr>
+      <tr><td><b>감가상각키</b></td><td>정액·정률 등 계산 방법을 담은 키</td><td><span class="chip">AFAMA</span></td></tr>
+      <tr><td><b>자산 마스터</b></td><td>자산 1건 = 마스터 1건. 코스트센터·내용연수·감가상각 개시일 보관</td><td><span class="chip">AS01</span><span class="chip">AS02</span><span class="chip">AS03</span></td></tr>
+      <tr><td><b>건설중인자산(AuC)</b></td><td>공사 중 원가를 모아 두었다가 완공 시 본자산으로 대체</td><td><span class="chip">AIAB</span><span class="chip">AIBU</span></td></tr>
+    </table></div>
+    <h3 style="margin-top:16px">업무별 T-Code</h3>
+    <div class="tw"><table>
+      <tr><th>업무</th><th>T-Code</th><th>비고</th></tr>
+      <tr><td>취득 (공급업체 송장 함께)</td><td><span class="chip">F-90</span></td><td>전기키 70 자산 / 31 공급업체</td></tr>
+      <tr><td>취득 (상대계정 자동)</td><td><span class="chip">ABZON</span></td><td>상대계정은 정리용 계정</td></tr>
+      <tr><td>구매오더로 취득</td><td><span class="chip">ME21N</span><span class="chip">MIGO</span><span class="chip">MIRO</span></td><td>계정지정범주 A(자산)</td></tr>
+      <tr><td>감가상각 실행</td><td><span class="chip">AFAB</span></td><td>월별 일괄 전기, 테스트 실행 가능</td></tr>
+      <tr><td>회사코드 내 이전</td><td><span class="chip">ABUMN</span></td><td>자산클래스·코스트센터 변경</td></tr>
+      <tr><td>매각 (고객 없음 / 고객 매출)</td><td><span class="chip">ABAON</span><span class="chip">F-92</span></td><td>처분손익 자동 계산</td></tr>
+      <tr><td>폐기</td><td><span class="chip">ABAVN</span></td><td>장부금액 전액 처분손실</td></tr>
+      <tr><td>조회·보고서</td><td><span class="chip">AW01N</span><span class="chip">AR01</span><span class="chip">S_ALR_87011990</span></td><td>자산 탐색기 / 자산 잔액 / 자산 이력표</td></tr>
+      <tr><td>연말 작업</td><td><span class="chip">AJRW</span><span class="chip">AJAB</span></td><td>회계연도 변경 / 연도 마감</td></tr>
+    </table></div>
+    <p style="font-size:13px;color:var(--sub);margin:8px 0 0">S/4HANA(신 자산회계)에서는 자산 거래가 감가상각영역별로 원장(Ledger)에 실시간 반영되고 ACDOCA에 함께 기록됨. 분개 연습 #4(비품 취득)·#12(감가상각)가 이 흐름의 축소판.</p>
+  </div>
+</section>
+
+<!-- ============ FTA ============ -->
+<section class="view" id="v-fta">
+  <h2>FTA 회계 — 관세가 바뀌면 원가가 바뀜</h2>
+  <p class="lead">수입관세는 비용이 아니라 재고의 취득원가. 그래서 FTA로 관세가 줄거나, 나중에 돌려받거나, 추징당하면 모두 원가(재고·매출원가)가 움직임.</p>
+
+  <div class="card">
+    <h3>핵심 원칙 3가지</h3>
+    <div class="steps">
+      <div><b>관세는 원가</b><span>수입관세·운송비 등 취득 부대비용은 재고 원가에 포함(K-IFRS 1002). 나중에 돌려받는 세금은 원가에서 제외.</span></div>
+      <div><b>부가세는 원가 아님</b><span>수입 부가세는 공제 대상이면 부가세대급금(자산). 관세가 바뀌면 부가세 과세표준도 함께 바뀜.</span></div>
+      <div><b>재고 남았나, 팔렸나</b><span>관세 환급·추징은 해당 물품이 재고로 남아 있으면 재고, 이미 팔렸으면 매출원가로 조정.</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>FTA 관세 흐름</h3>
+    <div class="flow">
+      <div class="st"><b>원산지증빙 확보</b><span>수출자의 원산지증명서</span></div><div class="ar">→</div>
+      <div class="st"><b>수입신고</b><span>수리 전 협정관세 적용 신청 → 낮은 관세 납부</span></div><div class="ar">→</div>
+      <div class="st"><b>사후적용</b><span>수리 전 신청 못 했으면 수리일부터 1년 이내 신청 → 차액 환급</span></div><div class="ar">→</div>
+      <div class="st"><b>원산지 검증</b><span>요건 불충족 시 협정관세 배제 → 차액 + 가산세 추징</span></div>
+    </div>
+    <p style="font-size:13px;color:var(--sub);margin:10px 0 0">세관이 품목분류를 변경해 세액을 경정·고지한 경우 등에는 고지받은 날부터 45일 이내 사후적용을 신청할 수 있는 예외가 있음. 원산지 검증은 수입 후 수년 뒤에 오기도 하므로 원산지증빙서류는 법정 기간 동안 보관.</p>
+  </div>
+
+  <div class="card">
+    <h3>예시 — (주)서울사이클, 미국산 자전거 부품 수입 (한-미 FTA)</h3>
+    <p style="margin:0 0 8px;font-size:14px">과세가격 100,000,000원 · 기본관세 8% · 협정관세 0% · 부가세 10% (세율은 교육용 가정)</p>
+    <div class="tw"><table>
+      <tr><th>상황</th><th>차변</th><th class="n">금액</th><th>대변</th><th class="n">금액</th></tr>
+      <tr><td rowspan="2"><b>A. 수입 시 FTA 적용</b><br><span style="font-size:13px;color:var(--sub)">관세 0원</span></td>
+        <td class="dr">상품</td><td class="n">100,000,000</td><td class="cr">외상매입금(해외)</td><td class="n">100,000,000</td></tr>
+      <tr><td class="dr">부가세대급금</td><td class="n">10,000,000</td><td class="cr">현금</td><td class="n">10,000,000</td></tr>
+      <tr><td rowspan="2"><b>B. 원산지증명서 미입수</b><br><span style="font-size:13px;color:var(--sub)">기본세율 8% 납부</span></td>
+        <td class="dr">상품(관세)</td><td class="n">8,000,000</td><td class="cr">현금</td><td class="n">18,800,000</td></tr>
+      <tr><td class="dr">부가세대급금</td><td class="n">10,800,000</td><td></td><td></td></tr>
+      <tr><td rowspan="3"><b>C. 사후적용 환급 결정</b><br><span style="font-size:13px;color:var(--sub)">B 이후, 이미 60% 판매</span></td>
+        <td class="dr">미수금(관세환급)</td><td class="n">8,800,000</td><td class="cr">상품 (남은 40%)</td><td class="n">3,200,000</td></tr>
+      <tr><td></td><td></td><td class="cr">매출원가 (팔린 60%)</td><td class="n">4,800,000</td></tr>
+      <tr><td></td><td></td><td class="cr">부가세대급금</td><td class="n">800,000</td></tr>
+      <tr><td rowspan="2"><b>D. 원산지 검증 실패</b><br><span style="font-size:13px;color:var(--sub)">A 이후, 전량 판매 완료, 가산세 1,000,000 가정</span></td>
+        <td class="dr">매출원가(추징 관세)</td><td class="n">8,000,000</td><td class="cr">미지급금(세관)</td><td class="n">9,000,000</td></tr>
+      <tr><td class="dr">세금과공과(가산세)</td><td class="n">1,000,000</td><td></td><td></td></tr>
+    </table></div>
+    <ul style="font-size:13px;color:var(--sub);margin:10px 0 0;padding-left:18px">
+      <li>C: 환급금이 입금되면 (차) 현금 / (대) 미수금. 환급가산금(이자 성격)은 별도로 금융수익.</li>
+      <li>C·D: 관세가 바뀌면 부가세 과세표준도 바뀜 — 수정수입세금계산서에 맞춰 부가세대급금을 조정.</li>
+      <li>D: 가산세는 원가가 아닌 벌과금 성격 → 영업외비용, 법인세 계산 시 손금불산입. 금액이 중요하면 전기오류 여부를 검토.</li>
+      <li>D: 수출자 귀책으로 계약상 보상을 받기로 확정되면 (차) 미수금 / (대) 기타수익.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>FTA 절감·환급 계산기</h3>
+    <div class="grid g3" style="gap:10px">
+      <div><label class="f">과세가격 (원)</label><input type="number" id="tV" value="100000000" inputmode="numeric"></div>
+      <div><label class="f">기본세율 (%)</label><input type="number" id="tB" value="8" step="0.1" inputmode="decimal"></div>
+      <div><label class="f">협정세율 (%)</label><input type="number" id="tF" value="0" step="0.1" inputmode="decimal"></div>
+      <div><label class="f">환급 시점 판매 비율 (%)</label><input type="number" id="tS" value="60" min="0" max="100" inputmode="numeric"></div>
+      <div><label class="f">부가세율 (%)</label><input type="number" id="tT" value="10" step="0.1" inputmode="decimal"></div>
+    </div>
+    <div id="tOut" style="margin-top:12px"></div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>수출자 쪽 회계</h3>
+      <div class="tw"><table>
+        <tr><th>항목</th><th>처리</th></tr>
+        <tr><td>원산지증명서 발급 수수료</td><td>판관비(지급수수료)</td></tr>
+        <tr><td>원산지관리 시스템·컨설팅</td><td>판관비, 시스템 구축은 무형자산 검토</td></tr>
+        <tr><td>FTA 혜택분 가격 할인 요구</td><td>매출 차감(거래가격 조정, K-IFRS 1115)</td></tr>
+        <tr><td>수입국 추징분 보상 의무</td><td>지출 가능성이 높고 추정 가능하면 충당부채, 아니면 주석 공시</td></tr>
+      </table></div>
+    </div>
+    <div class="card">
+      <h3>헷갈리기 쉬운 것 — FTA vs 관세환급</h3>
+      <div class="tw"><table>
+        <tr><th></th><th>FTA 협정관세</th><th>수출용원재료 관세환급</th></tr>
+        <tr><td><b>근거</b></td><td>FTA 관세특례법</td><td>관세환급특례법</td></tr>
+        <tr><td><b>대상</b></td><td>체약국 원산지 물품의 수입</td><td>수출물품 제조에 쓴 원재료의 수입관세</td></tr>
+        <tr><td><b>시점</b></td><td>수입할 때 낮은 세율 적용</td><td>일단 내고, 수출 후 돌려받음</td></tr>
+        <tr><td><b>회계</b></td><td>애초에 원가가 낮음 / 사후적용 시 원가 조정</td><td>환급금을 미수금으로 잡고 원가(주로 매출원가)에서 차감</td></tr>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>SAP에서는</h3>
+    <div class="tw"><table>
+      <tr><th>단계</th><th>SAP 처리</th><th>회계 결과</th></tr>
+      <tr><td>수입 구매오더</td><td><span class="chip">ME21N</span> 가격결정에 관세 조건(예: ZOA1 %, ZOB1 금액)을 계획 운송비로 넣고 세관·관세사를 공급업체로 지정</td><td>관세가 재고 원가에 포함되도록 설계</td></tr>
+      <tr><td>입고</td><td><span class="chip">MIGO</span></td><td>(차) 재고 / (대) GR/IR + 관세 정리계정(거래키 FR3)</td></tr>
+      <tr><td>관세 정산</td><td><span class="chip">MIRO</span> 계획 운송비 송장</td><td>(차) 관세 정리계정 / (대) 세관·관세사</td></tr>
+      <tr><td>사후적용 환급</td><td><span class="chip">MIRO</span> 후속 대변(Subsequent Credit)</td><td>이동평균가 자재: 남은 재고만큼 재고 차감, 나머지 가격차이 / 표준가 자재: 가격차이(PRD)</td></tr>
+      <tr><td>원산지 판정·증명</td><td>SAP GTS 특혜관리(장기공급자선언 수집, 원산지 판정) 또는 외부 FTA 원산지관리시스템 연동</td><td>회계 전표는 없음 — 증빙 관리</td></tr>
+    </table></div>
+    <p style="font-size:13px;color:var(--sub);margin:8px 0 0">조건유형·거래키는 SAP 표준 예시 기준이며 회사별 가격결정절차 설정에 따라 다름. 이미 팔린 분량의 원가 조정은 SAP 자동 처리 범위 밖일 수 있어 결산 때 매출원가 대체 전표로 맞추는 경우가 많음.</p>
+  </div>
+</section>
+
+<!-- ============ 2. JOURNAL ============ -->
+<section class="view" id="v-journal">
+  <h2>Global Bike 첫 달, 13개의 거래</h2>
+  <p class="lead">미국 법인 Global Bike(USD)의 첫 달 거래를 분개함. 맞히면 장부에 자동 전기됨.</p>
+  <div class="prog" id="prog"></div>
+  <div class="card">
+    <div class="row" style="justify-content:space-between">
+      <span class="tag" id="sTag"></span>
+      <span style="color:var(--sub);font-size:13px" id="sCount"></span>
+    </div>
+    <div class="scene" id="sText"></div>
+    <div class="entry">
+      <div class="side"><h4 class="dr">차변 (Debit)</h4>
+        <select id="eDr"></select></div>
+      <div class="side"><h4 class="cr">대변 (Credit)</h4>
+        <select id="eCr"></select></div>
+    </div>
+    <div style="margin-top:10px;max-width:260px"><label class="f">금액 (USD)</label>
+      <input type="number" id="eAmt" inputmode="numeric" placeholder="예: 10000"></div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn" id="eCheck">채점</button>
+      <button class="btn ghost" id="eShow">정답 보기</button>
+      <span style="flex:1"></span>
+      <button class="btn ghost sm" id="ePrev">◀ 이전</button>
+      <button class="btn ghost sm" id="eNext">다음 ▶</button>
+    </div>
+    <div class="fb" id="eFb"></div>
+  </div>
+</section>
+
+<!-- ============ 3. LEDGER ============ -->
+<section class="view" id="v-ledger">
+  <h2>장부에서 재무제표까지</h2>
+  <p class="lead">분개 연습에서 맞힌 거래와 직접 입력한 거래가 여기에 쌓임.</p>
+  <div class="card">
+    <h3>직접 분개 입력</h3>
+    <div class="grid g3" style="gap:10px">
+      <div><label class="f">차변 계정</label><select id="fDr"></select></div>
+      <div><label class="f">대변 계정</label><select id="fCr"></select></div>
+      <div><label class="f">금액 (USD)</label><input type="number" id="fAmt" inputmode="numeric"></div>
+    </div>
+    <div style="margin-top:10px"><label class="f">적요</label><input type="text" id="fMemo" placeholder="예: 사무용품 현금 구입"></div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn" id="fPost">전기</button>
+      <span style="flex:1"></span>
+      <button class="btn ghost sm" id="fAll">13개 거래 한 번에 전기</button>
+      <button class="btn ghost sm" id="fReset">전체 초기화</button>
+    </div>
+    <div id="fMsg" style="margin-top:8px;font-size:13px;color:var(--sub)"></div>
+  </div>
+
+  <div class="card"><h3>분개장 (Journal)</h3><div class="tw" id="jnl"></div></div>
+  <div class="card"><h3>총계정원장 (T계정)</h3><div id="tacc"></div></div>
+  <div class="card"><h3>시산표 (Trial Balance)</h3><div class="tw" id="tb"></div></div>
+  <div class="grid g2">
+    <div class="card"><h3>손익계산서 (P/L)</h3><div class="tw" id="pl"></div></div>
+    <div class="card"><h3>재무상태표 (B/S)</h3><div class="tw" id="bs"></div></div>
+  </div>
+</section>
+
+<!-- ============ 4. SAP ============ -->
+<section class="view" id="v-sap">
+  <h2>같은 분개, SAP 전표로 보기</h2>
+  <p class="lead">전기키(Posting Key)가 차/대와 계정유형을 함께 결정함. 전표유형은 전표의 출처를 알려줌.</p>
+
+  <div class="card">
+    <h3>구매 → 지급 (P2P) 자동전표</h3>
+    <div class="tw"><table>
+      <tr><th>단계</th><th>T-Code</th><th>전표유형</th><th>차변</th><th>대변</th></tr>
+      <tr><td>입고</td><td><span class="chip">MIGO</span></td><td>WE</td><td><span class="dr">재고자산</span> <span class="chip">89</span></td><td><span class="cr">GR/IR</span> <span class="chip">96</span></td></tr>
+      <tr><td>송장검증</td><td><span class="chip">MIRO</span></td><td>RE</td><td><span class="dr">GR/IR</span> <span class="chip">86</span></td><td><span class="cr">매입채무(Vendor)</span> <span class="chip">31</span></td></tr>
+      <tr><td>지급</td><td><span class="chip">F-53</span></td><td>KZ</td><td><span class="dr">매입채무(Vendor)</span> <span class="chip">25</span></td><td><span class="cr">은행</span> <span class="chip">50</span></td></tr>
+    </table></div>
+    <p style="color:var(--sub);font-size:13px;margin:8px 0 0">GR/IR은 입고와 송장 사이의 중간 계정 — 두 단계가 끝나면 잔액 0. 결과적으로 "재고 / 매입채무" 분개와 같음.</p>
+  </div>
+
+  <div class="card">
+    <h3>판매 → 수금 (O2C) 자동전표</h3>
+    <div class="tw"><table>
+      <tr><th>단계</th><th>T-Code</th><th>전표유형</th><th>차변</th><th>대변</th></tr>
+      <tr><td>출고(PGI)</td><td><span class="chip">VL02N</span></td><td>WL</td><td><span class="dr">매출원가</span> <span class="chip">81</span></td><td><span class="cr">재고자산</span> <span class="chip">99</span></td></tr>
+      <tr><td>대금청구</td><td><span class="chip">VF01</span></td><td>RV</td><td><span class="dr">매출채권(Customer)</span> <span class="chip">01</span></td><td><span class="cr">매출</span> <span class="chip">50</span></td></tr>
+      <tr><td>수금</td><td><span class="chip">F-28</span></td><td>DZ</td><td><span class="dr">은행</span> <span class="chip">40</span></td><td><span class="cr">매출채권(Customer)</span> <span class="chip">15</span></td></tr>
+    </table></div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>주요 전기키</h3>
+      <div class="tw"><table>
+        <tr><th>키</th><th>차/대</th><th>계정유형</th><th>용도</th></tr>
+        <tbody id="pkT"></tbody>
+      </table></div>
+    </div>
+    <div class="card">
+      <h3>전기키 드릴</h3>
+      <p style="color:var(--sub);font-size:13px;margin:0">이 전기키는 차변인가, 대변인가?</p>
+      <div class="drill" id="dKey">40</div>
+      <div class="row" style="justify-content:center">
+        <button class="btn" data-d="D" style="min-width:110px">차변 (S)</button>
+        <button class="btn ghost" data-d="C" style="min-width:110px">대변 (H)</button>
+      </div>
+      <div id="dRes" style="text-align:center;margin-top:12px;min-height:48px"></div>
+      <div style="text-align:center;color:var(--sub);font-size:13px" id="dScore"></div>
+      <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
+      <h3>주요 전표유형</h3>
+      <div class="tw"><table>
+        <tr><th>유형</th><th>의미</th></tr>
+        <tr><td>SA</td><td>G/L 계정 전표</td></tr>
+        <tr><td>DR / DZ</td><td>고객 송장 / 고객 지급(수금)</td></tr>
+        <tr><td>KR / KZ</td><td>공급업체 송장 / 공급업체 지급</td></tr>
+        <tr><td>RV / RE</td><td>SD 대금청구 연동 / MM 송장검증(MIRO)</td></tr>
+        <tr><td>WE / WL / WA</td><td>입고 / 출하 출고 / 기타 출고</td></tr>
+        <tr><td>AA / AF</td><td>자산 전기 / 감가상각</td></tr>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. QUIZ ============ -->
+<section class="view" id="v-quiz">
+  <h2>확인 퀴즈</h2>
+  <p class="lead">회계 원리 9문항 + SAP FI 6문항.</p>
+  <div class="card" id="quiz"></div>
+</section>
+</main>
+<footer>교육용 예시 데이터(Global Bike 가상 거래, USD). SAP 전기키·전표유형은 표준 기본값 기준이며 회사별 설정에 따라 다를 수 있음.</footer>
+
+<script>
+const ACC = {
+  cash:{n:'현금 및 예금',e:'Cash',t:'A'}, ar:{n:'매출채권',e:'Accounts Receivable',t:'A'},
+  inv:{n:'재고자산',e:'Inventory',t:'A'}, prepaid:{n:'선급비용',e:'Prepaid Expense',t:'A'},
+  equip:{n:'비품',e:'Equipment',t:'A'}, accdep:{n:'감가상각누계액',e:'Accum. Depreciation',t:'XA'},
+  ap:{n:'매입채무',e:'Accounts Payable',t:'L'}, loan:{n:'차입금',e:'Loan Payable',t:'L'},
+  accrued:{n:'미지급비용',e:'Accrued Expense',t:'L'}, capital:{n:'자본금',e:'Capital Stock',t:'E'},
+  sales:{n:'매출',e:'Sales Revenue',t:'R'}, cogs:{n:'매출원가',e:'COGS',t:'X'},
+  salary:{n:'급여',e:'Salaries',t:'X'}, rent:{n:'임차료',e:'Rent Expense',t:'X'},
+  dep:{n:'감가상각비',e:'Depreciation',t:'X'}, interest:{n:'이자비용',e:'Interest Expense',t:'X'}
+};
+const TN = {A:'자산',XA:'자산(차감)',L:'부채',E:'자본',R:'수익',X:'비용'};
+const DRN = t => t==='A'||t==='X';           // normal debit balance
+
+const SC = [
+ {tag:'설립',text:'주주가 현금 100,000을 출자해 Global Bike를 설립함.',dr:'cash',cr:'capital',amt:100000,
+  why:'현금(자산) 증가 → 차변, 자본금(자본) 증가 → 대변.',
+  sap:{t:'F-02',d:'SA',l:[['40','현금 및 예금','D'],['50','자본금','C']]}},
+ {tag:'차입',text:'은행에서 운영자금 50,000을 빌려 예금 계좌로 받음.',dr:'cash',cr:'loan',amt:50000,
+  why:'현금(자산) 증가 → 차변, 차입금(부채) 증가 → 대변.',
+  sap:{t:'F-02',d:'SA',l:[['40','현금 및 예금','D'],['50','차입금','C']]}},
+ {tag:'구매',text:'공급업체에서 자전거 재고 20,000어치를 외상으로 매입함.',dr:'inv',cr:'ap',amt:20000,
+  why:'재고(자산) 증가 → 차변, 갚을 의무인 매입채무(부채) 증가 → 대변.',
+  sap:{t:'MIGO → MIRO',d:'WE → RE',l:[['89','재고자산','D'],['96','GR/IR','C'],['86','GR/IR','D'],['31','공급업체(매입채무)','C']],
+       note:'SAP는 입고와 송장을 두 전표로 나눔. GR/IR이 상계되어 순효과는 "재고 / 매입채무".'}},
+ {tag:'비품',text:'사무용 비품(컴퓨터·집기) 12,000을 현금으로 구입함.',dr:'equip',cr:'cash',amt:12000,
+  why:'비품(자산) 증가 → 차변, 현금(자산) 감소 → 대변. 자산끼리 바뀐 교환거래.',
+  sap:{t:'ABZON / F-90',d:'AA',l:[['70','고정자산(비품)','D'],['50','현금 및 예금','C']],note:'고정자산은 자산 마스터(AS01) 기준으로 70번 키로 취득 전기.'}},
+ {tag:'선급',text:'매장 임차료 12개월분 6,000을 미리 현금으로 지급함.',dr:'prepaid',cr:'cash',amt:6000,
+  why:'아직 사용하지 않은 기간의 임차료는 비용이 아닌 선급비용(자산) → 차변. 현금 감소 → 대변.',
+  sap:{t:'FB50',d:'SA',l:[['40','선급비용','D'],['50','현금 및 예금','C']]}},
+ {tag:'판매',text:'고객 Philly Bikes에 자전거를 30,000에 외상으로 판매하고 대금을 청구함.',dr:'ar',cr:'sales',amt:30000,
+  why:'받을 권리인 매출채권(자산) 증가 → 차변, 매출(수익) 발생 → 대변.',
+  sap:{t:'VF01',d:'RV',l:[['01','고객(매출채권)','D'],['50','매출','C']]}},
+ {tag:'원가',text:'판매한 자전거의 원가는 18,000임. 출고(PGI) 처리함.',dr:'cogs',cr:'inv',amt:18000,
+  why:'팔린 재고는 매출원가(비용)로 바뀜 → 차변, 재고(자산) 감소 → 대변.',
+  sap:{t:'VL02N (PGI)',d:'WL',l:[['81','매출원가','D'],['99','재고자산','C']],note:'출고 시점에 재고평가 기준으로 자동 전기됨.'}},
+ {tag:'수금',text:'Philly Bikes로부터 외상대금 30,000이 입금됨.',dr:'cash',cr:'ar',amt:30000,
+  why:'현금(자산) 증가 → 차변, 매출채권(자산) 감소 → 대변.',
+  sap:{t:'F-28',d:'DZ',l:[['40','현금 및 예금','D'],['15','고객(매출채권)','C']]}},
+ {tag:'지급',text:'공급업체에 외상대금 20,000을 송금함.',dr:'ap',cr:'cash',amt:20000,
+  why:'매입채무(부채) 감소 → 차변, 현금(자산) 감소 → 대변.',
+  sap:{t:'F-53',d:'KZ',l:[['25','공급업체(매입채무)','D'],['50','현금 및 예금','C']]}},
+ {tag:'급여',text:'직원 급여 5,000을 현금으로 지급함.',dr:'salary',cr:'cash',amt:5000,
+  why:'급여(비용) 발생 → 차변, 현금(자산) 감소 → 대변.',
+  sap:{t:'FB50',d:'SA',l:[['40','급여','D'],['50','현금 및 예금','C']],note:'실무에서는 HR 급여 결과가 인터페이스로 전기되는 경우가 많음.'}},
+ {tag:'결산',text:'[월말 결산] 선급한 임차료 중 이번 달 사용분 500을 비용으로 바꿈.',dr:'rent',cr:'prepaid',amt:500,
+  why:'사용한 만큼 임차료(비용) → 차변, 선급비용(자산) 감소 → 대변. 발생주의.',
+  sap:{t:'FB50 / FBS1',d:'SA',l:[['40','임차료','D'],['50','선급비용','C']]}},
+ {tag:'결산',text:'[월말 결산] 비품의 이번 달 감가상각비 200을 계상함.',dr:'dep',cr:'accdep',amt:200,
+  why:'감가상각비(비용) → 차변, 감가상각누계액(자산 차감계정) 증가 → 대변. 비품 원가는 그대로 둠.',
+  sap:{t:'AFAB',d:'AF',l:[['40','감가상각비','D'],['50','감가상각누계액','C']],note:'자산회계(FI-AA)가 자산별로 계산해 일괄 전기함.'}},
+ {tag:'결산',text:'[월말 결산] 차입금에 대한 이번 달 이자 250이 발생했으나 아직 지급하지 않음.',dr:'interest',cr:'accrued',amt:250,
+  why:'이자비용(비용) 발생 → 차변, 미지급비용(부채) 증가 → 대변. 돈이 안 나가도 비용은 인식.',
+  sap:{t:'FBS1',d:'SA',l:[['40','이자비용','D'],['50','미지급비용','C']],note:'FBS1 발생주의 전표는 다음 달 F.81로 역분개 가능.'}}
+];
+
+const PK = [
+ ['01','D','고객','송장(매출채권)'],['11','C','고객','대변메모'],['15','C','고객','수금'],
+ ['21','D','공급업체','대변메모'],['25','D','공급업체','지급'],['31','C','공급업체','송장(매입채무)'],
+ ['40','D','G/L','차변 전기'],['50','C','G/L','대변 전기'],
+ ['70','D','고정자산','취득'],['75','C','고정자산','처분 등'],
+ ['81','D','G/L(MM)','원가·비용'],['86','D','G/L(MM)','GR/IR 정리'],['89','D','재고(MM)','입고'],
+ ['91','C','G/L(MM)','원가·비용'],['96','C','G/L(MM)','GR/IR 정리'],['99','C','재고(MM)','출고']
+];
+
+/* ---------- state ---------- */
+let S = {entries:[], done:{}, cur:0};
+try{ const s = JSON.parse(localStorage.getItem('fiLab')||'null'); if(s&&s.entries) S = Object.assign(S,s);}catch(e){}
+const save = () => { try{ localStorage.setItem('fiLab', JSON.stringify(S)); }catch(e){} };
+
+const $ = id => document.getElementById(id);
+const fmt = n => (n<0?'(':'') + Math.abs(n).toLocaleString('en-US') + (n<0?')':'');
+const an = k => ACC[k].n;
+
+function accOptions(sel, ph){
+  sel.innerHTML = `<option value="">${ph}</option>` + ['A','XA','L','E','R','X'].map(t=>
+    `<optgroup label="${TN[t]}">` + Object.keys(ACC).filter(k=>ACC[k].t===t).map(k=>`<option value="${k}">${ACC[k].n} · ${ACC[k].e}</option>`).join('') + '</optgroup>').join('');
+}
+
+/* ---------- routing ---------- */
+const VIEWS = ['basics','structure','accounts','fixed','fta','journal','ledger','sap','quiz'];
+function route(){
+  let v = location.hash.slice(1); if(!VIEWS.includes(v)) v='basics';
+  VIEWS.forEach(x=>$('v-'+x).classList.toggle('on',x===v));
+  document.querySelectorAll('#tabs a').forEach(a=>a.classList.toggle('on',a.dataset.v===v));
+  if(v==='ledger') renderLedger();
+  window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',route);
+
+/* ---------- basics judge ---------- */
+$('jGo').onclick = ()=>{
+  const t=$('jEl').value, up=$('jCh').value==='up';
+  const left = t==='A'||t==='X';
+  const d = left===up;
+  $('jRes').innerHTML = d ? '<span class="dr">→ 차변 (Debit)</span>' : '<span class="cr">→ 대변 (Credit)</span>';
+};
+
+/* ---------- journal ---------- */
+accOptions($('eDr'),'계정 선택'); accOptions($('eCr'),'계정 선택');
+function sapHTML(s){
+  const rows = s.sap.l.map(r=>`<tr><td><span class="chip">${r[0]}</span></td><td class="${r[2]==='D'?'dr':'cr'}">${r[2]==='D'?'차변':'대변'}</td><td>${r[1]}</td></tr>`).join('');
+  return `<div class="sapbox"><div class="hd">SAP에서는 <span class="chip">${s.sap.t}</span> · 전표유형 <span class="chip">${s.sap.d}</span></div>
+  <div class="tw"><table><tr><th>전기키</th><th>차/대</th><th>계정</th></tr>${rows}</table></div>
+  ${s.sap.note?`<div style="font-size:13px;color:var(--sub);margin-top:6px">${s.sap.note}</div>`:''}</div>`;
+}
+function renderProg(){
+  $('prog').innerHTML = SC.map((s,i)=>`<button class="${S.done[i]?'done':''} ${i===S.cur?'cur':''}" data-i="${i}">${i+1}</button>`).join('');
+  $('prog').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.cur=+b.dataset.i;save();renderScene();});
+}
+function renderScene(){
+  const s = SC[S.cur];
+  $('sTag').textContent = s.tag; $('sCount').textContent = `${S.cur+1} / ${SC.length} · 완료 ${Object.keys(S.done).length}`;
+  $('sText').textContent = s.text;
+  $('eDr').value=''; $('eCr').value=''; $('eAmt').value='';
+  const fb=$('eFb'); fb.className='fb'; fb.innerHTML='';
+  if(S.done[S.cur]){ $('eDr').value=s.dr; $('eCr').value=s.cr; $('eAmt').value=s.amt; showFb(true,'이미 맞힌 거래 — 장부에 전기됨'); }
+  $('ePrev').disabled = S.cur===0; $('eNext').disabled = S.cur===SC.length-1;
+  renderProg();
+}
+function showFb(ok,title,extra=''){
+  const s=SC[S.cur], fb=$('eFb');
+  fb.className = 'fb '+(ok?'ok':'ng');
+  fb.innerHTML = `<div class="t">${title}</div>` + (ok||extra==='answer' ?
+    `<div><span class="dr">(차) ${an(s.dr)} ${fmt(s.amt)}</span> &nbsp; <span class="cr">(대) ${an(s.cr)} ${fmt(s.amt)}</span></div>
+     <div style="margin-top:4px">${s.why}</div>${sapHTML(s)}` : extra);
+}
+function postScenario(i){
+  if(S.entries.some(e=>e.src===i)) return;
+  const s=SC[i]; S.entries.push({src:i,dr:s.dr,cr:s.cr,amt:s.amt,memo:s.text.replace(/^\[.*?\]\s*/,'')});
+  S.entries.sort((a,b)=>(a.src??99)-(b.src??99));
+}
+$('eCheck').onclick = ()=>{
+  const s=SC[S.cur], d=$('eDr').value, c=$('eCr').value, a=+$('eAmt').value;
+  if(!d||!c||!a){ showFb(false,'차변·대변 계정과 금액을 모두 입력함'); return; }
+  const hints=[];
+  if(d!==s.dr) hints.push(d===s.cr?'차변과 대변이 바뀜':`차변 계정 다시 확인 — ${an(d)}은(는) ${TN[ACC[d].t]} 계정임`);
+  if(c!==s.cr && d!==s.cr) hints.push(`대변 계정 다시 확인 — ${an(c)}은(는) ${TN[ACC[c].t]} 계정임`);
+  if(a!==s.amt) hints.push('금액 다시 확인');
+  if(!hints.length){ S.done[S.cur]=true; postScenario(S.cur); save(); showFb(true,'정답 — 장부에 전기됨'); renderProg();
+    $('sCount').textContent = `${S.cur+1} / ${SC.length} · 완료 ${Object.keys(S.done).length}`; }
+  else showFb(false,'다시 생각해 봄', '<ul style="margin:4px 0 0;padding-left:18px">'+hints.map(h=>`<li>${h}</li>`).join('')+'</ul>');
+};
+$('eShow').onclick = ()=>{ const s=SC[S.cur]; $('eDr').value=s.dr; $('eCr').value=s.cr; $('eAmt').value=s.amt; showFb(false,'정답','answer'); $('eFb').className='fb ok'; };
+$('ePrev').onclick = ()=>{ if(S.cur>0){S.cur--;save();renderScene();} };
+$('eNext').onclick = ()=>{ if(S.cur<SC.length-1){S.cur++;save();renderScene();} };
+
+/* ---------- ledger ---------- */
+accOptions($('fDr'),'선택'); accOptions($('fCr'),'선택');
+$('fPost').onclick = ()=>{
+  const d=$('fDr').value,c=$('fCr').value,a=+$('fAmt').value,m=$('fMemo').value.trim()||'직접 입력';
+  if(!d||!c||!(a>0)){ $('fMsg').textContent='차변·대변 계정과 0보다 큰 금액을 입력함'; return; }
+  if(d===c){ $('fMsg').textContent='차변과 대변에 같은 계정은 쓸 수 없음'; return; }
+  S.entries.push({src:null,dr:d,cr:c,amt:a,memo:m}); save();
+  $('fAmt').value=''; $('fMemo').value=''; $('fMsg').textContent='전기 완료'; renderLedger();
+};
+$('fAll').onclick = ()=>{ SC.forEach((s,i)=>{S.done[i]=true; postScenario(i);}); save(); renderLedger(); renderScene(); $('fMsg').textContent='13개 거래 전기 완료'; };
+let resetArm=false;
+$('fReset').onclick = ()=>{
+  if(!resetArm){ resetArm=true; $('fReset').textContent='한 번 더 누르면 초기화'; setTimeout(()=>{resetArm=false;$('fReset').textContent='전체 초기화';},3000); return; }
+  resetArm=false; $('fReset').textContent='전체 초기화';
+  S={entries:[],done:{},cur:0}; save(); renderLedger(); renderScene(); $('fMsg').textContent='초기화됨';
+};
+
+function balances(){
+  const b={}; Object.keys(ACC).forEach(k=>b[k]={d:0,c:0,dl:[],cl:[]});
+  S.entries.forEach((e,i)=>{ b[e.dr].d+=e.amt; b[e.dr].dl.push([i+1,e.amt]); b[e.cr].c+=e.amt; b[e.cr].cl.push([i+1,e.amt]); });
+  Object.keys(b).forEach(k=>{ b[k].bal = DRN(ACC[k].t) ? b[k].d-b[k].c : b[k].c-b[k].d; });
+  return b;
+}
+function renderLedger(){
+  if(!S.entries.length){
+    ['jnl','tacc','tb','pl','bs'].forEach(id=>$(id).innerHTML='<div class="empty">아직 전기된 거래가 없음 — 분개 연습을 풀거나 위에서 직접 입력함</div>'); return;
+  }
+  $('jnl').innerHTML = '<table><tr><th>#</th><th>적요</th><th>차변</th><th class="n">금액</th><th>대변</th><th></th></tr>' +
+    S.entries.map((e,i)=>`<tr><td>${i+1}</td><td>${e.memo}</td><td class="dr">${an(e.dr)}</td><td class="n">${fmt(e.amt)}</td><td class="cr">${an(e.cr)}</td>
+      <td>${e.src===null?`<button class="btn ghost sm" data-del="${i}">삭제</button>`:''}</td></tr>`).join('') + '</table>';
+  $('jnl').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{S.entries.splice(+b.dataset.del,1);save();renderLedger();});
+
+  const b=balances(), used=Object.keys(ACC).filter(k=>b[k].d||b[k].c);
+  $('tacc').innerHTML = '<div class="tgrid">'+used.map(k=>{
+    const x=b[k], side=DRN(ACC[k].t)?'차변':'대변';
+    const L=a=>a.map(([n,v])=>`<div class="ln"><i>#${n}</i><span>${fmt(v)}</span></div>`).join('');
+    return `<div class="tacc"><div class="nm">${an(k)}</div><div class="bd"><div>${L(x.dl)}</div><div>${L(x.cl)}</div></div>
+      <div class="bal">잔액(${side}) ${fmt(x.bal)}</div></div>`;}).join('')+'</div>';
+
+  let td=0,tc=0;
+  const rows = used.map(k=>{ const x=b[k]; const net=x.d-x.c; const d=net>0?net:0, c=net<0?-net:0; td+=d; tc+=c;
+    return `<tr><td>${an(k)} <span class="tag">${TN[ACC[k].t]}</span></td><td class="n">${d?fmt(d):''}</td><td class="n">${c?fmt(c):''}</td></tr>`;}).join('');
+  $('tb').innerHTML = `<table><tr><th>계정</th><th class="n">차변 잔액</th><th class="n">대변 잔액</th></tr>${rows}
+    <tr class="tot"><td>합계</td><td class="n">${fmt(td)}</td><td class="n">${fmt(tc)}</td></tr></table>
+    <span class="chk ${td===tc?'ok':'ng'}">${td===tc?'✓ 차변 합계 = 대변 합계':'✗ 차대 불일치'}</span>`;
+
+  const keys=t=>Object.keys(ACC).filter(k=>ACC[k].t===t&&(b[k].d||b[k].c));
+  const rev=keys('R').reduce((s,k)=>s+b[k].bal,0), exp=keys('X').reduce((s,k)=>s+b[k].bal,0), ni=rev-exp;
+  $('pl').innerHTML = `<table>
+    ${keys('R').map(k=>`<tr><td>${an(k)}</td><td class="n">${fmt(b[k].bal)}</td></tr>`).join('')}
+    <tr><td><b>수익 합계</b></td><td class="n"><b>${fmt(rev)}</b></td></tr>
+    ${keys('X').map(k=>`<tr><td>&nbsp;&nbsp;${an(k)}</td><td class="n">(${fmt(b[k].bal)})</td></tr>`).join('')}
+    <tr><td><b>비용 합계</b></td><td class="n"><b>(${fmt(exp)})</b></td></tr>
+    <tr class="tot"><td>당기순이익</td><td class="n">${fmt(ni)}</td></tr></table>`;
+
+  const assets=[...keys('A'),...keys('XA')], ta=assets.reduce((s,k)=>s+(ACC[k].t==='XA'?-b[k].bal:b[k].bal),0);
+  const tl=keys('L').reduce((s,k)=>s+b[k].bal,0), te=keys('E').reduce((s,k)=>s+b[k].bal,0)+ni;
+  $('bs').innerHTML = `<table>
+    <tr><th colspan="2">자산</th></tr>
+    ${assets.map(k=>`<tr><td>${ACC[k].t==='XA'?'&nbsp;&nbsp;(차감) ':''}${an(k)}</td><td class="n">${ACC[k].t==='XA'?'('+fmt(b[k].bal)+')':fmt(b[k].bal)}</td></tr>`).join('')}
+    <tr class="tot"><td>자산 총계</td><td class="n">${fmt(ta)}</td></tr>
+    <tr><th colspan="2">부채</th></tr>
+    ${keys('L').map(k=>`<tr><td>${an(k)}</td><td class="n">${fmt(b[k].bal)}</td></tr>`).join('')}
+    <tr><td><b>부채 합계</b></td><td class="n"><b>${fmt(tl)}</b></td></tr>
+    <tr><th colspan="2">자본</th></tr>
+    ${keys('E').map(k=>`<tr><td>${an(k)}</td><td class="n">${fmt(b[k].bal)}</td></tr>`).join('')}
+    <tr><td>이익잉여금(당기순이익)</td><td class="n">${fmt(ni)}</td></tr>
+    <tr><td><b>자본 합계</b></td><td class="n"><b>${fmt(te)}</b></td></tr>
+    <tr class="tot"><td>부채 + 자본</td><td class="n">${fmt(tl+te)}</td></tr></table>
+    <span class="chk ${ta===tl+te?'ok':'ng'}">${ta===tl+te?'✓ 자산 = 부채 + 자본':'✗ 불일치'}</span>`;
+}
+
+/* ---------- SAP ---------- */
+$('pkT').innerHTML = PK.map(p=>`<tr><td><span class="chip">${p[0]}</span></td><td class="${p[1]==='D'?'dr':'cr'}">${p[1]==='D'?'차변':'대변'}</td><td>${p[2]}</td><td>${p[3]}</td></tr>`).join('');
+let dk=null, dOk=0, dN=0;
+function nextDrill(){ dk=PK[Math.floor(Math.random()*PK.length)]; $('dKey').textContent=dk[0]; }
+document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{
+  const ok=b.dataset.d===dk[1]; dN++; if(ok)dOk++;
+  $('dRes').innerHTML = `<b style="color:${ok?'var(--ok)':'var(--ng)'}">${ok?'정답':'오답'}</b> — ${dk[0]}: ${dk[1]==='D'?'차변':'대변'} · ${dk[2]} · ${dk[3]}`;
+  $('dScore').textContent = `${dOk} / ${dN}`; nextDrill();
+});
+nextDrill();
+
+/* ---------- account dictionary ---------- */
+const ELEM = {
+ A:{n:'자산',e:'Assets',def:'과거 거래의 결과로 회사가 통제하고, 미래에 경제적 효익(현금 유입)을 가져올 자원.',bal:'차변',cls:'유동자산(1년 또는 정상영업주기 내 현금화) / 비유동자산',
+    f:['재무상태표 왼쪽 — "돈을 어디에 썼나(운용)"','유동성이 높은 순서로 배열','차감계정(대손충당금·감가상각누계액)으로 장부가를 줄여 표시']},
+ L:{n:'부채',e:'Liabilities',def:'과거 거래로 생긴 현재의무로, 이행하면 자원이 빠져나갈 것으로 예상되는 것.',bal:'대변',cls:'유동부채 / 비유동부채',
+    f:['재무상태표 오른쪽 위 — 타인자본(남의 돈)','누구에게, 언제, 얼마를 갚는지가 핵심','돈이 아닌 재화·용역으로 갚는 부채도 있음(선수금·선수수익)']},
+ E:{n:'자본',e:'Equity',def:'자산에서 부채를 뺀 잔여지분(순자산). 주주의 몫.',bal:'대변',cls:'자본금 · 자본잉여금 · 자본조정 · 기타포괄손익누계액 · 이익잉여금',
+    f:['자기자본 — 갚을 의무가 없는 돈','주주와의 거래(출자·배당)와 영업 성과(이익)로만 변함','이익잉여금이 손익계산서와 재무상태표를 잇는 연결고리']},
+ R:{n:'수익',e:'Revenue / Income',def:'기간 중 자본을 늘리는 경제적 효익의 유입(주주 출자는 제외).',bal:'대변',cls:'매출(영업수익) / 기타수익 / 금융수익',
+    f:['손익계산서 항목 — 기간이 끝나면 이익잉여금으로 마감되는 임시계정','현금을 받을 때가 아니라 수행의무를 이행할 때 인식(K-IFRS 1115)','결국 자본을 늘리므로 대변']},
+ X:{n:'비용',e:'Expenses',def:'기간 중 자본을 줄이는 경제적 효익의 유출(주주 배분은 제외).',bal:'차변',cls:'매출원가 / 판매비와관리비 / 기타비용 / 금융원가 / 법인세비용',
+    f:['손익계산서 항목 — 기간 마감 시 이익잉여금으로 마감','현금 지급이 아니라 발생·수익 대응 시점에 인식','결국 자본을 줄이므로 차변']}
+};
+const AD = [
+ ['A','유동','현금및현금성자산','Cash & Cash Equivalents','보유 현금, 요구불예금, 취득 시 만기 3개월 이내의 고유동성 금융상품.','가장 유동성이 높은 자산. 만기 3개월 초과~1년 이내 예금은 단기금융상품으로 따로 분류.','은행별 G/L + 입출금 정리용 중간계정 구조. 은행 거래명세 반영은 FF_5(자동)·FF67(수동).'],
+ ['A','유동','매출채권','Trade Receivables','본업(상품·제품 판매)에서 생긴 외상 대금을 받을 권리.','대손충당금을 차감한 순액으로 표시. 회수기간이 길어지면 현금흐름 악화 신호.','고객 BP의 Reconciliation Account(통제계정). G/L 직접 전기 불가 — 고객 보조원장을 통해서만 움직임.'],
+ ['A','유동','대손충당금','Allowance for Doubtful Accounts','받지 못할 것으로 예상되는 매출채권 금액을 미리 추정한 차감계정.','자산 쪽이지만 대변 잔액. 기대신용손실(K-IFRS 1109) 모형으로 추정.','기말 채권 평가(F104)로 충당금 설정 전표 생성.'],
+ ['A','유동','미수금','Other Receivables','본업 외 거래(비품 매각 등)에서 생긴 받을 돈.','매출채권과의 구분 기준은 "본업이냐 아니냐".','일반 G/L 또는 별도 고객 통제계정으로 관리.'],
+ ['A','유동','선급금','Advance Payments','상품·원재료를 받기 전에 계약금으로 미리 준 돈.','물건으로 돌려받을 권리. 입고되면 재고 등으로 대체.','공급업체 Special G/L(지시자 A) — F-48 지급, F-54 정리.'],
+ ['A','유동','선급비용','Prepaid Expenses','이미 지급했지만 아직 해당 기간이 오지 않은 비용(보험료·임차료 선지급).','시간이 지나면 비용으로 대체(발생주의). 분개 연습 #5 → #11 흐름.','FBS1 발생주의 전표 또는 Accrual Engine으로 월별 대체.'],
+ ['A','유동','재고자산','Inventories','판매 목적의 상품·제품, 생산 중인 재공품, 원재료.','팔리는 순간 매출원가로 바뀜. 원가흐름 가정(선입선출·가중평균)과 저가법 평가가 핵심.','자재 평가클래스 → OBYC 거래키 BSX로 G/L 자동 결정. 입고 전기키 89, 출고 99.'],
+ ['A','비유동','유형자산','Property, Plant & Equipment','1년 넘게 영업에 쓰는 형체 있는 자산 — 토지, 건물, 기계장치, 비품, 차량.','토지를 빼고 감가상각. 취득원가에 설치·운반비 등 부대비용 포함.','FI-AA 자산 마스터(AS01) · 자산클래스 → 계정결정(AO90). 취득 전기키 70.'],
+ ['A','비유동','감가상각누계액','Accumulated Depreciation','유형자산 원가 중 지금까지 비용으로 넘긴 누적액.','자산의 차감계정 — 대변 잔액. 취득원가 − 누계액 = 장부가.','감가상각 실행(AFAB)으로 자산별 계산 후 일괄 전기.'],
+ ['A','비유동','무형자산','Intangible Assets','형체 없는 장기 자산 — 소프트웨어, 특허권, 개발비, 영업권.','대부분 상각하지만 영업권은 상각 없이 매년 손상검사.','FI-AA에서 별도 자산클래스로 관리.'],
+ ['A','비유동','사용권자산','Right-of-Use Assets','리스로 빌린 자산을 쓸 수 있는 권리(K-IFRS 1116).','리스부채와 짝으로 생김. 리스기간 동안 감가상각.','리스 관리(RE-FX 등)와 연계해 전기.'],
+ ['L','유동','매입채무','Trade Payables','본업(원재료·상품 매입)에서 생긴 외상 대금을 갚을 의무.','지급조건(Payment Terms)이 현금흐름을 좌우.','공급업체 BP의 Reconciliation Account. MIRO 송장 시 생성(전기키 31).'],
+ ['L','유동','미지급금','Other Payables','본업 외 거래(비품·설비 구입 등)로 확정된 갚을 돈.','금액·지급일이 확정된 채무. 매입채무와 구분 기준은 "본업이냐".','일반 G/L 또는 별도 공급업체 통제계정.'],
+ ['L','유동','미지급비용','Accrued Expenses','기간이 지나 이미 발생했지만 아직 청구·지급되지 않은 비용(미지급 이자·급여).','결산 정리에서 생김. 분개 연습 #13.','FBS1 발생주의 전표 → 다음 달 F.81로 역분개.'],
+ ['L','유동','선수금','Advances from Customers','물건을 넘기기 전에 고객에게 미리 받은 계약금.','돈이 아니라 물건(이행)으로 갚는 부채. 납품하면 매출로 대체.','고객 Special G/L(지시자 A) — F-29 입금, SD 다운페이먼트와 연계.'],
+ ['L','유동','선수수익','Unearned Revenue','받은 대가 중 아직 기간이 오지 않은 수익(선수 임대료·구독료).','시간이 지나면 수익으로 대체.','발생주의 전표 또는 수익인식(RAR)과 연계.'],
+ ['L','유동','예수금','Withholdings','남의 돈을 잠시 맡아 둔 것 — 원천징수 소득세, 4대보험 직원 부담분.','회사 비용이 아니라 대신 내 줄 돈.','원천세(Withholding Tax) 설정 또는 급여 인터페이스 G/L.'],
+ ['L','유동','단기차입금','Short-term Borrowings','1년 이내 갚아야 하는 금융기관 차입.','이자비용 발생. 장기차입금 중 1년 내 만기분은 유동성장기부채로 재분류.','G/L로 관리, 대출 관리는 Treasury(TRM)와 연계 가능.'],
+ ['L','비유동','장기차입금 · 사채','Long-term Borrowings / Bonds','1년 넘게 갚는 차입금과 회사채.','만기가 1년 안으로 들어오면 유동으로 재분류.','결산 시 1년 내 만기분 재분류 전기.'],
+ ['L','비유동','퇴직급여부채','Defined Benefit Obligation','확정급여형(DB) 퇴직금으로 장래 지급할 의무의 현재가치.','보험수리적 평가. 재측정 손익은 기타포괄손익으로.','보험계리 평가 결과를 결산 시 G/L 전기.'],
+ ['L','비유동','충당부채','Provisions','시기·금액이 불확실하지만 지출 가능성이 높은 의무(제품보증, 소송).','신뢰성 있게 추정할 수 있어야 인식. 아니면 주석 공시(우발부채).','결산 전표로 설정·환입.'],
+ ['L','비유동','리스부채','Lease Liabilities','앞으로 낼 리스료의 현재가치.','사용권자산과 짝. 이자비용 발생.','리스 관리(RE-FX 등)와 연계.'],
+ ['E','납입자본','자본금','Share Capital','발행 주식 수 × 액면금액.','법정자본. 증자·감자로만 변함.','G/L 계정. 분개 연습 #1 출자.'],
+ ['E','납입자본','자본잉여금','Capital Surplus','주주와의 자본거래에서 생긴 잉여 — 대표적으로 주식발행초과금(액면 초과 납입액).','영업 성과와 무관.','G/L 계정.'],
+ ['E','자본조정','자기주식 등','Treasury Shares etc.','회사가 사들인 자기 회사 주식 등 자본의 임시·차감 항목.','자본에서 차감 표시.','G/L 계정.'],
+ ['E','기타포괄손익','기타포괄손익누계액','Accumulated OCI','당기손익에 넣지 않는 평가손익의 누적 — FVOCI 금융자산 평가, 해외사업 환산, 재평가잉여금.','손익계산서를 거치지 않고 자본으로 바로 감.','해외법인 환산차이는 연결(Group Reporting)에서 처리.'],
+ ['E','이익잉여금','이익잉여금','Retained Earnings','번 이익 중 배당하지 않고 쌓아 둔 누적액.','기말 = 기초 + 당기순이익 − 배당. P/L과 B/S의 연결고리.','OB53에 이익잉여금 계정 지정 → 연말 잔액이월(FAGLGVTR) 시 손익계정 잔액이 자동 대체.'],
+ ['R','영업','매출액','Revenue','본업에서 고객에게 재화·용역을 제공하고 얻는 수익.','K-IFRS 1115 5단계: 계약 식별 → 수행의무 → 거래가격 → 배분 → 이행 시 인식. 할인·반품 예상분은 차감.','SD 대금청구(VF01) 시 VKOA 계정결정(ERL 등)으로 G/L 결정, 수익성분석(CO-PA)과 동시 전기.'],
+ ['R','금융','이자수익','Interest Income','예금·대여금에서 생기는 이자.','영업외 항목(금융수익).','은행 명세 반영 또는 이자 계산 결과 전기.'],
+ ['R','금융','배당금수익','Dividend Income','보유 주식에서 받는 배당.','배당 받을 권리가 확정될 때 인식.','G/L 계정.'],
+ ['R','기타','외환차익 · 외화환산이익','FX Gains','외화 결제 시 차익(실현) / 기말 외화자산·부채 평가 이익(미실현).','실현·미실현을 구분해 관리.','결제 시 OBA1 계정결정으로 자동, 기말 평가는 FAGL_FCV.'],
+ ['R','기타','유형자산처분이익','Gain on Disposal','장부가보다 비싸게 자산을 팔았을 때의 차익.','본업 매출이 아니므로 기타수익.','FI-AA 매각 — ABAON(고객 없음) / F-92(고객 있음).'],
+ ['X','매출원가','매출원가','Cost of Goods Sold','팔린 상품·제품의 원가.','매출과 대응(수익비용 대응). 매출액 − 매출원가 = 매출총이익.','출고(PGI) 시 OBYC GBB-VAX로 자동 전기, 전기키 81.'],
+ ['X','판관비','급여 · 퇴직급여','Salaries / Retirement Benefits','임직원 근로의 대가와 퇴직급여 비용.','생산직 인건비는 제조원가 → 재고를 거쳐 매출원가가 됨.','HR 급여 결과 FI 전기 인터페이스, 코스트센터로 배부.'],
+ ['X','판관비','감가상각비','Depreciation','유형자산 원가를 사용기간에 나눠 비용화한 금액.','현금이 나가지 않는 비용 → 현금흐름표(간접법)에서 다시 더함.','AFAB 실행, 자산의 코스트센터로 CO 반영.'],
+ ['X','판관비','대손상각비','Bad Debt Expense','회수하지 못할 것으로 추정되는 채권 손실.','대손충당금과 짝.','기말 채권 평가(F104).'],
+ ['X','판관비','임차료 · 광고선전비 · 연구비 등','Other SG&A','판매·관리 활동에 드는 일상 비용.','성격별로 계정을 나눠 원가 분석.','FB60·FB50 전기 시 코스트센터·내부오더 등 CO 오브젝트 지정 필수.'],
+ ['X','금융원가','이자비용','Interest Expense','차입금·사채·리스부채의 이자.','영업이익 아래에 표시(금융원가).','G/L 전기, 미지급 이자는 FBS1.'],
+ ['X','기타','외환차손 · 외화환산손실','FX Losses','외화 결제 차손 / 기말 평가 손실.','외환차익과 대칭.','OBA1 / FAGL_FCV.'],
+ ['X','법인세','법인세비용','Income Tax Expense','당기 법인세 + 이연법인세 변동.','세전이익 − 법인세비용 = 당기순이익.','결산 시 세무조정 결과를 전기.']
+];
+let aFilter='all';
+$('aF').innerHTML = [['all','전체'],...Object.keys(ELEM).map(k=>[k,ELEM[k].n])].map(([k,n])=>`<button data-f="${k}" class="${k==='all'?'on':''}">${n}</button>`).join('');
+$('aF').querySelectorAll('button').forEach(b=>b.onclick=()=>{aFilter=b.dataset.f;$('aF').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));renderAcc();});
+$('aQ').oninput = renderAcc;
+function renderAcc(){
+  const q=$('aQ').value.trim();
+  $('aList').innerHTML = Object.keys(ELEM).filter(k=>aFilter==='all'||aFilter===k).map(k=>{
+    const el=ELEM[k], list=AD.filter(a=>a[0]===k && (!q || a.slice(1).join(' ').includes(q)));
+    if(q && !list.length) return '';
+    return `<div class="elhd"><h3>${el.n} <span style="font-size:13px;color:var(--sub);font-weight:500">${el.e}</span></h3>
+      <div>${el.def}</div>
+      <div class="meta">정상잔액 <b class="${el.bal==='차변'?'dr':'cr'}">${el.bal}</b> · 분류: ${el.cls}</div>
+      <ul>${el.f.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+      <div class="agrid">${list.map(a=>`<div class="acard"><div class="t"><b>${a[2]}</b><span class="tag">${a[1]}</span></div>
+        <i style="font-style:normal;font-size:12px;color:var(--sub)">${a[3]}</i>
+        <p>${a[4]}</p><div class="ft"><b>특징</b> · ${a[5]}</div><div class="sp"><b>SAP</b> · ${a[6]}</div></div>`).join('')}</div>`;
+  }).join('') || '<div class="empty">검색 결과 없음</div>';
+}
+renderAcc();
+
+/* ---------- depreciation calculator ---------- */
+const DM = [['sl','정액법'],['db','정률법'],['syd','연수합계법'],['ddb','이중체감법']];
+let dMeth='sl';
+$('dM').innerHTML = DM.map(([k,n])=>`<button data-m="${k}" class="${k===dMeth?'on':''}">${n}</button>`).join('');
+$('dM').querySelectorAll('button').forEach(b=>b.onclick=()=>{dMeth=b.dataset.m;$('dM').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));renderDep();});
+['dCost','dRes','dLife'].forEach(id=>$(id).oninput=renderDep);
+function renderDep(){
+  const C=Math.round(+$('dCost').value), R=Math.round(+$('dRes').value), N=Math.round(+$('dLife').value);
+  if(!(C>0)||R<0||R>=C||!(N>=1&&N<=40)){ $('dOut').innerHTML='<div class="empty">취득원가 &gt; 잔존가치 ≥ 0, 내용연수 1~40년으로 입력함</div>'; return; }
+  if(dMeth==='db'&&R===0){ $('dOut').innerHTML='<div class="empty">정률법은 잔존가치가 0보다 커야 상각률을 구할 수 있음 (실무에선 취득원가의 5% 등을 가정)</div>'; return; }
+  const base=C-R, rows=[]; let bv=C, acc=0, note='';
+  const rDB=1-Math.pow(R/C,1/N), SUM=N*(N+1)/2;
+  if(dMeth==='sl') note=`연 상각비 = (${fmt(C)} − ${fmt(R)}) ÷ ${N}`;
+  if(dMeth==='db') note=`상각률 = 1 − (${fmt(R)} ÷ ${fmt(C)})^(1/${N}) = ${(rDB*100).toFixed(1)}%`;
+  if(dMeth==='syd') note=`연수 합계 = ${N}×${N+1}÷2 = ${SUM}`;
+  if(dMeth==='ddb') note=`상각률 = 2 ÷ ${N} = ${(200/N).toFixed(1)}% · 잔존가치 아래로는 상각하지 않음`;
+  for(let i=1;i<=N;i++){
+    let d;
+    if(i===N) d=bv-R;
+    else if(dMeth==='sl') d=Math.round(base/N);
+    else if(dMeth==='db') d=Math.round(bv*rDB);
+    else if(dMeth==='syd') d=Math.round(base*(N-i+1)/SUM);
+    else d=Math.min(Math.round(bv*2/N), bv-R);
+    rows.push({i,open:bv,d,acc:acc+d,close:bv-d}); acc+=d; bv-=d;
+  }
+  const mx=Math.max(...rows.map(r=>r.d));
+  $('dOut').innerHTML = `<p style="font-size:13px;color:var(--sub);margin:10px 0">${note}</p><div class="tw"><table>
+    <tr><th>연도</th><th class="n">기초 장부금액</th><th class="n">감가상각비</th><th style="width:28%"></th><th class="n">누계액</th><th class="n">기말 장부금액</th></tr>
+    ${rows.map(r=>`<tr><td>${r.i}년차</td><td class="n">${fmt(r.open)}</td><td class="n"><b>${fmt(r.d)}</b></td>
+      <td><div style="height:10px;border-radius:5px;background:var(--navy2);width:${mx?r.d/mx*100:0}%"></div></td>
+      <td class="n">${fmt(r.acc)}</td><td class="n">${fmt(r.close)}</td></tr>`).join('')}
+    <tr class="tot"><td>합계</td><td></td><td class="n">${fmt(acc)}</td><td></td><td></td><td class="n">${fmt(R)}</td></tr></table></div>
+    <p style="font-size:13px;color:var(--sub);margin:8px 0 0">어떤 방법이든 총 상각액은 ${fmt(base)}(취득원가 − 잔존가치)으로 같음 — 다른 것은 기간별 배분뿐. 마지막 해는 끝수 조정.</p>`;
+}
+renderDep();
+
+/* ---------- FTA calculator ---------- */
+['tV','tB','tF','tS','tT'].forEach(id=>$(id).oninput=renderFta);
+function renderFta(){
+  const V=+$('tV').value, B=+$('tB').value/100, F=+$('tF').value/100, S=Math.min(100,Math.max(0,+$('tS').value))/100, T=+$('tT').value/100;
+  if(!(V>0)||B<0||F<0||F>B||T<0){ $('tOut').innerHTML='<div class="empty">과세가격 &gt; 0, 기본세율 ≥ 협정세율 ≥ 0으로 입력함</div>'; return; }
+  const dB=Math.round(V*B), dF=Math.round(V*F), save=dB-dF, vat=Math.round(save*T);
+  const toCogs=Math.round(save*S), toInv=save-toCogs, w=n=>fmt(n)+'원';
+  $('tOut').innerHTML = `<div class="tw"><table>
+    <tr><th></th><th class="n">기본세율</th><th class="n">협정세율</th><th class="n">차이</th></tr>
+    <tr><td>관세</td><td class="n">${w(dB)}</td><td class="n">${w(dF)}</td><td class="n"><b>${w(save)}</b></td></tr>
+    <tr><td>부가세</td><td class="n">${w(Math.round((V+dB)*T))}</td><td class="n">${w(Math.round((V+dF)*T))}</td><td class="n">${w(vat)}</td></tr>
+  </table></div>
+  <p style="margin:10px 0 4px;font-size:14px"><b>사후적용 환급 분개</b> (기본세율로 납부 후 판매 ${Math.round(S*100)}% 시점에 환급 결정)</p>
+  <div class="tw"><table>
+    <tr><th>차변</th><th class="n">금액</th><th>대변</th><th class="n">금액</th></tr>
+    <tr><td class="dr">미수금(관세환급)</td><td class="n">${w(save+vat)}</td><td class="cr">상품 (남은 재고분)</td><td class="n">${w(toInv)}</td></tr>
+    <tr><td></td><td></td><td class="cr">매출원가 (판매분)</td><td class="n">${w(toCogs)}</td></tr>
+    <tr><td></td><td></td><td class="cr">부가세대급금</td><td class="n">${w(vat)}</td></tr>
+  </table></div>
+  <p style="font-size:13px;color:var(--sub);margin:6px 0 0">관세 절감 ${w(save)}은 결국 전액 이익 증가로 이어짐 — 판매분은 이번 기간, 남은 재고분은 판매되는 기간에.</p>`;
+}
+renderFta();
+
+/* ---------- quiz ---------- */
+const Q = [
+ ['매출채권이 증가하면 어느 쪽에 기록하는가?',['차변','대변'],0,'매출채권은 자산 — 자산 증가는 차변.'],
+ ['다음 중 정상잔액이 대변인 계정은?',['선급비용','감가상각비','미지급비용','재고자산'],2,'미지급비용은 부채라 대변 잔액. 선급비용·재고는 자산, 감가상각비는 비용으로 차변 잔액.'],
+ ['상품을 외상으로 매입하면?',['(차) 재고 / (대) 현금','(차) 재고 / (대) 매입채무','(차) 매입채무 / (대) 재고','(차) 매출원가 / (대) 매입채무'],1,'재고(자산) 증가 차변, 아직 갚지 않았으니 매입채무(부채) 증가 대변.'],
+ ['임차료 1년분을 미리 지급할 때 차변 계정은?',['임차료','선급비용','미지급비용','자본금'],1,'아직 쓰지 않은 기간은 자산(선급비용). 사용한 만큼 결산 때 임차료로 대체.'],
+ ['감가상각누계액에 대한 설명으로 맞는 것은?',['비용 계정이다','부채 계정이다','자산을 차감하는 계정이다','자본 계정이다'],2,'비품 등 자산의 장부가를 줄이는 차감계정. 재무상태표에서 자산 아래 (차감)으로 표시.'],
+ ['시산표 차변 합계와 대변 합계가 일치하면?',['모든 분개가 정확하다','최소한 차대 금액 균형은 맞다','재무제표 감사가 끝났다','이익이 발생했다'],1,'계정을 잘못 고르거나 거래를 통째로 빠뜨려도 시산표는 일치할 수 있음.'],
+ ['이자가 발생했지만 아직 지급하지 않았을 때 결산 분개는?',['(차) 이자비용 / (대) 현금','(차) 이자비용 / (대) 미지급비용','(차) 미지급비용 / (대) 이자비용','분개하지 않는다'],1,'발생주의 — 현금 유출이 없어도 기간 비용으로 인식하고 부채를 잡음.'],
+ ['취득원가 50,000, 감가상각누계액 27,000인 기계를 25,000에 팔면?',['처분손실 2,000','처분이익 2,000','처분이익 25,000','손익 없음'],1,'장부금액 = 50,000 − 27,000 = 23,000. 매각가 25,000 − 23,000 = 처분이익 2,000.'],
+ ['FTA 사후적용으로 관세를 환급받았는데 해당 상품이 이미 모두 팔렸다면 어느 계정을 줄이는가?',['상품','매출원가','매출','세금과공과'],1,'관세는 상품 원가에 포함됐고, 팔린 상품의 원가는 이미 매출원가로 넘어감. 남은 재고가 있으면 그만큼은 상품을 줄임.'],
+ ['SAP 전기키 31의 의미는?',['고객 송장(차변)','공급업체 송장(대변)','G/L 차변','공급업체 지급(차변)'],1,'31 = Vendor Invoice, 대변. 매입채무가 늘어남.'],
+ ['MIGO 입고 시 재고자산의 상대 계정은?',['매입채무','GR/IR','매출원가','현금'],1,'입고 시 (차) 재고 / (대) GR/IR. MIRO에서 GR/IR을 정리하며 매입채무가 생김.'],
+ ['출하 출고(PGI) 시 생성되는 회계전표는?',['(차) 매출채권 / (대) 매출','(차) 매출원가 / (대) 재고자산','(차) 재고자산 / (대) GR/IR','(차) 현금 / (대) 매출채권'],1,'PGI는 재고가 나가는 시점 — 매출원가 인식. 매출은 VF01 대금청구에서 생김.'],
+ ['고객 수금(F-28) 시 고객 계정의 전기키는?',['01','11','15','40'],2,'15 = Incoming Payment, 대변. 매출채권이 줄어듦.'],
+ ['전표유형 KR이 의미하는 것은?',['고객 송장','공급업체 송장','G/L 전표','감가상각'],1,'K는 Kreditor(공급업체), R은 Rechnung(송장). DR은 고객 송장.'],
+ ['SAP FI-AA에서 자산별 감가상각비를 계산해 일괄 전기하는 T-Code는?',['AS01','ABZON','AFAB','ABAON'],2,'AFAB 감가상각 실행. AS01은 자산 마스터 생성, ABZON은 취득, ABAON은 매각.']
+];
+let qi=0, qs=0, qa=false;
+function renderQuiz(){
+  const el=$('quiz');
+  if(qi>=Q.length){
+    el.innerHTML = `<div style="text-align:center"><div class="score">${qs} / ${Q.length}</div>
+      <p>${qs>=14?'완벽에 가까움 — SAP 자동전표도 읽을 수 있는 수준':qs>=11?'기본기 탄탄함 — 틀린 문항만 다시 봄':'분개 연습 탭을 한 번 더 돌고 다시 도전'}</p>
+      <button class="btn" id="qR">다시 풀기</button></div>`;
+    $('qR').onclick=()=>{qi=0;qs=0;renderQuiz();}; return;
+  }
+  const q=Q[qi]; qa=false;
+  el.innerHTML = `<div class="row" style="justify-content:space-between"><span class="tag">${qi<9?'회계 원리':'SAP FI'}</span><span style="color:var(--sub);font-size:13px">${qi+1} / ${Q.length} · 점수 ${qs}</span></div>
+    <h3 style="margin-top:10px;font-size:17px">${q[0]}</h3>
+    ${q[1].map((o,i)=>`<button class="opt" data-o="${i}">${o}</button>`).join('')}
+    <div id="qFb"></div>`;
+  el.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+    if(qa) return; qa=true; const o=+b.dataset.o, ok=o===q[2]; if(ok)qs++;
+    el.querySelectorAll('.opt').forEach((x,i)=>{x.disabled=true; if(i===q[2])x.classList.add('ok'); else if(i===o)x.classList.add('ng');});
+    $('qFb').innerHTML = `<div class="fb ${ok?'ok':'ng'}" style="display:block"><div class="t">${ok?'정답':'오답'}</div>${q[3]}</div>
+      <div style="margin-top:12px;text-align:right"><button class="btn" id="qN">${qi===Q.length-1?'결과 보기':'다음 문제'}</button></div>`;
+    $('qN').onclick=()=>{qi++;renderQuiz();};
+  });
+}
+renderQuiz();
+
+renderScene();
+route();
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#354A5F;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+</body>
+</html>

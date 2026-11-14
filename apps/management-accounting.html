@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>관리회계 실습 앱 — 원가 흐름에서 SAP CO까지</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#32363A; --sub:#6A6D70; --line:#E5E5E5; --soft:#F7F7F7;
+  --navy:#354A5F; --navy2:#0A6ED1; --navy3:#bfd9f2; --tint:#ebf5fe;
+  --ok:#107e3e; --okbg:#ebf5ef; --ng:#bb0000; --ngbg:#fdeeee;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;color:var(--ink);font-family:"Noto Sans KR","Malgun Gothic",system-ui,sans-serif;font-size:15px;line-height:1.6}
+button,select,input{font:inherit;color:inherit}
+header{padding:20px 18px 10px;max-width:1080px;margin:0 auto}
+header .eyebrow{font-size:12px;letter-spacing:.08em;color:var(--navy2);font-weight:700}
+header h1{margin:4px 0 2px;font-size:24px;font-weight:900;letter-spacing:-.02em}
+header p{margin:0;color:var(--sub);font-size:14px}
+header{max-width:none;background:#354A5F;color:#fff;padding:16px max(18px,calc((100% - 1044px)/2)) 14px}
+header .eyebrow{color:#BCD4EA}
+header h1{color:#fff}
+header p{color:#D5E1EC}
+nav{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line)}
+nav .in{max-width:1080px;margin:0 auto;display:flex;gap:4px;overflow-x:auto;padding:0 12px;scrollbar-width:none}
+nav .in::-webkit-scrollbar{display:none}
+nav a{flex:none;padding:12px 12px;text-decoration:none;color:var(--sub);font-weight:500;border-bottom:3px solid transparent;white-space:nowrap}
+nav a.on{color:var(--navy2);border-color:var(--navy2);font-weight:700}
+main{max-width:1080px;margin:0 auto;padding:18px}
+section.view{display:none}
+section.view.on{display:block}
+h2{font-size:20px;margin:6px 0 4px;font-weight:900;letter-spacing:-.01em}
+h3{font-size:16px;margin:0 0 8px;font-weight:700}
+.lead{color:var(--sub);margin:0 0 16px}
+.card{border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px;background:#fff}
+.grid{display:grid;gap:14px}
+@media(min-width:760px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--navy);color:#fff;font-weight:500;font-size:13px}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tw{overflow-x:auto}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border-radius:99px;border:1px solid var(--navy3);color:var(--navy2);background:var(--tint)}
+.dr{color:var(--navy2);font-weight:700}
+.cr{color:#8a5300;font-weight:700}
+.btn{border:1px solid var(--navy2);background:var(--navy2);color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--navy2)}
+.btn.sm{padding:5px 10px;font-size:13px}
+.btn:disabled{opacity:.4;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch}
+.flow .st{flex:1 1 120px;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--soft)}
+.flow .st b{display:block;color:var(--navy)}
+.flow .st span{font-size:13px;color:var(--sub)}
+.flow .ar{align-self:center;color:var(--navy2);font-weight:900}
+.chip{display:inline-block;font-family:Consolas,"Courier New",monospace;font-size:12px;background:#fff;border:1px solid var(--navy3);border-radius:6px;padding:0 6px;margin:2px 2px 0 0;color:var(--navy2)}
+label.f{display:block;font-size:13px;color:var(--sub);margin-bottom:4px}
+select,input[type=number],input[type=text]{width:100%;padding:9px 10px;border:1px solid #cdd5de;border-radius:8px;background:#fff}
+.result{margin-top:10px;font-weight:900;font-size:18px}
+.fb{margin-top:12px;border-radius:10px;padding:12px 14px;display:none}
+.fb.ok{display:block;background:var(--okbg);border:1px solid #bfe0cb}
+.fb.ng{display:block;background:var(--ngbg);border:1px solid #f2c2c2}
+.fb .t{font-weight:900;margin-bottom:4px}
+.sapbox{margin-top:10px;border:1px dashed var(--navy2);border-radius:10px;padding:12px;background:#fafcff}
+.sapbox .hd{font-weight:700;color:var(--navy);margin-bottom:6px}
+.tot td{font-weight:900;border-top:2px solid var(--ink)}
+.chk{font-weight:700;padding:8px 12px;border-radius:8px;margin-top:8px;display:inline-block}
+.chk.ok{background:var(--okbg);color:var(--ok)}
+.chk.ng{background:var(--ngbg);color:var(--ng)}
+.empty{color:var(--sub);text-align:center;padding:20px}
+.filt{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.filt button{border:1px solid #cdd5de;background:#fff;border-radius:99px;padding:6px 14px;font-weight:700;cursor:pointer;font-size:14px}
+.filt button.on{background:var(--navy2);border-color:var(--navy2);color:#fff}
+.steps{counter-reset:s;display:grid;gap:10px}
+@media(min-width:760px){.steps{grid-template-columns:repeat(3,1fr)}}
+.steps>div{border:1px solid var(--line);border-radius:10px;padding:12px 12px 12px 48px;position:relative}
+.steps>div::before{counter-increment:s;content:counter(s);position:absolute;left:12px;top:12px;width:26px;height:26px;border-radius:50%;background:var(--navy2);color:#fff;font-weight:900;display:grid;place-items:center;font-size:13px}
+.steps b{display:block;margin-bottom:2px}
+.steps span{font-size:14px;color:var(--sub)}
+.bar{height:10px;border-radius:5px;background:var(--navy2)}
+.bar.alt{background:var(--navy3)}
+.meter{height:14px;border-radius:7px;background:var(--soft);overflow:hidden;border:1px solid var(--line)}
+.meter i{display:block;height:100%}
+.kpi{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--soft)}
+.kpi b{display:block;font-size:22px;font-weight:900;color:var(--navy);font-variant-numeric:tabular-nums}
+.kpi span{font-size:13px;color:var(--sub)}
+.org{display:grid;gap:8px;text-align:center;font-size:14px}
+.org .lv{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.org .nd{border:1.5px solid var(--navy2);border-radius:10px;padding:8px 12px;background:#fff;min-width:130px}
+.org .nd.top{background:var(--navy);border-color:var(--navy);color:#fff}
+.org .nd small{display:block;font-size:12px;opacity:.75}
+.org .ln{color:var(--navy2);font-weight:900}
+.wf{display:grid;gap:4px;font-size:14px}
+.wf>div{display:grid;grid-template-columns:150px 1fr 90px;gap:8px;align-items:center}
+.wf .lbl{white-space:nowrap}
+.wf .v{text-align:right;font-variant-numeric:tabular-nums}
+.wf .sum .lbl,.wf .sum .v{font-weight:900}
+.pick{display:block;width:100%;text-align:left;border:1px solid #cdd5de;border-radius:10px;background:#fff;padding:10px 14px;margin:6px 0;cursor:pointer}
+.pick.done{background:var(--tint);border-color:var(--navy2);color:var(--navy2);font-weight:700}
+.pick.bad{background:var(--ngbg);border-color:var(--ng)}
+.opt{display:block;width:100%;text-align:left;border:1px solid #cdd5de;border-radius:10px;background:#fff;padding:11px 14px;margin:8px 0;cursor:pointer}
+.opt.ok{border-color:var(--ok);background:var(--okbg)}
+.opt.ng{border-color:var(--ng);background:var(--ngbg)}
+.opt:disabled{cursor:default}
+.score{font-size:36px;font-weight:900;color:var(--navy2)}
+.note{font-size:13px;color:var(--sub);margin:8px 0 0}
+footer{max-width:1080px;margin:0 auto;padding:10px 18px 40px;color:var(--sub);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">곰선비의 ERP 실무노트 · MANAGEMENT ACCOUNTING LAB</div>
+  <h1>관리회계 실습 앱</h1>
+  <p>원가를 모으고, 나누고, 제품에 싣고, 손익을 쪼개 봄 — 그리고 SAP CO 전표로 다시 봄</p>
+</header>
+<nav><div class="in" id="tabs">
+  <a href="#basics" data-v="basics">① CO 기초</a>
+  <a href="#cca" data-v="cca">② 배부 시뮬레이터</a>
+  <a href="#activity" data-v="activity">③ 활동단가</a>
+  <a href="#order" data-v="order">④ 내부오더</a>
+  <a href="#costing" data-v="costing">⑤ 표준원가</a>
+  <a href="#variance" data-v="variance">⑥ 생산오더 차이</a>
+  <a href="#copa" data-v="copa">⑦ 수익성 분석</a>
+  <a href="#close" data-v="close">⑧ 기간마감</a>
+  <a href="#quiz" data-v="quiz">⑨ 퀴즈</a>
+</div></nav>
+
+<main>
+<!-- ============ 1. BASICS ============ -->
+<section class="view" id="v-basics">
+  <h2>FI는 밖에 보고하고, CO는 안을 들여다봄</h2>
+  <p class="lead">같은 비용 전표가 FI에서는 G/L 계정에, CO에서는 원가대상(코스트센터·오더·제품·시장)에 동시에 기록됨.</p>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>FI vs CO</h3>
+      <div class="tw"><table>
+        <tr><th></th><th>재무회계 (FI)</th><th>관리회계 (CO)</th></tr>
+        <tr><td><b>보는 사람</b></td><td>주주·채권자·세무서</td><td>경영진·부서장</td></tr>
+        <tr><td><b>기준</b></td><td>K-IFRS·세법 (규정)</td><td>회사가 정한 규칙</td></tr>
+        <tr><td><b>질문</b></td><td>얼마 벌었나</td><td>어디서, 무엇으로, 왜 벌었나</td></tr>
+        <tr><td><b>단위</b></td><td>회사코드 · G/L 계정</td><td>관리회계 영역 · 원가요소 · 원가대상</td></tr>
+        <tr><td><b>SAP 화면</b></td><td><span class="chip">FB03</span><span class="chip">FBL3N</span></td><td><span class="chip">KSB1</span><span class="chip">KSB5</span></td></tr>
+      </table></div>
+    </div>
+    <div class="card">
+      <h3>조직구조 — Global Bike 예</h3>
+      <div class="org">
+        <div class="lv"><div class="nd top">운영관련 관심분야<small>CO-PA 최상위</small></div></div>
+        <div class="ln">↑</div>
+        <div class="lv"><div class="nd top">관리회계 영역<small>CO 최상위 · 예: NA00</small></div></div>
+        <div class="ln">↑ 할당</div>
+        <div class="lv"><div class="nd">회사코드<small>US00 · USD</small></div></div>
+        <div class="ln">↓ 원가대상</div>
+        <div class="lv">
+          <div class="nd">코스트센터<small>부서·장소</small></div>
+          <div class="nd">내부오더<small>행사·프로젝트</small></div>
+          <div class="nd">생산오더<small>제품 원가</small></div>
+          <div class="nd">수익성 세그먼트<small>고객·제품·지역</small></div>
+        </div>
+      </div>
+      <p class="note">회사코드 여러 개를 한 관리회계 영역에 묶을 수 있음. 단, 계정과목표와 회계연도 변형이 같아야 함.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>원가 흐름 한눈에</h3>
+    <div class="flow">
+      <div class="st"><b>① 발생</b><span>FI 비용 전표 → 1차 원가요소</span><br><span class="chip">FB60</span><span class="chip">MIGO</span></div><div class="ar">→</div>
+      <div class="st"><b>② 집계</b><span>코스트센터·내부오더에 모음</span><br><span class="chip">KSB1</span></div><div class="ar">→</div>
+      <div class="st"><b>③ 배부</b><span>지원부서 → 생산·영업</span><br><span class="chip">KSU5</span><span class="chip">KSV5</span></div><div class="ar">→</div>
+      <div class="st"><b>④ 제품에 싣기</b><span>활동배부·오버헤드</span><br><span class="chip">CO11N</span><span class="chip">CO43</span></div><div class="ar">→</div>
+      <div class="st"><b>⑤ 정산</b><span>오더 → 재고·차이</span><br><span class="chip">CO88</span><span class="chip">KO88</span></div><div class="ar">→</div>
+      <div class="st"><b>⑥ 손익 분석</b><span>고객·제품별 손익</span><br><span class="chip">KE30</span></div>
+    </div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>1차? 2차? 원가요소 판단기</h3>
+      <label class="f">거래를 고름</label>
+      <select id="ceSel"></select>
+      <div id="ceOut" style="margin-top:12px"></div>
+    </div>
+    <div class="card">
+      <h3>실제 전기 vs 통계 전기</h3>
+      <p style="margin:0 0 8px;font-size:14px">비용 한 줄은 <b>실제(real) 원가대상 하나</b>에만 귀속됨. 나머지는 통계용으로만 기록되어 배부·정산되지 않음.</p>
+      <div class="tw"><table>
+        <tr><th>전표에 넣은 원가대상</th><th>실제</th><th>통계</th></tr>
+        <tr><td>코스트센터만</td><td>코스트센터</td><td>—</td></tr>
+        <tr><td>코스트센터 + 실제 내부오더</td><td>내부오더</td><td>코스트센터</td></tr>
+        <tr><td>코스트센터 + 통계 내부오더</td><td>코스트센터</td><td>내부오더</td></tr>
+        <tr><td>손익센터</td><td colspan="2">CO 원가대상 아님 — 코스트센터 등에서 파생되는 보고 단위</td></tr>
+      </table></div>
+      <p class="note">배부 결과가 이상하면 원가가 통계로만 들어간 건 아닌지 먼저 확인함.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. CCA ALLOCATION ============ -->
+<section class="view" id="v-cca">
+  <h2>지원부서 원가를 나눠 보기</h2>
+  <p class="lead">Global Bike의 IT와 관리 부서 원가를 생산·영업 부서로 넘김. 배부기준과 방식을 바꾸며 결과를 비교함.</p>
+
+  <div class="card">
+    <h3>송신 코스트센터 (이번 달 실적, USD)</h3>
+    <div class="tw"><table id="snd"></table></div>
+    <h3 style="margin-top:14px">수신 코스트센터 배부기준 (통계 주요지표)</h3>
+    <div class="tw"><table id="rcv"></table></div>
+    <p class="note">코스트센터 코드는 교육용 가정. 인원수·면적은 KK01로 만든 통계 주요지표를 KB31N으로 입력한 값이라고 봄.</p>
+  </div>
+
+  <div class="card">
+    <div class="grid g3" style="gap:10px">
+      <div><label class="f">1단계 IT 배부기준</label>
+        <select id="aB1"><option value="head">인원수</option><option value="area">면적</option><option value="eq">균등</option></select></div>
+      <div><label class="f">2단계 관리 배부기준</label>
+        <select id="aB2"><option value="area">면적</option><option value="head">인원수</option><option value="eq">균등</option></select></div>
+      <div><label class="f">방식</label>
+        <select id="aM"><option value="as">배부 (Assessment)</option><option value="di">분배 (Distribution)</option></select></div>
+    </div>
+    <div id="aOut" style="margin-top:14px"></div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>배부 vs 분배</h3>
+      <div class="tw"><table>
+        <tr><th></th><th>배부 (Assessment)</th><th>분배 (Distribution)</th></tr>
+        <tr><td><b>원가요소</b></td><td>2차 원가요소(범주 42) 하나로 묶음</td><td>원래 1차 원가요소 유지</td></tr>
+        <tr><td><b>대상 원가</b></td><td>1차 + 2차 모두</td><td>1차만</td></tr>
+        <tr><td><b>수신처에서</b></td><td>"IT 배부 얼마"만 보임</td><td>급여·감가상각이 각각 보임</td></tr>
+        <tr><td><b>T-Code</b></td><td><span class="chip">KSU1</span><span class="chip">KSU5</span></td><td><span class="chip">KSV1</span><span class="chip">KSV5</span></td></tr>
+      </table></div>
+    </div>
+    <div class="card">
+      <h3>사이클 · 세그먼트</h3>
+      <p style="margin:0 0 6px;font-size:14px">배부 규칙은 <b>사이클</b>에 담고, 사이클 안에 <b>세그먼트</b>를 여러 개 둠. 세그먼트마다 송신처·수신처·배부기준을 정함.</p>
+      <div class="tw"><table>
+        <tr><th>세그먼트</th><th>송신</th><th>수신</th><th>기준</th></tr>
+        <tr><td>SEG1</td><td>IT</td><td>관리·생산·영업</td><td id="segB1">인원수</td></tr>
+        <tr><td>SEG2</td><td>관리</td><td>생산·영업</td><td id="segB2">면적</td></tr>
+      </table></div>
+      <p class="note">지원부서끼리 주고받는 구조면 반복(Iterative) 배부를 켬. 실행 전 테스트 런으로 결과를 먼저 확인함.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. ACTIVITY ============ -->
+<section class="view" id="v-activity">
+  <h2>활동단가 — 부서가 파는 "시간"의 값</h2>
+  <p class="lead">생산 코스트센터는 기계시간·인건시간을 제품에 팖. 단가를 정해 두면 생산 실적만큼 원가가 자동으로 오더로 넘어감.</p>
+
+  <div class="card">
+    <h3>계획 → 단가 → 배부 → 차이</h3>
+    <div class="grid g4" style="gap:10px">
+      <div><label class="f">활동유형</label><select id="acT"><option value="mach">기계시간 (MACH)</option><option value="labr">인건시간 (LABR)</option></select></div>
+      <div><label class="f">계획원가 (USD)</label><input type="number" id="acPC" inputmode="numeric"></div>
+      <div><label class="f">계획 활동량 (H)</label><input type="number" id="acPQ" inputmode="numeric"></div>
+      <div><label class="f">계획 단가</label><input type="text" id="acPP" readonly></div>
+      <div><label class="f">실제원가 (USD)</label><input type="number" id="acAC" inputmode="numeric"></div>
+      <div><label class="f">실제 활동량 (H)</label><input type="number" id="acAQ" inputmode="numeric"></div>
+    </div>
+    <div id="acOut" style="margin-top:14px"></div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>SAP 순서</h3>
+      <div class="tw"><table>
+        <tr><th>단계</th><th>T-Code</th><th>내용</th></tr>
+        <tr><td>활동유형 생성</td><td><span class="chip">KL01</span></td><td>단위 H, 배부 원가요소(범주 43) 지정</td></tr>
+        <tr><td>활동량 계획</td><td><span class="chip">KP26</span></td><td>코스트센터 × 활동유형 계획 수량·단가</td></tr>
+        <tr><td>원가 계획</td><td><span class="chip">KP06</span></td><td>원가요소별 계획원가</td></tr>
+        <tr><td>계획 단가 계산</td><td><span class="chip">KSPI</span></td><td>계획원가 ÷ 계획 활동량</td></tr>
+        <tr><td>작업장 연결</td><td><span class="chip">CR01</span></td><td>원가산정 뷰: 코스트센터 + 활동유형</td></tr>
+        <tr><td>실적 배부</td><td><span class="chip">CO11N</span><span class="chip">KB21N</span></td><td>생산 확인 시 자동 / 수동 직접 배부</td></tr>
+        <tr><td>실적 단가 계산</td><td><span class="chip">KSII</span></td><td>실제원가 ÷ 실제 활동량, 재평가 선택</td></tr>
+      </table></div>
+    </div>
+    <div class="card">
+      <h3>배부 부족 vs 배부 초과</h3>
+      <div class="tw"><table>
+        <tr><th></th><th>뜻</th><th>흔한 원인</th></tr>
+        <tr><td><b>배부 부족</b><br><span style="font-size:13px;color:var(--sub)">코스트센터에 잔액 남음</span></td><td>쓴 돈보다 제품에 넘긴 금액이 적음</td><td>조업도 하락(가동률 저하), 실제 비용 증가</td></tr>
+        <tr><td><b>배부 초과</b><br><span style="font-size:13px;color:var(--sub)">코스트센터 잔액이 대변</span></td><td>쓴 돈보다 많이 넘김</td><td>조업도 상승, 비용 절감, 단가를 높게 잡음</td></tr>
+      </table></div>
+      <p class="note">남은 잔액은 기간말에 CO-PA로 배부하거나(KEU5) 실적 단가로 재평가(KSII)해 정리함. 그대로 두면 코스트센터가 0이 되지 않음.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. INTERNAL ORDER ============ -->
+<section class="view" id="v-order">
+  <h2>내부오더 — 잠깐 쓰는 원가 주머니</h2>
+  <p class="lead">Global Bike가 12월 자전거 박람회에 참가함. 행사비를 오더 하나에 모아 예산을 관리하고, 끝나면 정산함.</p>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>오더 정보</h3>
+      <div class="tw"><table>
+        <tr><td>오더</td><td><b>700100</b> · 12월 자전거 박람회 <span class="tag">실제 오더</span></td></tr>
+        <tr><td>오더유형</td><td>마케팅 행사 (교육용 가정)</td></tr>
+        <tr><td>상태</td><td><span class="chip">REL</span> 릴리즈 — 실적 전기 가능</td></tr>
+      </table></div>
+      <h3 style="margin-top:14px">집계된 원가</h3>
+      <div class="tw"><table id="ioCost"></table></div>
+      <div style="margin-top:12px"><label class="f">예산 (USD) · <span class="chip">KO22</span></label><input type="number" id="ioBud" value="10000" inputmode="numeric"></div>
+      <div id="ioAvc" style="margin-top:10px"></div>
+    </div>
+    <div class="card">
+      <h3>정산 규칙 · <span class="chip">KO02</span></h3>
+      <div class="grid g2" style="gap:10px">
+        <div><label class="f">영업 코스트센터 SAL1 (%)</label><input type="number" id="ioP1" value="60" min="0" max="100" inputmode="numeric"></div>
+        <div><label class="f">CO-PA 영업조직 UE00 (%)</label><input type="number" id="ioP2" value="40" min="0" max="100" inputmode="numeric"></div>
+      </div>
+      <div class="row" style="margin-top:12px"><button class="btn" id="ioRun">정산 실행 (KO88)</button><button class="btn ghost" id="ioTest">테스트 런</button></div>
+      <div id="ioOut" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>오더 생애주기</h3>
+    <div class="flow">
+      <div class="st"><b>CRTD 생성</b><span>계획 가능, 실적 불가</span><br><span class="chip">KO01</span></div><div class="ar">→</div>
+      <div class="st"><b>예산 배정</b><span>가용성 통제 시작</span><br><span class="chip">KO22</span></div><div class="ar">→</div>
+      <div class="st"><b>REL 릴리즈</b><span>비용 전기 가능</span><br><span class="chip">KO02</span></div><div class="ar">→</div>
+      <div class="st"><b>원가 집계</b><span>송장·경비 전기 시 오더 지정</span><br><span class="chip">FB60</span><span class="chip">KOB1</span></div><div class="ar">→</div>
+      <div class="st"><b>정산</b><span>오더 잔액 0</span><br><span class="chip">KO88</span><span class="chip">KO8G</span></div><div class="ar">→</div>
+      <div class="st"><b>TECO · CLSD</b><span>추가 전기 차단</span></div>
+    </div>
+    <p class="note">통계 오더는 원가가 코스트센터에도 실제로 남으므로 정산하지 않음 — 예산 감시만 필요할 때 씀.</p>
+  </div>
+</section>
+
+<!-- ============ 5. STANDARD COSTING ============ -->
+<section class="view" id="v-costing">
+  <h2>표준원가 — DXTR1000 한 대에 얼마가 드나</h2>
+  <p class="lead">BOM으로 재료비, 라우팅으로 활동비, 원가산정 시트로 오버헤드를 쌓아 올림. 값을 바꾸면 롤업이 다시 계산됨.</p>
+
+  <div class="card">
+    <h3>재료비 — BOM</h3>
+    <div class="tw"><table id="bomT"></table></div>
+    <h3 style="margin-top:14px">활동비 — 라우팅</h3>
+    <div class="tw"><table id="rtgT"></table></div>
+    <div class="grid g3" style="gap:10px;margin-top:14px">
+      <div><label class="f">오버헤드율 (재료비 기준 %)</label><input type="number" id="ohR" value="12" step="0.5" inputmode="decimal"></div>
+    </div>
+    <div id="cOut" style="margin-top:14px"></div>
+    <p class="note">BOM 구성과 단가는 교육용 가정. 기본값은 SD 실습 데이터의 표준가 1,400 USD에 맞춤.</p>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>원가추정을 통제하는 키</h3>
+      <div class="tw"><table>
+        <tr><th>설정</th><th>정하는 것</th><th>T-Code</th></tr>
+        <tr><td><b>원가산정 변형</b></td><td>원가추정 방식 전체 (표준원가용 PPC1)</td><td><span class="chip">OKKN</span></td></tr>
+        <tr><td><b>평가 변형</b></td><td>재료·활동 단가를 어디서 가져올지 순서</td><td><span class="chip">OKK4</span></td></tr>
+        <tr><td><b>원가산정 시트</b></td><td>오버헤드율과 기준</td><td><span class="chip">KZS2</span></td></tr>
+        <tr><td><b>원가 구성요소 구조</b></td><td>재료·노무·경비·오버헤드로 묶어 보여줌</td><td><span class="chip">OKTZ</span></td></tr>
+      </table></div>
+    </div>
+    <div class="card">
+      <h3>원가추정 → 표준가 확정</h3>
+      <div class="flow">
+        <div class="st"><b>원가추정</b><span>1개 자재</span><br><span class="chip">CK11N</span></div><div class="ar">→</div>
+        <div class="st"><b>롤업</b><span>여러 자재 일괄</span><br><span class="chip">CK40N</span></div><div class="ar">→</div>
+        <div class="st"><b>마킹·릴리즈</b><span>자재마스터 표준가 갱신</span><br><span class="chip">CK24</span></div>
+      </div>
+      <p class="note">릴리즈하면 재고가 새 표준가로 재평가되어 FI 전표가 생김. 보통 연초·분기초에 한 번 함.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. VARIANCE ============ -->
+<section class="view" id="v-variance">
+  <h2>생산오더 — 계획대로 만들었나</h2>
+  <p class="lead">DXTR1000 10대를 생산함. 실제 투입을 바꿔 보면 목표원가와 차이, 차이 범주, 정산 전표가 바뀜.</p>
+
+  <div class="card">
+    <h3>실제 투입 입력</h3>
+    <div class="grid g4" style="gap:10px">
+      <div><label class="f">납품 수량 (EA)</label><input type="number" id="vQ" value="10" min="1" inputmode="numeric"></div>
+      <div><label class="f">프레임 실제 단가</label><input type="number" id="vFP" value="420" inputmode="numeric"></div>
+      <div><label class="f">휠 어셈블리 투입 수량</label><input type="number" id="vWQ" value="22" inputmode="numeric"></div>
+      <div><label class="f">인건시간 실적 (H)</label><input type="number" id="vLH" value="33" inputmode="numeric"></div>
+    </div>
+    <div id="vOut" style="margin-top:14px"></div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>차이 범주</h3>
+      <div class="tw"><table>
+        <tr><th>범주</th><th>계산</th><th>뜻</th></tr>
+        <tr><td><b>투입가격 차이</b></td><td>(실제단가 − 표준단가) × 실제수량</td><td>비싸게 샀음</td></tr>
+        <tr><td><b>수량 차이</b></td><td>(실제수량 − 목표수량) × 표준단가</td><td>많이 썼음 (불량·스크랩)</td></tr>
+        <tr><td><b>자원사용 차이</b></td><td>계획에 없던 자재·활동 투입</td><td>대체 부품 사용</td></tr>
+        <tr><td><b>잔여 차이</b></td><td>위로 설명되지 않는 나머지</td><td>반올림·기타</td></tr>
+        <tr><td><b>로트크기 차이</b></td><td>고정 준비원가 ÷ 수량 차이</td><td>소량 생산</td></tr>
+      </table></div>
+      <p class="note">차이 키(<span class="chip">OKV1</span>)에서 어떤 범주를 계산할지 정함.</p>
+    </div>
+    <div class="card">
+      <h3>기간말 생산오더 순서</h3>
+      <div class="steps" style="grid-template-columns:1fr">
+        <div><b>오버헤드 계산</b><span><span class="chip">CO43</span> 원가산정 시트 비율로 오버헤드 부과</span></div>
+        <div><b>재공품 계산</b><span><span class="chip">KKAO</span> 미완성 오더 원가를 WIP로</span></div>
+        <div><b>차이 계산</b><span><span class="chip">KKS1</span> 납품완료(DLV)·TECO 오더만</span></div>
+        <div><b>정산</b><span><span class="chip">CO88</span> WIP는 재고로, 차이는 가격차이 계정·CO-PA로</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. CO-PA ============ -->
+<section class="view" id="v-copa">
+  <h2>수익성 분석 — 어디서 남고 어디서 새나</h2>
+  <p class="lead">12월 Global Bike 청구 데이터를 특성(고객·제품·지역)으로 쪼갬. SD 청구 시 매출·할인·표준원가가 CO-PA로 함께 넘어옴.</p>
+
+  <div class="card">
+    <h3>원천 데이터 — 청구 라인</h3>
+    <div class="tw"><table id="paSrc"></table></div>
+    <p class="note">고객·제품·금액은 교육용 가정. 생산 차이는 ⑥ 탭 기본값(10대 기준)을 DXTR1000에, 판관비는 영업 코스트센터 배부액을 매출 비율로 나눔.</p>
+  </div>
+
+  <div class="card">
+    <div class="filt" id="paF"></div>
+    <div id="paOut"></div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>CO-PA 두 가지 방식</h3>
+      <div class="tw"><table>
+        <tr><th></th><th>원가 기반</th><th>계정 기반 (마진 분석)</th></tr>
+        <tr><td><b>저장 단위</b></td><td>값필드 (매출액·할인·재료비…)</td><td>G/L 계정</td></tr>
+        <tr><td><b>매출원가</b></td><td>청구 시점 표준원가로 추정</td><td>출고(PGI) 실제 전표</td></tr>
+        <tr><td><b>FI와 일치</b></td><td>차이 날 수 있음</td><td>항상 일치</td></tr>
+        <tr><td><b>테이블</b></td><td>CE1xxxx ~ CE4xxxx</td><td>ACDOCA</td></tr>
+        <tr><td><b>S/4HANA</b></td><td>선택 (병행 가능)</td><td>기본</td></tr>
+      </table></div>
+    </div>
+    <div class="card">
+      <h3>CO-PA로 들어오는 길</h3>
+      <div class="tw"><table>
+        <tr><th>출처</th><th>T-Code</th><th>들어오는 것</th></tr>
+        <tr><td>SD 청구</td><td><span class="chip">VF01</span></td><td>매출·할인 (조건유형 → 값필드 <span class="chip">KE4I</span>)</td></tr>
+        <tr><td>출고</td><td><span class="chip">VL02N</span></td><td>매출원가 (계정 기반)</td></tr>
+        <tr><td>생산오더 정산</td><td><span class="chip">CO88</span></td><td>생산 차이</td></tr>
+        <tr><td>코스트센터 배부</td><td><span class="chip">KEU5</span></td><td>판관비</td></tr>
+        <tr><td>FI 직접 전기</td><td><span class="chip">FB50</span></td><td>수익성 세그먼트 지정 전표</td></tr>
+        <tr><td>보고서 · 라인아이템</td><td><span class="chip">KE30</span><span class="chip">KE24</span></td><td>—</td></tr>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8. CLOSING ============ -->
+<section class="view" id="v-close">
+  <h2>기간마감 순서 맞히기</h2>
+  <p class="lead">앞 단계 결과가 다음 단계 입력이 됨. 아래 작업을 올바른 순서대로 눌러 봄.</p>
+  <div class="card">
+    <div class="row" style="justify-content:space-between"><b id="clProg"></b><button class="btn ghost sm" id="clReset">다시 섞기</button></div>
+    <div id="clList" style="margin-top:8px"></div>
+    <div id="clFb"></div>
+  </div>
+  <div class="card">
+    <h3>정답 순서와 이유</h3>
+    <div class="tw"><table id="clAns"></table></div>
+    <p class="note">회사마다 세부 순서는 다를 수 있음. 실행 전 <span class="chip">OKP1</span> 기간 잠금 상태와 테스트 런 결과를 확인함.</p>
+  </div>
+</section>
+
+<!-- ============ 9. QUIZ ============ -->
+<section class="view" id="v-quiz">
+  <h2>확인 퀴즈</h2>
+  <p class="lead">관리회계 원리 7문항 + SAP CO 8문항.</p>
+  <div class="card" id="quiz"></div>
+</section>
+</main>
+<footer>교육용 예시 데이터(Global Bike 가상 거래, USD). 코스트센터·오더 번호와 금액은 가정값이며 T-Code·설정은 SAP 표준 기준으로 회사별 설정에 따라 다를 수 있음.</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const fmt = n => { const r=Math.round(n); return (r<0?'(':'') + Math.abs(r).toLocaleString('en-US') + (r<0?')':''); };
+const f2 = n => (Math.round(n*100)/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+/* ---------- routing ---------- */
+const VIEWS=['basics','cca','activity','order','costing','variance','copa','close','quiz'];
+function route(){
+  let v=location.hash.slice(1); if(!VIEWS.includes(v)) v='basics';
+  VIEWS.forEach(x=>$('v-'+x).classList.toggle('on',x===v));
+  document.querySelectorAll('#tabs a').forEach(a=>a.classList.toggle('on',a.dataset.v===v));
+  window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',route);
+
+/* ---------- 1. cost element judge ---------- */
+const CE = [
+ ['직원 급여 지급 (FI 전표)','1차','1 · 일반 1차 원가','FI 손익계정과 1:1. 코스트센터로 들어감.'],
+ ['SD 청구로 매출 발생','1차','11 · 수익','수익도 원가요소로 관리 — CO-PA·손익센터로 감.'],
+ ['매출 할인 (판매장려금)','1차','12 · 매출 차감',''],
+ ['IT 부서 원가를 생산·영업으로 배부','2차','42 · 배부','KSU5 실행 시 쓰임. FI 전표는 생기지 않음.'],
+ ['생산 확인으로 기계시간 배부','2차','43 · 내부 활동배부','CO11N 확인 → 생산오더 차변, 코스트센터 대변.'],
+ ['내부오더를 코스트센터로 정산','2차','21 · 내부 정산','배부구조에 따라 1차 원가요소 그대로 정산할 수도 있음.'],
+ ['생산오더에 오버헤드 부과','2차','41 · 오버헤드','CO43 / KGI2.'],
+ ['내부오더를 자산·G/L로 정산','1차','22 · 외부 정산','CO 밖(FI)으로 나가는 정산 — FI 전표 생성.']
+];
+$('ceSel').innerHTML = CE.map((c,i)=>`<option value="${i}">${c[0]}</option>`).join('');
+function renderCE(){ const c=CE[+$('ceSel').value];
+  $('ceOut').innerHTML = `<div class="result"><span class="${c[1]==='1차'?'dr':'cr'}">→ ${c[1]} 원가요소</span></div>
+   <div style="margin-top:6px">범주 <span class="chip">${c[2]}</span></div>${c[3]?`<p class="note">${c[3]}</p>`:''}
+   <p class="note">S/4HANA에서는 원가요소도 <span class="chip">FS00</span>의 G/L 계정 — 1차는 계정유형 P, 2차는 S.</p>`; }
+$('ceSel').onchange=renderCE; renderCE();
+
+/* ---------- 2. allocation ---------- */
+const SND = { IT:{n:'IT 지원 (IT00)',c:{'급여':8000,'감가상각비':3000,'통신비':1000}},
+              ADM:{n:'관리 (ADM0)',c:{'급여':6000,'임차료':3000}} };
+const RCV = { ADM:{n:'관리 (ADM0)',head:5,area:100}, PRD:{n:'생산 Dallas (PRD1)',head:30,area:600}, SAL:{n:'영업 Miami (SAL1)',head:15,area:300} };
+const BN = {head:'인원수',area:'면적',eq:'균등'};
+$('snd').innerHTML = '<tr><th>코스트센터</th><th>원가요소</th><th class="n">금액</th></tr>' +
+  Object.values(SND).map(s=>Object.entries(s.c).map(([k,v],i)=>`<tr><td>${i?'':'<b>'+s.n+'</b>'}</td><td>${k}</td><td class="n">${fmt(v)}</td></tr>`).join('')).join('');
+$('rcv').innerHTML = '<tr><th>코스트센터</th><th class="n">인원수 (명)</th><th class="n">면적 (㎡)</th></tr>' +
+  Object.values(RCV).map(r=>`<tr><td>${r.n}</td><td class="n">${r.head}</td><td class="n">${r.area}</td></tr>`).join('');
+function shares(keys,basis){ const w=keys.map(k=>basis==='eq'?1:RCV[k][basis]); const t=w.reduce((a,b)=>a+b,0); return Object.fromEntries(keys.map((k,i)=>[k,w[i]/t])); }
+function renderAlloc(){
+  const b1=$('aB1').value, b2=$('aB2').value, m=$('aM').value;
+  $('segB1').textContent=BN[b1]; $('segB2').textContent=BN[b2];
+  const s1=shares(['ADM','PRD','SAL'],b1), s2=shares(['PRD','SAL'],b2);
+  // per receiver per element
+  const res={PRD:{},SAL:{}}, admIn={};
+  const add=(o,k,v)=>o[k]=(o[k]||0)+v;
+  const docs=[];
+  const itTot=Object.values(SND.IT.c).reduce((a,b)=>a+b,0);
+  if(m==='as'){
+    ['ADM','PRD','SAL'].forEach(r=>{ const v=itTot*s1[r]; if(r==='ADM') add(admIn,'IT 배부 (2차)',v); else add(res[r],'IT 배부 (2차)',v); docs.push(['SEG1','IT00',RCV[r].n,'IT 배부 (2차, 범주 42)',v]); });
+    const admTot=Object.values(SND.ADM.c).reduce((a,b)=>a+b,0)+itTot*s1.ADM;
+    ['PRD','SAL'].forEach(r=>{ const v=admTot*s2[r]; add(res[r],'관리 배부 (2차)',v); docs.push(['SEG2','ADM0',RCV[r].n,'관리 배부 (2차, 범주 42)',v]); });
+  } else {
+    Object.entries(SND.IT.c).forEach(([ce,amt])=>['ADM','PRD','SAL'].forEach(r=>{ const v=amt*s1[r]; if(r==='ADM') add(admIn,ce,v); else add(res[r],ce,v); docs.push(['SEG1','IT00',RCV[r].n,ce+' (1차 유지)',v]); }));
+    const admC={...SND.ADM.c}; Object.entries(admIn).forEach(([k,v])=>add(admC,k,v));
+    Object.entries(admC).forEach(([ce,amt])=>['PRD','SAL'].forEach(r=>{ const v=amt*s2[r]; add(res[r],ce,v); docs.push(['SEG2','ADM0',RCV[r].n,ce+' (1차 유지)',v]); }));
+  }
+  const ces=[...new Set([...Object.keys(res.PRD),...Object.keys(res.SAL)])];
+  const tot=r=>Object.values(res[r]).reduce((a,b)=>a+b,0);
+  const all=tot('PRD')+tot('SAL');
+  $('aOut').innerHTML = `<div class="grid g2" style="gap:10px;margin-bottom:12px">
+      <div class="kpi"><span>생산 PRD1이 받은 원가</span><b>${fmt(tot('PRD'))}</b><div class="bar" style="width:${tot('PRD')/all*100}%;margin-top:6px"></div></div>
+      <div class="kpi"><span>영업 SAL1이 받은 원가</span><b>${fmt(tot('SAL'))}</b><div class="bar alt" style="width:${tot('SAL')/all*100}%;margin-top:6px"></div></div></div>
+    <h3>수신처에서 보이는 원가요소</h3>
+    <div class="tw"><table><tr><th>원가요소</th><th class="n">생산 PRD1</th><th class="n">영업 SAL1</th></tr>
+    ${ces.map(c=>`<tr><td>${c}</td><td class="n">${fmt(res.PRD[c]||0)}</td><td class="n">${fmt(res.SAL[c]||0)}</td></tr>`).join('')}
+    <tr class="tot"><td>합계</td><td class="n">${fmt(tot('PRD'))}</td><td class="n">${fmt(tot('SAL'))}</td></tr></table></div>
+    <span class="chk ok">✓ 송신 합계 ${fmt(itTot+9000)} = 수신 합계 ${fmt(all)}</span>
+    <div class="sapbox"><div class="hd">CO 전표 · <span class="chip">${m==='as'?'KSU5':'KSV5'}</span> (FI 전표는 생기지 않음)</div>
+    <div class="tw"><table><tr><th>세그먼트</th><th>송신 (대변)</th><th>수신 (차변)</th><th>원가요소</th><th class="n">금액</th></tr>
+    ${docs.map(d=>`<tr><td>${d[0]}</td><td class="cr">${d[1]}</td><td class="dr">${d[2]}</td><td>${d[3]}</td><td class="n">${fmt(d[4])}</td></tr>`).join('')}</table></div>
+    <p class="note">${m==='as'?'배부는 송신 원가를 2차 원가요소 하나로 묶음 — 생산 부서장은 "IT 배부"만 보고 내용은 모름.':'분배는 1차 원가요소를 그대로 넘김 — 수신처에서 급여·감가상각을 따로 볼 수 있음. 단, 1차 원가만 가능.'}</p></div>`;
+}
+['aB1','aB2','aM'].forEach(id=>$(id).onchange=renderAlloc); renderAlloc();
+
+/* ---------- 3. activity ---------- */
+const ACT = { mach:{pc:100000,pq:2000,ac:104000,aq:1900}, labr:{pc:180000,pq:3000,ac:176000,aq:3100} };
+function loadAct(){ const a=ACT[$('acT').value]; $('acPC').value=a.pc; $('acPQ').value=a.pq; $('acAC').value=a.ac; $('acAQ').value=a.aq; renderAct(); }
+function renderAct(){
+  const pc=+$('acPC').value, pq=+$('acPQ').value, ac=+$('acAC').value, aq=+$('acAQ').value;
+  if(!(pc>0&&pq>0&&ac>=0&&aq>=0)){ $('acPP').value=''; $('acOut').innerHTML='<div class="empty">계획원가·계획 활동량은 0보다 크게 입력함</div>'; return; }
+  const pp=pc/pq; $('acPP').value=f2(pp)+' USD/H';
+  const alloc=aq*pp, diff=ac-alloc, apr=aq?ac/aq:0;
+  const lab=diff>0?'배부 부족 (Under-absorption)':diff<0?'배부 초과 (Over-absorption)':'차이 없음';
+  const mx=Math.max(ac,alloc)||1;
+  $('acOut').innerHTML = `<div class="grid g3" style="gap:10px">
+    <div class="kpi"><span>실제 활동량 × 계획 단가</span><b>${fmt(alloc)}</b><span>생산오더로 넘어간 금액</span></div>
+    <div class="kpi"><span>코스트센터 실제원가</span><b>${fmt(ac)}</b><span>실적 단가 ${aq?f2(apr):'—'} USD/H</span></div>
+    <div class="kpi"><span>${lab}</span><b style="color:${diff>0?'var(--ng)':'var(--ok)'}">${fmt(diff)}</b><span>코스트센터에 남은 잔액</span></div></div>
+    <div style="margin-top:12px;display:grid;gap:6px;font-size:13px">
+      <div>실제원가<div class="bar" style="width:${ac/mx*100}%"></div></div>
+      <div>배부액<div class="bar alt" style="width:${alloc/mx*100}%"></div></div></div>
+    <div class="sapbox"><div class="hd">CO 전표 · <span class="chip">CO11N</span> 확인 시 자동 (2차 원가요소 범주 43)</div>
+    <div class="tw"><table><tr><th>차변</th><th>대변</th><th class="n">수량</th><th class="n">금액</th></tr>
+    <tr><td class="dr">생산오더</td><td class="cr">코스트센터 PRD1 · ${$('acT').value==='mach'?'MACH':'LABR'}</td><td class="n">${fmt(aq)} H</td><td class="n">${fmt(alloc)}</td></tr></table></div></div>`;
+}
+$('acT').onchange=loadAct; ['acPC','acPQ','acAC','acAQ'].forEach(id=>$(id).oninput=renderAct); loadAct();
+
+/* ---------- 4. internal order ---------- */
+const IOC=[['부스 임차료','외부 송장 FB60',4000],['홍보물 인쇄','외부 송장 FB60',1500],['출장 여비','경비 정산 FB50',2500]];
+const ioTot=IOC.reduce((a,c)=>a+c[2],0);
+$('ioCost').innerHTML='<tr><th>원가요소</th><th>출처</th><th class="n">금액</th></tr>'+IOC.map(c=>`<tr><td>${c[0]}</td><td>${c[1]}</td><td class="n">${fmt(c[2])}</td></tr>`).join('')+`<tr class="tot"><td>합계</td><td></td><td class="n">${fmt(ioTot)}</td></tr>`;
+let ioDone=false;
+function renderAvc(){
+  const b=+$('ioBud').value; if(!(b>0)){ $('ioAvc').innerHTML='<div class="empty">예산을 입력함</div>'; return; }
+  const u=ioTot/b*100, col=u>=100?'var(--ng)':u>=90?'#e9730c':'var(--ok)';
+  $('ioAvc').innerHTML=`<div class="row" style="justify-content:space-between;font-size:13px"><span>예산 사용률</span><b style="color:${col}">${u.toFixed(0)}%</b></div>
+   <div class="meter"><i style="width:${Math.min(u,100)}%;background:${col}"></i></div>
+   <p class="note">${u>=100?'가용성 통제 오류 — 추가 비용 전기가 막힘. 예산 보충(KO24) 필요.':u>=90?'가용성 통제 경고 — 사용률 90% 초과 (허용치 예시).':'여유 있음 — 실적 + 약정(구매오더) 합계로 판단함.'}</p>`;
+}
+function settle(test){
+  const p1=+$('ioP1').value, p2=+$('ioP2').value;
+  if(p1<0||p2<0||p1+p2!==100){ $('ioOut').innerHTML='<div class="fb ng" style="display:block"><div class="t">정산 오류</div>정산 규칙 비율 합계가 100%가 아님 (현재 '+(p1+p2)+'%). 남은 금액이 오더에 잔액으로 남게 됨.</div>'; return; }
+  if(!test) ioDone=true;
+  const a1=ioTot*p1/100, a2=ioTot-a1;
+  $('ioOut').innerHTML=`<div class="fb ok" style="display:block"><div class="t">${test?'테스트 런 결과 — 전기되지 않음':'정산 완료 — 오더 잔액 0'}</div>
+   <div class="tw"><table><tr><th>수신처</th><th class="n">%</th><th class="n">금액</th></tr>
+   <tr><td>코스트센터 SAL1</td><td class="n">${p1}</td><td class="n">${fmt(a1)}</td></tr>
+   <tr><td>CO-PA 세그먼트 (영업조직 UE00)</td><td class="n">${p2}</td><td class="n">${fmt(a2)}</td></tr></table></div></div>
+   <div class="sapbox"><div class="hd">CO 전표 · <span class="chip">KO88</span> 정산 원가요소 범주 21 (배부구조 기준)</div>
+   <div class="tw"><table><tr><th>차변</th><th>대변</th><th class="n">금액</th></tr>
+   <tr><td class="dr">코스트센터 SAL1</td><td class="cr">오더 700100</td><td class="n">${fmt(a1)}</td></tr>
+   <tr><td class="dr">수익성 세그먼트</td><td class="cr">오더 700100</td><td class="n">${fmt(a2)}</td></tr></table></div>
+   <p class="note">${test?'':'오더 잔액: '+fmt(ioTot)+' − '+fmt(ioTot)+' = 0. 이제 TECO로 바꿔도 됨.'}</p></div>`;
+}
+$('ioBud').oninput=renderAvc; $('ioRun').onclick=()=>settle(false); $('ioTest').onclick=()=>settle(true);
+['ioP1','ioP2'].forEach(id=>$(id).oninput=()=>{ if(ioDone||$('ioOut').innerHTML) settle(!ioDone); });
+renderAvc();
+
+/* ---------- 5. standard costing ---------- */
+const BOM=[['프레임 (블랙)',1,400],['휠 어셈블리',2,150],['핸들바',1,80],['시트 키트',1,60],['구동계 (체인·변속기)',1,110],['페달·소모품',1,50]];
+const RTG=[['0010 프레임 조립','기계시간 MACH',1,50],['0020 휠 장착','기계시간 MACH',1,50],['0030 최종 조립·검사','인건시간 LABR',3,60]];
+function renderBom(){
+  $('bomT').innerHTML='<tr><th>구성품</th><th class="n" style="width:90px">수량</th><th class="n" style="width:110px">단가</th><th class="n">금액</th></tr>'+
+    BOM.map((b,i)=>`<tr><td>${b[0]}</td><td><input type="number" data-b="${i}" data-k="1" value="${b[1]}" inputmode="decimal"></td><td><input type="number" data-b="${i}" data-k="2" value="${b[2]}" inputmode="decimal"></td><td class="n" id="bm${i}"></td></tr>`).join('');
+  $('rtgT').innerHTML='<tr><th>공정</th><th>활동유형</th><th class="n" style="width:90px">시간 (H)</th><th class="n" style="width:110px">단가</th><th class="n">금액</th></tr>'+
+    RTG.map((r,i)=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td><input type="number" data-r="${i}" data-k="2" value="${r[2]}" inputmode="decimal"></td><td><input type="number" data-r="${i}" data-k="3" value="${r[3]}" inputmode="decimal"></td><td class="n" id="rt${i}"></td></tr>`).join('');
+  document.querySelectorAll('[data-b]').forEach(e=>e.oninput=()=>{BOM[+e.dataset.b][+e.dataset.k]=+e.value||0;renderCost();});
+  document.querySelectorAll('[data-r]').forEach(e=>e.oninput=()=>{RTG[+e.dataset.r][+e.dataset.k]=+e.value||0;renderCost();});
+}
+function renderCost(){
+  let mat=0; BOM.forEach((b,i)=>{const v=b[1]*b[2]; mat+=v; $('bm'+i).textContent=fmt(v);});
+  let act=0; RTG.forEach((r,i)=>{const v=r[2]*r[3]; act+=v; $('rt'+i).textContent=fmt(v);});
+  const oh=mat*(+$('ohR').value||0)/100, tot=mat+act+oh, std=1400;
+  const parts=[['재료비',mat,'var(--navy2)'],['활동비',act,'var(--navy)'],['오버헤드',oh,'var(--navy3)']];
+  $('cOut').innerHTML=`<div class="grid g4" style="gap:10px">
+    ${parts.map(p=>`<div class="kpi"><span>${p[0]}</span><b>${fmt(p[1])}</b><span>${tot?(p[1]/tot*100).toFixed(1):0}%</span></div>`).join('')}
+    <div class="kpi" style="background:var(--tint);border-color:var(--navy3)"><span>표준원가 / EA</span><b style="color:var(--navy2)">${fmt(tot)}</b><span>${tot===std?'자재마스터 표준가와 일치':'현재 표준가 1,400 대비 '+(tot>std?'+':'')+fmt(tot-std)}</span></div></div>
+    <div style="display:flex;height:16px;border-radius:8px;overflow:hidden;margin-top:12px">${parts.map(p=>`<div style="width:${tot?p[1]/tot*100:0}%;background:${p[2]}"></div>`).join('')}</div>
+    <div class="sapbox"><div class="hd">원가 구성요소 보기 · <span class="chip">CK11N</span> → <span class="chip">CK24</span></div>
+    <p style="margin:0;font-size:14px">릴리즈하면 자재마스터 회계 1 뷰 표준가(가격통제 S)가 ${fmt(tot)}로 바뀜.
+    ${tot!==std?`재고 105 EA 기준 재평가 금액 = (${fmt(tot)} − 1,400) × 105 = <b>${fmt((tot-std)*105)}</b> → 재고와 재평가 손익 계정에 FI 전표 생성.`:'변경이 없으니 재평가 전표도 없음.'}</p></div>`;
+}
+$('ohR').oninput=renderCost; renderBom(); renderCost();
+
+/* ---------- 6. variance ---------- */
+const STD={frame:400,wheel:150,other:BOM.slice(2).reduce((a,b)=>a+b[1]*b[2],0),machH:2,mach:50,labH:3,lab:60,oh:0.12};
+let lastVar={qty:10,total:0};
+function renderVar(){
+  const q=+$('vQ').value, fp=+$('vFP').value, wq=+$('vWQ').value, lh=+$('vLH').value;
+  if(!(q>0&&fp>=0&&wq>=0&&lh>=0)){ $('vOut').innerHTML='<div class="empty">값을 다시 확인함</div>'; return; }
+  const rows=[
+    // name, target qty, std price, actual qty, actual price
+    ['프레임', q, STD.frame, q, fp],
+    ['휠 어셈블리', q*2, STD.wheel, wq, STD.wheel],
+    ['기타 부품 (세트)', q, STD.other, q, STD.other],
+    ['기계시간 MACH (H)', q*STD.machH, STD.mach, q*STD.machH, STD.mach],
+    ['인건시간 LABR (H)', q*STD.labH, STD.lab, lh, STD.lab]
+  ];
+  let tT=0,tA=0,pv=0,qv=0;
+  const body=rows.map(r=>{const t=r[1]*r[2], a=r[3]*r[4], p=(r[4]-r[2])*r[3], qq=(r[3]-r[1])*r[2]; tT+=t; tA+=a; pv+=p; qv+=qq;
+    return `<tr><td>${r[0]}</td><td class="n">${fmt(r[1])}</td><td class="n">${fmt(t)}</td><td class="n">${fmt(r[3])}</td><td class="n">${fmt(a)}</td><td class="n">${fmt(p)}</td><td class="n">${fmt(qq)}</td></tr>`;}).join('');
+  const matT=q*STD.frame+q*2*STD.wheel+q*STD.other, matA=q*fp+wq*STD.wheel+q*STD.other;
+  const ohT=matT*STD.oh, ohA=matA*STD.oh, ohV=ohA-ohT;
+  tT+=ohT; tA+=ohA;
+  const tv=tA-tT; lastVar={qty:q,total:tv};
+  $('vOut').innerHTML=`<div class="tw"><table>
+    <tr><th>투입</th><th class="n">목표수량</th><th class="n">목표원가</th><th class="n">실제수량</th><th class="n">실제원가</th><th class="n">가격 차이</th><th class="n">수량 차이</th></tr>
+    ${body}
+    <tr><td>오버헤드 (재료비 12%)</td><td></td><td class="n">${fmt(ohT)}</td><td></td><td class="n">${fmt(ohA)}</td><td class="n" colspan="2" style="text-align:center">기준 변동분 ${fmt(ohV)} → 잔여 차이</td></tr>
+    <tr class="tot"><td>합계</td><td></td><td class="n">${fmt(tT)}</td><td></td><td class="n">${fmt(tA)}</td><td class="n">${fmt(pv)}</td><td class="n">${fmt(qv)}</td></tr></table></div>
+    <div class="grid g4" style="gap:10px;margin-top:12px">
+      <div class="kpi"><span>목표원가 (표준 × ${fmt(q)}대)</span><b>${fmt(tT)}</b></div>
+      <div class="kpi"><span>실제원가</span><b>${fmt(tA)}</b></div>
+      <div class="kpi"><span>총 차이</span><b style="color:${tv>0?'var(--ng)':'var(--ok)'}">${fmt(tv)}</b><span>${tv>0?'불리 (원가 초과)':tv<0?'유리 (원가 절감)':'—'}</span></div>
+      <div class="kpi"><span>차이 분해</span><b style="font-size:15px">가격 ${fmt(pv)} · 수량 ${fmt(qv)} · 잔여 ${fmt(ohV)}</b></div></div>
+    <div class="sapbox"><div class="hd">정산 전표 · <span class="chip">CO88</span> (가격통제 S 자재)</div>
+    <div class="tw"><table><tr><th>시점</th><th>차변</th><th>대변</th><th class="n">금액</th></tr>
+    <tr><td>입고 (<span class="chip">MIGO</span> 101)</td><td class="dr">제품 재고</td><td class="cr">생산오더 (공장 생산 출고)</td><td class="n">${fmt(tT)}</td></tr>
+    <tr><td>정산</td><td class="${tv>=0?'dr':'cr'}">${tv>=0?'생산 가격차이 (비용)':'생산오더'}</td><td class="${tv>=0?'cr':'dr'}">${tv>=0?'생산오더':'생산 가격차이 (이익)'}</td><td class="n">${fmt(Math.abs(tv))}</td></tr></table></div>
+    <p class="note">재고는 표준가로만 들어감 — 차이는 재고가 아니라 차이 계정(OBYC PRD, 계정변경 PRF)으로 감. 차이 범주는 CO-PA로도 넘길 수 있음(⑦ 탭).</p></div>`;
+  if(typeof renderPA==='function') renderPA();
+}
+['vQ','vFP','vWQ','vLH'].forEach(id=>$(id).oninput=renderVar);
+
+/* ---------- 7. CO-PA ---------- */
+const PA=[
+ // customer, region, product, qty, price, disc%, std
+ ['Philly Bikes (127000)','동부','DXTR1000',8,2000,5,1400],
+ ['Philly Bikes (127000)','동부','PRTR1000',4,3000,5,2100],
+ ['Lakeside Cycles','중부','DXTR1000',6,2000,3,1400],
+ ['Seoul Cycle (1004401)','수출','DXTR1000',20,1800,0,1400],
+ ['Seoul Cycle (1004401)','수출','PRTR1000',5,2700,0,2100],
+ ['Bay Area Bikes','서부','PRTR1000',6,3000,8,2100]
+];
+const SGA=9000; // 영업 코스트센터 배부 예시
+$('paSrc').innerHTML='<tr><th>고객</th><th>지역</th><th>제품</th><th class="n">수량</th><th class="n">단가</th><th class="n">할인</th><th class="n">표준원가</th></tr>'+
+  PA.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td class="n">${r[3]}</td><td class="n">${fmt(r[4])}</td><td class="n">${r[5]}%</td><td class="n">${fmt(r[6])}</td></tr>`).join('');
+let paDim=0;
+$('paF').innerHTML=[['0','고객별'],['2','제품별'],['1','지역별']].map(([k,n],i)=>`<button data-d="${k}" class="${i===0?'on':''}">${n}</button>`).join('');
+$('paF').querySelectorAll('button').forEach(b=>b.onclick=()=>{paDim=+b.dataset.d;$('paF').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));renderPA();});
+function renderPA(){
+  const dxQty=PA.filter(r=>r[2]==='DXTR1000').reduce((a,r)=>a+r[3],0);
+  const varPerDx=lastVar.qty?lastVar.total/lastVar.qty:0;
+  const g={};
+  PA.forEach(r=>{ const k=r[paDim]; g[k]=g[k]||{rev:0,disc:0,cogs:0,pv:0};
+    const rev=r[3]*r[4], d=rev*r[5]/100; g[k].rev+=rev; g[k].disc+=d; g[k].cogs+=r[3]*r[6];
+    if(r[2]==='DXTR1000') g[k].pv+=r[3]*varPerDx; });
+  const totNet=Object.values(g).reduce((a,x)=>a+x.rev-x.disc,0);
+  Object.values(g).forEach(x=>{x.net=x.rev-x.disc; x.cm1=x.net-x.cogs; x.cm2=x.cm1-x.pv; x.sga=SGA*x.net/totNet; x.op=x.cm2-x.sga;});
+  const keys=Object.keys(g).sort((a,b)=>g[b].op-g[a].op);
+  const T=k=>keys.reduce((a,x)=>a+g[x][k],0);
+  const lines=[['매출액','rev'],['− 할인','disc'],['= 순매출','net',1],['− 매출원가 (표준)','cogs'],['= 공헌이익 I','cm1',1],['− 생산 차이','pv'],['= 공헌이익 II','cm2',1],['− 판관비 배부','sga'],['= 영업이익','op',1]];
+  const best=keys[0], mx=Math.max(...keys.map(k=>Math.abs(g[k].op)))||1;
+  $('paOut').innerHTML=`<div class="tw"><table><tr><th>항목</th>${keys.map(k=>`<th class="n">${k}</th>`).join('')}<th class="n">합계</th></tr>
+    ${lines.map(l=>`<tr${l[2]?' style="font-weight:700;background:var(--soft)"':''}><td>${l[0]}</td>${keys.map(k=>`<td class="n">${fmt(g[k][l[1]])}</td>`).join('')}<td class="n">${fmt(T(l[1]))}</td></tr>`).join('')}
+    <tr><td>영업이익률</td>${keys.map(k=>`<td class="n">${(g[k].op/g[k].net*100).toFixed(1)}%</td>`).join('')}<td class="n">${(T('op')/T('net')*100).toFixed(1)}%</td></tr></table></div>
+    <h3 style="margin-top:14px">영업이익 비교</h3>
+    <div style="display:grid;gap:6px;font-size:13px">${keys.map(k=>`<div style="display:grid;grid-template-columns:160px 1fr 80px;gap:8px;align-items:center"><span>${k}</span><div class="bar${g[k].op<0?' alt':''}" style="width:${Math.abs(g[k].op)/mx*100}%"></div><span style="text-align:right;font-variant-numeric:tabular-nums">${fmt(g[k].op)}</span></div>`).join('')}</div>
+    <p class="note">가장 많이 남는 곳: <b>${best}</b>. 생산 차이 ${fmt(lastVar.total)}(⑥ 탭, ${lastVar.qty}대)를 대당 ${f2(varPerDx)}로 DXTR1000 판매 ${dxQty}대에 나눔. 판관비 ${fmt(SGA)}는 순매출 비율로 배부(KEU5)했다고 가정.</p>`;
+}
+renderVar(); renderPA();
+
+/* ---------- 8. closing order ---------- */
+const CL=[
+ ['반복·발생 전표 / 수동 재전기','FBS1 · KB11N','코스트센터에 들어갈 1차 원가를 먼저 완성함'],
+ ['오버헤드 계산','CO43 · KGI2','오버헤드는 코스트센터를 대변 처리하므로 배부보다 먼저'],
+ ['지원부서 배부·분배','KSV5 · KSU5','생산 코스트센터로 원가를 모아야 단가를 계산할 수 있음'],
+ ['실적 활동단가 계산','KSII','모인 원가 ÷ 실제 활동량. 오더 재평가 시 원가가 바뀜'],
+ ['재공품 계산','KKAO','최종 원가가 확정된 오더를 대상으로 WIP 판단'],
+ ['생산오더 차이 계산','KKS1','목표원가 대비 차이와 범주 산출'],
+ ['생산오더·내부오더 정산','CO88 · KO8G','WIP·차이를 FI와 CO-PA로 넘기고 오더 잔액 0'],
+ ['물질원장 실제원가 계산','CKMLCP','정산으로 확정된 가격차이를 재고·매출원가로 굴려 올림'],
+ ['코스트센터 잔액 CO-PA 배부','KEU5','남은 판관비를 시장 세그먼트에 반영'],
+ ['수익성 보고서 확인 · 기간 잠금','KE30 · OKP1','결과를 보고 다음 달 전에 기간을 잠금']
+];
+let clOrder=[], clPos=0, clMiss=0;
+function clShuffle(){ clOrder=CL.map((_,i)=>i).sort(()=>Math.random()-.5); clPos=0; clMiss=0; renderCl(); }
+function renderCl(){
+  $('clProg').textContent=`${clPos} / ${CL.length} 맞힘 · 실수 ${clMiss}`;
+  $('clList').innerHTML=clOrder.map(i=>`<button class="pick ${i<clPos?'done':''}" data-i="${i}" ${i<clPos?'disabled':''}>${i<clPos?(i+1)+'. ':''}${CL[i][0]} <span class="chip">${CL[i][1]}</span></button>`).join('');
+  $('clList').querySelectorAll('.pick').forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.i;
+    if(i===clPos){ clPos++; $('clFb').innerHTML=''; renderCl(); if(clPos===CL.length) $('clFb').innerHTML=`<div class="fb ok" style="display:block"><div class="t">완료 — 실수 ${clMiss}번</div>${clMiss===0?'순서를 완벽히 이해함.':'아래 표에서 틀린 단계의 이유를 다시 봄.'}</div>`; }
+    else { clMiss++; b.classList.add('bad'); setTimeout(()=>b.classList.remove('bad'),500); $('clProg').textContent=`${clPos} / ${CL.length} 맞힘 · 실수 ${clMiss}`;
+      $('clFb').innerHTML=`<div class="fb ng" style="display:block"><div class="t">아직 아님</div>"${CL[i][0]}"은(는) ${i+1}번째 단계. 지금은 ${clPos+1}번째를 찾음.</div>`; }
+  });
+}
+$('clAns').innerHTML='<tr><th>#</th><th>작업</th><th>T-Code</th><th>이 순서인 이유</th></tr>'+CL.map((c,i)=>`<tr><td>${i+1}</td><td>${c[0]}</td><td><span class="chip">${c[1]}</span></td><td>${c[2]}</td></tr>`).join('');
+$('clReset').onclick=clShuffle; clShuffle();
+
+/* ---------- 9. quiz ---------- */
+const Q=[
+ ['관리회계(CO)의 주된 목적은?',['외부 감사 대응','세무 신고','내부 의사결정 지원','주주 배당 결정'],2,'CO는 경영진이 원가와 수익성을 보고 판단하도록 돕는 내부 회계.'],
+ ['조업도와 관계없이 일정하게 발생하는 원가는?',['변동비','고정비','직접재료비','매출원가'],1,'임차료·감가상각비처럼 생산량이 변해도 일정한 원가가 고정비.'],
+ ['매출액에서 변동비를 뺀 금액은?',['영업이익','공헌이익','매출총이익','순이익'],1,'공헌이익 — 고정비 회수와 이익에 기여하는 몫.'],
+ ['배부와 분배의 차이로 맞는 것은?',['분배는 2차 원가도 보낼 수 있다','배부는 원래 1차 원가요소를 유지한다','분배는 1차 원가요소를 유지한다','둘은 같다'],2,'분배(Distribution)는 1차 원가만, 원가요소를 그대로 넘김. 배부는 2차 원가요소 하나로 묶음.'],
+ ['기계시간 계획원가 100,000, 계획 2,000H일 때 활동단가는?',['20','50','100','200'],1,'100,000 ÷ 2,000 = 50 USD/H.'],
+ ['실제 활동량이 계획보다 줄었는데 원가는 그대로면?',['배부 초과','배부 부족','차이 없음','정산 불가'],1,'넘겨준 금액(실제량 × 계획단가)이 줄어 코스트센터에 잔액이 남음 — 배부 부족.'],
+ ['프레임 표준 400, 실제 420에 10개 샀다면 가격 차이는?',['20','200','4,200','400'],1,'(420 − 400) × 10 = 200, 불리 차이.'],
+ ['S/4HANA에서 원가요소를 관리하는 T-Code는?',['KA01','KS01','FS00','KL01'],2,'원가요소가 G/L 계정 유형으로 통합되어 FS00에서 관리함. KS01은 코스트센터, KL01은 활동유형.'],
+ ['IT 부서 원가를 생산 부서로 넘기는 배부에 쓰는 원가요소 범주는?',['1','21','42','43'],2,'42 = 배부(Assessment). 43은 활동배부, 21은 내부 정산.'],
+ ['내부오더 원가를 다른 대상으로 넘겨 잔액을 0으로 만드는 작업은?',['배부','정산','재전기','마감'],1,'정산(Settlement) — KO88 개별, KO8G 일괄.'],
+ ['통계 내부오더에 대한 설명으로 맞는 것은?',['반드시 정산해야 한다','원가는 코스트센터에 실제로 남는다','예산을 걸 수 없다','FI 전표를 만들지 않는다'],1,'통계 오더는 보고용 — 실제 원가는 코스트센터 등 다른 대상에 남고 정산하지 않음.'],
+ ['표준원가 원가추정을 실행하는 T-Code는?',['CK11N','CO01','KSB1','KE30'],0,'CK11N 원가추정, CK40N 일괄 롤업, CK24 마킹·릴리즈.'],
+ ['생산오더 차이를 계산할 수 있는 오더 상태는?',['CRTD','REL','DLV 또는 TECO','어떤 상태든'],2,'납품완료(DLV)나 TECO 오더만 차이 계산. 그 전에는 재공품으로 봄.'],
+ ['원가 기반 CO-PA에서 매출·할인 금액을 담는 단위는?',['G/L 계정','값필드','특성','원가요소 그룹'],1,'값필드(Value Field). 계정 기반은 G/L 계정 단위로 저장.'],
+ ['다음 중 기간마감에서 가장 먼저 하는 작업은?',['생산오더 정산','실적 활동단가 계산','오버헤드 계산','CO-PA 보고서 확인'],2,'오버헤드 → 배부 → 단가 → WIP → 차이 → 정산 → ML → CO-PA 순.']
+];
+let qi=0,qs=0,qa=false;
+function renderQuiz(){
+  const el=$('quiz');
+  if(qi>=Q.length){
+    el.innerHTML=`<div style="text-align:center"><div class="score">${qs} / ${Q.length}</div>
+      <p>${qs>=14?'완벽에 가까움 — CO 전표 흐름이 읽히는 수준':qs>=11?'기본기 탄탄함 — 틀린 문항만 다시 봄':'② ~ ⑥ 탭 시뮬레이터를 한 번 더 돌고 다시 도전'}</p>
+      <button class="btn" id="qR">다시 풀기</button></div>`;
+    $('qR').onclick=()=>{qi=0;qs=0;renderQuiz();}; return;
+  }
+  const q=Q[qi]; qa=false;
+  el.innerHTML=`<div class="row" style="justify-content:space-between"><span class="tag">${qi<7?'관리회계 원리':'SAP CO'}</span><span style="color:var(--sub);font-size:13px">${qi+1} / ${Q.length} · 점수 ${qs}</span></div>
+    <h3 style="margin-top:10px;font-size:17px">${q[0]}</h3>
+    ${q[1].map((o,i)=>`<button class="opt" data-o="${i}">${o}</button>`).join('')}<div id="qFb"></div>`;
+  el.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+    if(qa) return; qa=true; const o=+b.dataset.o, ok=o===q[2]; if(ok)qs++;
+    el.querySelectorAll('.opt').forEach((x,i)=>{x.disabled=true; if(i===q[2])x.classList.add('ok'); else if(i===o)x.classList.add('ng');});
+    $('qFb').innerHTML=`<div class="fb ${ok?'ok':'ng'}" style="display:block"><div class="t">${ok?'정답':'오답'}</div>${q[3]}</div>
+      <div style="margin-top:12px;text-align:right"><button class="btn" id="qN">${qi===Q.length-1?'결과 보기':'다음 문제'}</button></div>`;
+    $('qN').onclick=()=>{qi++;renderQuiz();};
+  });
+}
+renderQuiz();
+route();
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#354A5F;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+</body>
+</html>

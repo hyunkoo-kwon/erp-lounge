@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SAP MM 용어집</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff;--card:#fff;--ink:#1b1d22;--sub:#5f6470;--line:#e6e8ec;
+  --accent:#0A6ED1;--accent-soft:#EBF5FE;--gold:#E9730C;--chip:#F7F7F7;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:'Noto Sans KR',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;z-index:10;background:var(--bg);padding:calc(12px + env(safe-area-inset-top)) 16px 8px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+.brand h1{font-size:19px;font-weight:700;letter-spacing:-.3px}
+.brand h1 span{color:var(--accent)}
+.brand small{color:var(--sub);font-size:12px}
+header{background:#354A5F;border-bottom:0}
+.brand h1{color:#fff}.brand h1 span{color:#91C8F6}.brand small{color:#D1E8FF}
+.search{position:relative}
+.search input{width:100%;font:inherit;font-size:15px;padding:11px 36px 11px 38px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);outline:none}
+.search input:focus{border-color:var(--accent)}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.5}
+.search button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--sub);font-size:18px;padding:6px 8px;display:none;cursor:pointer}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:0;font:inherit;font-size:13px;padding:6px 12px;border-radius:999px;background:var(--chip);color:var(--sub);cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--accent);color:#fff}
+main{padding:12px 16px;max-width:760px;margin:0 auto}
+.count{font-size:12px;color:var(--sub);margin:2px 2px 10px}
+.list{display:grid;gap:8px}
+.item{background:var(--card);box-shadow:0 1px 2px rgba(16,24,40,.04);border:1px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+.item:active{transform:scale(.99)}
+.item .body{flex:1;min-width:0}
+.item .en{font-weight:700;font-size:15px}
+.item .ko{color:var(--accent);font-size:14px;margin-left:6px;font-weight:500}
+.item .d{color:var(--sub);font-size:13px;margin-top:4px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.tag{font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:6px;background:var(--accent-soft);color:var(--accent)}
+.tag.tb{background:var(--chip);color:var(--sub)}
+.star{border:0;background:none;font-size:19px;color:var(--line);cursor:pointer;padding:0 2px;line-height:1}
+.star.on{color:var(--gold)}
+.empty{text-align:center;color:var(--sub);padding:48px 12px;font-size:14px;line-height:1.7}
+mark{background:#ffe58a;color:inherit;border-radius:2px}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:none;font:inherit;font-size:12px;color:var(--sub);padding:9px 0 10px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+nav button.on{color:var(--accent);font-weight:700}
+nav svg{width:22px;height:22px}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+.sheet-bg.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;background:var(--card);border-radius:20px 20px 0 0;max-height:86vh;overflow-y:auto;transform:translateY(100%);transition:transform .25s ease;padding:8px 20px calc(24px + env(safe-area-inset-bottom));max-width:760px;margin:0 auto}
+.sheet.open{transform:none}
+.grip{width:40px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 14px}
+.sheet .cat{font-size:12px;color:var(--sub)}
+.sheet h2{font-size:22px;margin:4px 0 2px;letter-spacing:-.3px}
+.sheet .kot{color:var(--accent);font-size:16px;font-weight:500}
+.sheet .abbr{font-family:var(--mono);font-size:12px;color:var(--sub);margin-left:6px}
+.sheet p{font-size:15px;line-height:1.75;margin:14px 0}
+.tip{background:var(--accent-soft);border-radius:12px;padding:11px 13px;font-size:14px;line-height:1.65;margin:12px 0}
+.tip b{color:var(--accent)}
+.sec{font-size:12px;color:var(--sub);margin:16px 0 6px;font-weight:700;letter-spacing:.3px}
+.codes{display:flex;flex-wrap:wrap;gap:6px}
+.code{font-family:var(--mono);font-size:13px;padding:6px 10px;border-radius:8px;background:var(--accent-soft);color:var(--accent);border:0;cursor:pointer}
+.code.tb{background:var(--chip);color:var(--ink)}
+.rel{display:flex;flex-wrap:wrap;gap:6px}
+.rel button{font:inherit;font-size:13px;border:1px solid var(--line);background:none;color:var(--ink);padding:5px 10px;border-radius:999px;cursor:pointer}
+.row{display:flex;gap:8px;margin-top:20px}
+.btn{flex:1;font:inherit;font-size:14px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:13px;opacity:0;transition:.2s;z-index:50;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%)}
+/* flashcards */
+.fc-wrap{perspective:1200px;margin-top:6px}
+.fc{position:relative;height:340px;transform-style:preserve-3d;transition:transform .45s;cursor:pointer}
+.fc.flip{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;justify-content:center;text-align:center}
+.face.back{transform:rotateY(180deg);text-align:left;justify-content:flex-start;overflow-y:auto}
+.face .q{font-size:13px;color:var(--sub);margin-bottom:10px}
+.face .big{font-size:26px;font-weight:700;color:var(--accent);letter-spacing:-.3px}
+.face .hint{font-size:14px;color:var(--sub);line-height:1.6;margin-top:14px}
+.face .tap{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-size:12px;color:var(--sub)}
+.fc-meta{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--sub);margin:4px 2px 10px}
+.prog{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:12px}
+.prog i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.seg{display:flex;background:var(--chip);border-radius:10px;padding:3px;margin-bottom:12px}
+.seg button{flex:1;border:0;background:none;font:inherit;font-size:13px;padding:7px;border-radius:8px;color:var(--sub);cursor:pointer}
+.seg button.on{background:var(--card);color:var(--ink);font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.score{display:flex;gap:8px;font-size:13px}
+.score span{padding:3px 9px;border-radius:999px;background:var(--chip)}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><h1>SAP <span>MM</span> 용어집</h1><small id="total"></small></div>
+  <div class="search">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="q" type="search" placeholder="용어 · 한글 · T-code · 테이블 검색" autocomplete="off">
+    <button id="clr" aria-label="지우기">✕</button>
+  </div>
+  <div class="chips" id="chips"></div>
+</header>
+
+<main id="view"></main>
+
+<nav>
+  <button data-tab="list" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>용어</button>
+  <button data-tab="fav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>즐겨찾기</button>
+  <button data-tab="study"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h10M7 14h6"/></svg>학습카드</button>
+</nav>
+
+<div class="sheet-bg" id="bg"></div>
+<div class="sheet" id="sheet"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const CATS = {
+  org:"조직구조", md:"기준정보", pur:"구매", inv:"재고관리·이동유형", iv:"송장검증",
+  acc:"계정결정·평가", spc:"특수조달", pi:"재고실사", mrp:"MRP·소요량", tbl:"테이블"
+};
+// id, en, ko, cat, desc, tc, tb, tip, rel
+const T = [
+// ── 조직구조
+["plant","Plant","플랜트","org","생산·조달·재고관리·MRP가 이루어지는 물류의 핵심 조직 단위. 하나의 회사코드에 할당되며, 평가수준이 플랜트인 경우 플랜트가 곧 평가영역이 된다.",["OX10","OX18"],["T001W"],"플랜트→회사코드 할당은 OX18. 플랜트는 반드시 하나의 회사코드에만 속한다.",["sloc","valarea","porg"]],
+["sloc","Storage Location","저장위치","org","플랜트 내에서 재고를 수량 단위로 구분해 관리하는 장소. 재고 수량은 저장위치 수준, 재고 금액은 평가영역 수준에서 관리된다.",["OX09"],["T001L","MARD"],"저장위치 간 이동(311)은 같은 평가영역 안이므로 회계전표가 생기지 않는다.",["plant","mvt3xx"]],
+["porg","Purchasing Organization","구매조직","org","공급업체와 구매조건을 협상하고 구매에 대한 법적 책임을 지는 조직 단위. 회사코드별·플랜트별·전사(Cross-company) 형태로 구성할 수 있다.",["OX08","OX01","OX17"],["T024E"],"구매조직→회사코드(OX01)는 선택 할당, 구매조직→플랜트(OX17)는 필수. 회사코드를 비워두면 전사 구매조직이 된다.",["pgrp","plant","inforec"]],
+["pgrp","Purchasing Group","구매그룹","org","구매 담당자 또는 담당자 그룹을 나타내는 키. 조직 할당 없이 독립적으로 정의되며, 릴리즈 전략·보고서 분석 기준으로 자주 쓰인다.",["OME4"],["T024"],null,["porg","relstr"]],
+["valarea","Valuation Area / Valuation Level","평가영역 / 평가수준","org","자재를 평가(재고금액 관리)하는 단위. 평가수준을 플랜트로 하면 평가영역=플랜트, 회사코드로 하면 평가영역=회사코드. 대부분 플랜트 수준을 쓴다.",["OX14"],["T001K"],"평가수준은 한 번 정하면 사실상 변경 불가. PP·제품원가계산을 쓰려면 플랜트 수준이 전제.",["plant","valgrp","mbew"]],
+
+// ── 기준정보
+["matmaster","Material Master","자재마스터","md","자재의 모든 정보를 담는 마스터. 기본·구매·MRP·저장·회계·원가 등 뷰(View)로 구성되며, 뷰마다 저장되는 조직 수준(전사·플랜트·저장위치·평가영역)이 다르다.",["MM01","MM02","MM03","MM60"],["MARA","MARC","MARD","MBEW"],"자재 확장(새 플랜트·저장위치 추가)도 MM01로 한다. 일괄 조회는 MM60.",["mattype","valclass","mara"]],
+["mattype","Material Type","자재유형","md","자재를 성격별로 분류하는 키(ROH 원자재, HALB 반제품, FERT 완제품, HAWA 상품, NLAG 비재고, VERP 포장재, DIEN 서비스 등). 사용 가능한 뷰, 번호범위, 수량·금액 갱신 여부, 가격관리 기본값을 통제한다.",["OMS2","MMNR"],["T134"],"자재유형별 '수량 갱신/금액 갱신'은 평가영역 단위로 OMS2에서 설정. NLAG처럼 금액 갱신이 없으면 입고 즉시 비용 처리된다.",["matmaster","acr","valclass"]],
+["bpsup","Business Partner (Supplier)","비즈니스 파트너(공급업체)","md","S/4HANA에서 공급업체는 BP로 생성한다. BP 역할 FLVN00(구매 데이터)·FLVN01(재무 데이터)을 부여하고, CVI가 기존 공급업체 테이블(LFA1 등)과 동기화한다.",["BP"],["BUT000","LFA1","LFB1","LFM1"],"XK01·MK01은 S/4에서 BP로 리다이렉트된다. 구매조직 데이터(LFM1)가 없으면 PO 생성 불가.",["inforec","ers"]],
+["inforec","Purchasing Info Record","구매정보레코드","md","자재(또는 자재그룹)와 공급업체 간 구매조건(단가, 납기, 허용초과/미달 등)을 저장하는 마스터. 일반·자가가공(임가공)·파이프라인·위탁 유형이 있다.",["ME11","ME12","ME13","ME1M","ME1L"],["EINA","EINE"],"PO 단가 기본값은 정보레코드 조건에서 제안된다. PO 저장 시 정보레코드 갱신 지시자로 최근 PO 가격을 반영할 수 있다.",["eina","pricing","srclist"]],
+["srclist","Source List","소스리스트","md","플랜트별 자재에 대해 허용 공급원(공급업체·계약·일정계약)과 유효기간을 정의. 고정 공급원, 차단 공급원, MRP 관련 지시자를 지정할 수 있다.",["ME01","ME03","ME05"],["EORD"],"자재마스터 구매뷰의 '소스리스트 필수'를 켜면 등록되지 않은 공급업체로 PO를 만들 수 없다. MRP 지시자 1은 구매요청에 공급원 자동 할당, 2는 일정계약 납품일정 자동 생성.",["quota","eord","inforec"]],
+["quota","Quota Arrangement","쿼터배분","md","하나의 자재를 여러 공급원에서 조달할 때 비율(쿼터)로 배분하는 기능. 쿼터등급 = (쿼터배분 수량 + 쿼터기준 수량) ÷ 쿼터 이 가장 낮은 공급원이 다음 소요를 받는다.",["MEQ1","MEQ3"],["EQUK","EQUP"],"자재마스터 MRP뷰의 쿼터배분 사용(Quota arr. usage) 키가 있어야 PO·구매요청·MRP에 반영된다.",["srclist","mrprun"]],
+["batch","Batch","배치","md","같은 자재 중 생산 단위·특성이 같은 수량을 구분 관리하는 단위. 유효기한, 특성값, 이력 추적에 쓰인다. 배치 수준(플랜트·자재·클라이언트)은 설정으로 정한다.",["MSC1N","MSC2N","MSC3N","OMCT"],["MCH1","MCHA","MCHB"],"배치 수준은 기본값이 플랜트 수준. 자재 수준으로 올리면 플랜트 간에도 배치번호가 유일해진다.",["matmaster","stocktype"]],
+["splitval","Split Valuation","분할평가","md","같은 자재를 원산지·품질·조달형태 등 평가유형별로 다른 가격으로 평가하는 기능. 평가범주(예: 국산/수입)와 평가유형을 정의해 자재마스터에 지정한다.",["OMWC"],["MBEW"],"분할평가 자재는 상위 평가 레코드가 반드시 이동평균가(V)이고, 평가유형별로 S/V를 따로 줄 수 있다.",["pricectl","mbew","batch"]],
+
+// ── 구매
+["pr","Purchase Requisition","구매요청","pur","부서나 MRP가 자재·서비스 조달을 요청하는 내부 문서. 외부에 효력은 없으며 승인 후 구매오더·계약 등으로 전환된다.",["ME51N","ME52N","ME53N","ME54N","ME55","ME57"],["EBAN"],"MRP가 만든 구매요청은 ME57로 공급원을 할당해 PO로 전환하거나, ME59N으로 자동 PO 생성.",["po","relstr","eban"]],
+["rfq","RFQ / Quotation","견적요청 / 견적","pur","공급업체에 가격·조건을 묻는 견적요청과, 받은 견적을 입력해 비교하는 기능. 견적 비교 후 채택된 견적으로 정보레코드·PO를 만든다.",["ME41","ME47","ME49"],["EKKO","EKPO"],"견적요청은 구매문서 범주 A로 EKKO/EKPO에 저장된다. S/4HANA에서는 Fiori의 Manage RFQs 앱 사용이 권장된다.",["po","inforec"]],
+["contract","Contract","계약","pur","일정 기간 동안의 총수량(수량계약 MK) 또는 총금액(금액계약 WK)을 약정하는 장기 구매 협약. 실제 조달은 계약을 참조한 릴리즈오더(PO)로 이루어진다.",["ME31K","ME32K","ME33K","ME3M"],["EKKO","EKPO"],"구매문서 범주 K. 릴리즈오더가 발행될 때마다 계약의 누적 릴리즈 수량·금액이 갱신된다.",["schagr","po","srclist"]],
+["schagr","Scheduling Agreement","일정계약","pur","장기 약정에 납품일정(Schedule Line)을 붙여 반복 납품을 관리하는 협약. 별도 PO 없이 일정라인만으로 납품을 지시한다. 문서유형 LP(릴리즈 문서 없음), LPA(릴리즈 문서 사용).",["ME31L","ME32L","ME38","ME84"],["EKKO","EKPO","EKET"],"반복 조달 원자재에 적합. 소스리스트 MRP 지시자 2를 주면 MRP가 일정라인을 직접 생성한다.",["contract","srclist"]],
+["po","Purchase Order","구매오더","pur","공급업체에 대한 정식 발주 문서. 헤더(공급업체·구매조직·통화)와 품목(자재·수량·단가·플랜트·납기·계정지정)으로 구성된다.",["ME21N","ME22N","ME23N","ME2M","ME2L","ME2N"],["EKKO","EKPO","EKET","EKKN"],"PO 이력(입고·송장)은 ME23N의 품목 이력 탭, 테이블은 EKBE. 보고서는 자재별 ME2M, 공급업체별 ME2L, 문서번호별 ME2N.",["doctype","itemcat","acctcat","ekko"]],
+["doctype","Purchasing Document Type","구매문서유형","pur","구매문서의 종류와 번호범위·허용 품목범주를 통제. PO: NB 표준, UB 재고이전오더, FO 프레임워크오더. 계약 MK/WK, 일정계약 LP/LPA, 견적요청 AN, 구매요청 NB.",["SPRO"],["T161"],"회사 간(Cross-company) 재고이전은 보통 UB가 아니라 NB로 처리하며 SD 대금청구가 수반된다.",["po","sto","itemcat"]],
+["itemcat","Item Category","품목범주","pur","구매문서 품목의 조달 형태를 결정. 표준(공란), B 한도, K 위탁, L 임가공, S 3자거래, U 재고이전, D 서비스. 입고·송장 필수 여부와 계정지정 필수 여부를 통제한다.",["ME21N"],["EKPO","T163"],"EKPO-PSTYP에는 내부 코드가 저장된다: 0 표준, 1 한도, 2 위탁, 3 임가공, 5 3자, 7 재고이전, 9 서비스. SE16N 조회 시 외부코드와 다르니 주의.",["subcon","consign","sto","thirdparty"]],
+["acctcat","Account Assignment Category","계정지정범주","pur","구매품을 재고가 아닌 소비로 처리할 때 비용 귀속 대상을 지정. K 코스트센터, F 오더, A 자산, P 프로젝트(WBS), N 네트워크, U 미정.",["OME9"],["T163K","EKKN"],"계정지정 PO는 입고 시 재고계정(BSX) 대신 지정된 비용·자산 계정에 전기된다. U(미정)는 송장 시점까지 지정을 미룰 때 사용.",["po","itemcat"]],
+["relstr","Release Strategy","릴리즈 전략","pur","금액·구매그룹·문서유형 등 조건에 따라 구매요청·PO의 승인 단계를 정의하는 기능. 분류 시스템(클래스 유형 032)의 특성값으로 전략을 결정한다.",["ME29N","ME28","ME54N","ME55","CL20N"],["T16FS","EKKO"],"PO용 특성은 통신구조 CEKKO 필드(예: GNETW 총액)를 참조한다. 릴리즈 완료 전 PO는 출력·입고 불가.",["po","pr","pgrp"]],
+["pricing","Pricing (Purchasing)","가격결정(구매)","pur","조건 기법으로 PO 단가를 계산. 계산스키마(표준 RM0000)는 구매조직과 공급업체의 스키마그룹으로 결정된다. 주요 조건유형: PB00 총가격, RA01 총가격 대비 % 할인, FRA1/FRB1/FRC1 운임(%, 고정액, 수량당).",["M/08","MEK1","MEK3"],["KONP"],"운임·관세 등 부대비용 조건에는 발생계정키(FR1·FR3 등)를 연결해 입고 시 미지급 계정에 전기되게 한다.",["inforec","fr1","po"]],
+
+// ── 재고관리·이동유형
+["migo","Goods Receipt (MIGO 101)","입고(MIGO 101)","inv","구매오더를 참조해 자재를 입고하는 처리. 평가재고 자재는 재고계정(BSX) 차변, GR/IR(WRX) 대변으로 회계전표가 생성되고 PO 이력이 갱신된다.",["MIGO","MB03"],["MATDOC","EKBE"],"취소는 MIGO 취소(102). 수량 초과 입고는 정보레코드/PO의 허용초과(Overdelivery tolerance) 범위 내에서만 가능.",["mvt","matdoc","grir"]],
+["mvt","Movement Type","이동유형","inv","재고 이동의 성격을 나타내는 3자리 키. 수량·금액 갱신, 계정결정(거래키·계정수정자), 화면 필드 등을 통제한다. 취소 이동유형은 보통 원 이동유형+1(101→102).",["OMJJ","MIGO"],["T156"],"주요 코드: 101 입고, 122 공급업체 반품, 201 코스트센터 출고, 261 오더 출고, 301/311 재고이전, 321 품질→가용, 343 보류→가용, 541 임가공 부품 제공, 551 폐기, 561 초기재고, 601 납품 출고, 641 STO 출고, 701/702 실사 차이.",["migo","gbb","t156"]],
+["matdoc","Material Document","자재문서","inv","재고 이동 시 생성되는 문서. S/4HANA에서는 MKPF(헤더)·MSEG(라인)가 단일 테이블 MATDOC으로 통합되었고, 재고 수량은 MATDOC에서 실시간 집계된다.",["MB03","MB51","MIGO"],["MATDOC"],"기존 MKPF/MSEG, MARD 등 수량 집계 테이블은 호환뷰(CDS)로 계속 조회 가능하나, 커스텀 개발 시 직접 갱신 로직은 재검토가 필요하다.",["migo","t_matdoc","mvt"]],
+["spstock","Special Stock","특별재고","inv","소유권이나 귀속 대상이 일반 재고와 다른 재고. O 공급업체 제공 부품(임가공), K 공급업체 위탁, E 판매오더 재고, Q 프로젝트 재고, W 고객 위탁, P 파이프라인, V 고객 반환용기, M 공급업체 반환용기.",["MMBE","MB52","MBLB"],["MSLB","MKOL","MSKA","MSPR"],"K(위탁)와 P(파이프라인)는 회사 소유가 아니므로 재고금액이 없다. O·E·Q는 회사 소유 재고.",["subcon","consign","pipeline"]],
+["stocktype","Stock Type","재고유형","inv","재고의 사용 가능 상태 구분. 가용재고(Unrestricted), 품질검사재고(Quality Inspection), 보류재고(Blocked), 배치용 제한재고(Restricted). 모두 평가재고에 포함된다.",["MMBE","MB52","MIGO"],["MATDOC"],"상태 변경은 이전전기: 321 품질→가용, 343 보류→가용, 349 보류→품질. 입고 시 재고유형은 MIGO에서 직접 선택하거나 품질관리 설정으로 결정된다.",["grblock","mvt3xx"]],
+["grblock","GR Blocked Stock (103/105)","입고보류재고(103/105)","inv","입고는 했으나 아직 평가재고로 인정하지 않는 비평가 재고. 103으로 입고보류재고 입고, 105로 평가재고로 해제한다. 103 시점에는 회계전표가 생기지 않는다.",["MIGO"],["EKBE","MATDOC"],"입고기준 송장검증이 설정된 PO는 105 해제 전까지 송장 전기가 불가하다.",["stocktype","migo"]],
+["gi","Goods Issue (201/261)","출고(201/261)","inv","재고를 소비 목적으로 내보내는 처리. 201 코스트센터 출고, 221 프로젝트 출고, 261 생산오더 출고. 재고계정(BSX) 대변, 소비계정(GBB-VBR) 차변.",["MIGO","MB1A"],["MATDOC"],"S/4HANA에서 MB1A 등 MB 계열 거래는 MIGO 사용이 원칙. 예약(Reservation, MB21) 참조 출고도 MIGO에서 가능.",["gbb","mvt"]],
+["mvt3xx","Transfer Posting (301/311/309)","재고이전·이전전기","inv","재고의 위치·상태·자재번호를 바꾸는 이동. 311 저장위치 간 1단계, 313/315 2단계, 301 플랜트 간 1단계, 303/305 2단계, 309 자재 간 이전, 411 K 위탁→자사재고.",["MIGO","MB1B"],["MATDOC"],"평가영역이 다른 플랜트 간 이전(301)은 회계전표가 생성되며, 표준가 자재는 가격 차이가 AUM으로 전기될 수 있다.",["sloc","sto","aum"]],
+["ret","Return to Vendor (122/161)","공급업체 반품(122/161)","inv","입고된 자재를 공급업체로 되돌리는 처리. 122는 원 입고 자재문서를 참조한 반품, 161은 반품 지시자가 설정된 PO 품목(Returns PO)을 통한 반품.",["MIGO","ME21N"],["MATDOC","EKPO"],"122는 입고 취소(102)와 달리 사유코드와 반품 출력 관리를 할 수 있다. 송장이 이미 전기된 경우 대변메모로 정리.",["migo"]],
+
+// ── 송장검증
+["grir","GR/IR Clearing Account","입고·송장 대사계정(GR/IR)","iv","입고(GR) 시 대변, 송장(IR) 시 차변이 기록되는 중간계정(거래키 WRX). 수량·금액이 일치하면 서로 상계되고, 잔액은 미착송장 또는 미입고송장을 뜻한다.",["MB5S","MR11","FBL3N"],["EKBE"],"MB5S로 PO별 GR/IR 잔액을 분석. 결산 시 차이 정리는 MR11, 미결 잔액은 재분류 대상.",["wrx","mr11","3wm"]],
+["3wm","Three-way Match","3자 대사","iv","구매오더(PO)·입고(GR)·송장(IR)의 수량·단가를 대조해 송장을 검증하는 통제. 허용범위를 넘으면 송장이 지급보류(R)된다.",["MIRO","OMR6","MRBR"],["RBKP","RSEG","EKBE"],"PO 품목의 '입고기준 송장검증(GR-based IV)'을 켜면 입고 단위(자재문서별)로 송장을 매칭한다.",["miro","tolerance","mrbr"]],
+["miro","Logistics Invoice Verification (MIRO)","송장검증(MIRO)","iv","PO 또는 입고를 참조해 공급업체 송장을 입력·전기한다. 전기 시 GR/IR 차변, 공급업체 채무 대변, 세금이 기록되고 단가 차이는 재고 또는 가격차이 계정으로 간다.",["MIRO","MIR4","MIR7","MIR6","MR8M"],["RBKP","RSEG"],"MIR7은 보류(Park), MIR4는 조회, MR8M은 송장 취소. MIRO 문서와 FI 전표는 번호가 별도이며 FI 전표유형은 기본 RE.",["3wm","subdebit","tolerance"]],
+["subdebit","Subsequent Debit / Credit","차후차변 / 차후대변","iv","이미 송장이 처리된 PO 품목에 대해 수량 변동 없이 금액만 추가 청구(차후차변) 또는 감액(차후대변)하는 송장. 단가 인상·리베이트 정산 등에 사용.",["MIRO"],["RSEG"],"송장 대변메모(Credit memo)는 수량과 금액을 함께 줄이고, 차후대변은 금액만 줄인다. 이동평균가 자재는 재고 잔량 범위만큼 재고금액이 조정된다.",["miro"]],
+["tolerance","Tolerance Limits (OMR6)","허용범위(OMR6)","iv","송장검증 시 차이 허용 한도를 회사코드별 허용키로 정의. PP 가격차이, DQ 수량차이, BD 소액차이 자동처리, ST 일자차이, AN/AP 품목 금액 등.",["OMR6"],["T169G"],"허용범위 초과 시 송장은 전기되지만 지급보류(R)가 걸린다. BD는 차변·대변 잔액 소액 차이를 자동으로 잡손익 처리.",["mrbr","3wm","miro"]],
+["mrbr","Release Blocked Invoices (MRBR)","지급보류 해제(MRBR)","iv","허용범위 초과·랜덤 보류 등으로 지급보류(R)된 송장을 해제하는 기능. 자동 해제(보류 원인이 해소된 경우)와 수동 해제가 있다.",["MRBR"],["RBKP","RSEG"],"후속 입고로 수량 차이가 해소되면 MRBR 자동 해제로 일괄 처리할 수 있어 배치잡으로 돌리는 경우가 많다.",["tolerance","3wm"]],
+["mr11","GR/IR Account Maintenance (MR11)","GR/IR 정리(MR11)","iv","입고 수량과 송장 수량이 영구적으로 맞지 않는 PO의 GR/IR 잔액을 정리하는 기능. 차이를 정리 계정에 전기해 PO를 종결시킨다.",["MR11","MR11SHOW"],["EKBE"],"결산 전 MB5S로 장기 미결 잔액을 확인한 뒤 MR11 처리. 정리 대상 계정은 OBYC의 차이 정리 거래키로 결정된다.",["grir","wrx"]],
+["ers","Evaluated Receipt Settlement","입고기준 자동정산(ERS)","iv","공급업체 송장 없이 PO 단가와 입고 수량으로 송장을 자동 생성하는 기능. 공급업체 구매 데이터와 PO 품목에 ERS 지시자가 있어야 한다.",["MRRL"],["RBKP","LFM1"],"단가 협의가 확정된 반복 조달처에 적합. 세금코드가 PO 품목에 있어야 자동정산된다.",["miro","bpsup"]],
+
+// ── 계정결정·평가
+["obyc","Automatic Account Determination (OBYC)","MM 자동계정결정(OBYC)","acc","재고 이동·송장 시 전기 계정을 자동 결정. 계정과목표 + 평가그룹코드 + 거래키(Transaction key) + 계정수정자 + 평가클래스 조합으로 G/L 계정을 찾는다.",["OBYC","OMWB","OMWN"],["T030"],"OMWB에서 자재·이동유형별 계정결정 시뮬레이션이 가능해 오류 원인 분석에 유용하다.",["bsx","gbb","valclass","t030"]],
+["bsx","BSX — Inventory Posting","BSX 재고계정","acc","평가재고의 재고금액이 기록되는 거래키. 평가클래스별로 재고계정을 지정한다. 계정수정자 없이 평가클래스로만 결정된다.",["OBYC"],["T030"],"재고계정은 MM 외 수기 전기를 막기 위해 G/L 마스터에서 '자동 전기만 허용'으로 설정하는 것이 일반적.",["obyc","valclass","wrx"]],
+["wrx","WRX — GR/IR Clearing","WRX GR/IR 계정","acc","PO 입고 및 송장 시 GR/IR 대사계정에 전기하는 거래키. 미결관리 계정으로 설정되어야 한다.",["OBYC"],["T030"],null,["grir","bsx"]],
+["gbb","GBB — Offsetting Entry for Inventory Posting","GBB 재고 상대계정","acc","재고 이동의 상대계정을 결정하는 거래키. 이동유형에 따라 계정수정자로 구분된다: VBR 내부 소비, VAX/VAY 판매 출고, VNG 폐기, INV 실사 차이, BSA 초기재고, ZOB PO 없는 입고, AUF 오더 입고, VBO 임가공 부품 소비.",["OBYC","OMWN"],["T030","T156"],"이동유형→계정수정자 매핑은 OMWN(또는 이동유형 설정)에서 확인. 계정수정자가 같아도 평가클래스별로 다른 계정을 줄 수 있다.",["obyc","mvt","gi"]],
+["prd","PRD — Price Differences","PRD 가격차이","acc","표준가(S) 자재의 입고·송장 가격 차이, 또는 이동평균가(V) 자재 중 재고가 부족해 재고로 흡수할 수 없는 차이가 기록되는 거래키. 계정수정자 PRF(생산오더 입고), PRA(출고 등 기타) 등이 있다.",["OBYC"],["T030"],"Material Ledger 실제원가계산을 쓰면 기간 말 PRD 차이를 재고와 매출원가로 재배분할 수 있다.",["pricectl","stdprice","ml"]],
+["kon","KON — Consignment / Pipeline Payables","KON 위탁·파이프라인 미지급","acc","위탁재고·파이프라인 재고를 자사 재고로 인출(소비)할 때 공급업체 채무를 인식하는 계정. 위탁은 계정수정자 없이, 파이프라인은 PIP를 사용.",["OBYC","MRKO"],["T030"],"MRKO 정산 시 KON 계정이 차변, 공급업체 채무가 대변으로 정리된다.",["consign","pipeline"]],
+["frl","FRL — External Service (Subcontracting)","FRL 외주가공비","acc","임가공 PO 입고 시 공급업체에 지급할 가공비(외부 서비스)를 비용으로 기록하는 거래키.",["OBYC"],["T030"],"임가공 입고 전표: 완제품 BSX↔BSV, 부품 소비 GBB-VBO↔BSX, 가공비 FRL↔WRX가 한 자재문서에서 동시에 생성된다.",["subcon","bsv"]],
+["bsv","BSV — Change in Stock (Subcontracting)","BSV 재고변동","acc","임가공 입고 시 완제품 재고계정(BSX)의 상대계정으로 사용되는 재고변동 계정.",["OBYC"],["T030"],null,["frl","subcon","bsx"]],
+["umb","UMB — Revaluation Gain/Loss","UMB 재평가손익","acc","가격이 바뀐 뒤 이전 기간으로 전기하거나, 이전 기간 가격 변경이 있을 때 현재 가격과의 차이를 손익으로 기록하는 거래키.",["OBYC"],["T030"],"MMRV로 전기간 전기가 허용된 상태에서 기간 사이 표준가가 바뀐 자재에 자주 발생한다.",["mr21","mmpv"]],
+["aum","AUM — Expense/Revenue from Stock Transfer","AUM 재고이전 손익","acc","평가가격이 다른 평가영역(플랜트) 또는 자재 간 재고이전 시 발생하는 가격 차이를 기록하는 거래키. 주로 수령 측 자재가 표준가일 때 생긴다.",["OBYC"],["T030"],null,["mvt3xx","sto"]],
+["fr1","FR1~FR4 — Freight / Customs Clearing","FR1~FR4 운임·관세 미지급","acc","PO 가격결정의 부대비용 조건을 미지급 계정으로 받는 거래키. FR1 운임 정산, FR2 운임 충당, FR3 관세 정산, FR4 관세 충당.",["OBYC","M/08"],["T030"],"계산스키마의 조건유형에 발생계정키(Accrual key)를 지정해야 입고 시 해당 미지급 계정으로 전기된다. 이후 운송사·세관 송장은 MIRO 부대비용(Planned delivery costs)으로 정리.",["pricing","obyc"]],
+["valclass","Valuation Class","평가클래스","acc","자재를 재고계정별로 묶는 키. 자재마스터 회계뷰(MBEW-BKLAS)에 지정되며 OBYC에서 BSX·GBB 등 계정을 평가클래스별로 다르게 줄 수 있다.",["OMSK","MM02"],["T025","MBEW"],"재고가 있거나 미결 PO가 있으면 평가클래스 변경이 막힌다. 재고 0 상태에서 변경하거나 별도 프로그램으로 처리.",["acr","obyc","mattype"]],
+["acr","Account Category Reference","계정범주참조","acc","자재유형과 평가클래스를 연결하는 중간 키. 자재유형에 계정범주참조를 지정하고, 평가클래스를 계정범주참조에 할당해 해당 자재유형에 허용되는 평가클래스를 제한한다.",["OMSK"],["T025","T134"],"자재유형 → 계정범주참조 → 평가클래스 순으로 이어지는 구조를 이해하면 '평가클래스 입력 불가' 오류를 빠르게 해결할 수 있다.",["valclass","mattype"]],
+["valgrp","Valuation Grouping Code","평가그룹코드","acc","평가영역(플랜트)을 묶어 OBYC 계정결정을 공통으로 쓰게 하는 코드. 플랜트가 많을 때 설정량을 줄여준다.",["OMWM","OMWD"],["T001K","T030"],"OMWM에서 평가그룹코드를 활성화해야 OMWD 할당이 계정결정에 반영된다.",["obyc","valarea"]],
+["pricectl","Price Control (S / V)","가격관리(S / V)","acc","자재 평가 방식을 정하는 지시자(MBEW-VPRSV). S는 표준가, V는 이동평균가. 자재유형별 기본값을 두고 자재마스터 회계뷰에서 지정한다.",["MM02","OMS2"],["MBEW"],"일반적으로 제조 자재(FERT·HALB)는 S, 구매 자재(ROH·HAWA)는 V를 많이 쓰지만 회사 원가정책에 따라 다르다.",["map","stdprice","mbew"]],
+["map","Moving Average Price","이동평균가","acc","입고 시마다 (기존 재고금액 + 입고금액) ÷ (기존 수량 + 입고수량)으로 단가가 자동 재계산되는 평가 방식(V). 송장 가격 차이도 재고 잔량 범위 내에서 재고금액에 반영된다.",["MM03","CKM3"],["MBEW"],"재고가 출고된 뒤 송장 차이가 들어오면 재고로 흡수할 수 없는 부분은 PRD로 간다. 음수 재고 허용 시 단가 왜곡에 주의.",["pricectl","prd","mr21"]],
+["stdprice","Standard Price","표준가","acc","기간 동안 고정된 단가로 재고를 평가하는 방식(S). 실제 입고·송장 가격과의 차이는 모두 가격차이(PRD)로 처리된다. 표준가는 원가추정으로 계산해 반영한다.",["CK11N","CK24","MR21"],["MBEW","KEKO"],"원가추정(CK11N) 후 CK24에서 마킹·릴리즈하면 표준가가 갱신된다. 미래가격(MBEW-ZKPRS)도 활용 가능.",["pricectl","prd","ml"]],
+["mr21","Price Change / Debit-Credit Material (MR21 / MR22)","가격변경 / 자재 차대변(MR21·MR22)","acc","MR21은 자재 단가 자체를 바꿔 재고금액을 재평가하고, MR22는 단가가 아닌 재고금액(총액)을 직접 차변·대변 조정한다.",["MR21","MR22","CKMPCD"],["MBEW","ACDOCA"],"표준가 자재에 MR22를 하면 차액이 재고가 아닌 가격차이로 처리된다. 가격변경 전표는 CKMPCD로 조회.",["map","stdprice","ml"]],
+["ml","Material Ledger","자재원장","acc","재고를 복수 통화·복수 평가로 관리하는 기능. S/4HANA에서는 평가 목적으로 활성화가 필수이며, 실제원가계산(Actual Costing)은 선택 사항이다.",["CKM3","CKMLCP","CKMPCD"],["ACDOCA","CKMLHD","MLDOC"],"CKM3는 자재 가격 분석(기간별 입고·소비·차이 흐름) 화면으로 결산 검증의 출발점. 실제원가 마감은 CKMLCP 코크핏에서 수행.",["prd","stdprice","mr21"]],
+["mmpv","Period Closing (MMPV)","MM 기간마감(MMPV)","acc","MM 전기기간을 다음 기간으로 넘기는 처리. 현재 기간과 직전 기간에만 전기할 수 있으며, MMRV로 전기간 전기 허용 여부를 통제한다.",["MMPV","MMRV"],["MARV"],"MMPV는 한 번에 한 기간씩만 진행. FI 전기기간(OB52)도 함께 열려 있어야 MM 전기가 가능하다.",["umb","ml"]],
+
+// ── 특수조달
+["subcon","Subcontracting","임가공(외주가공)","spc","자사 부품을 공급업체에 제공하고 가공된 완제품을 받는 조달. PO 품목범주 L, 부품 제공은 541(특별재고 O), 완제품 입고 101 시 부품 소비 543이 자동 생성된다.",["ME21N","ME2O","MIGO","MBLB"],["EKPO","MSLB"],"ME2O로 임가공 업체별 부품 재고·소요를 모니터링하고 541 이전을 처리. 부품 리스트는 BOM 또는 PO 품목에서 직접 지정.",["frl","bsv","spstock"]],
+["consign","Vendor Consignment","공급업체 위탁재고","spc","공급업체 소유 재고를 자사 창고에 두고, 인출(소비·이전)하는 시점에 채무를 인식하는 조달. 품목범주 K, 입고 시 금액 없이 특별재고 K로 관리된다.",["ME21N","MIGO","MRKO","MB54"],["MKOL","EINE"],"VMI를 운영하는 경우 흔히 위탁재고와 결합한다. 411 K로 자사재고 전환 시 KON 대변, 정산은 MRKO.",["kon","spstock","pipeline"]],
+["sto","Stock Transport Order","재고이전오더(STO)","spc","플랜트 간 재고 이전을 PO로 관리. 회사 내 이전은 문서유형 UB·품목범주 U, 회사 간 이전은 보통 NB와 SD 대금청구를 사용한다. 납품(Delivery)을 쓰면 출고 641(회사 간 643) → 수령 플랜트 101 입고.",["ME21N","VL10B","MIGO","MB5T"],["EKKO","EKPO","EKBE"],"출고 후 입고 전까지는 운송중재고(Stock in transit)로 잡히며 MB5T로 조회. 납품 없는 STO는 351 출고 후 101 입고.",["mvt3xx","aum","doctype"]],
+["pipeline","Pipeline Material","파이프라인 자재","spc","전기·가스·용수처럼 배관으로 연속 공급되는 자재. 입고 처리 없이 인출(201 P 등) 시점에 채무가 발생하며 MRKO로 정산한다. 특별재고 P.",["ME11","MIGO","MRKO"],["EINE"],"파이프라인 정보레코드(정보범주 파이프라인)에 단가가 있어야 인출 금액이 계산된다.",["kon","consign"]],
+["thirdparty","Third-party Order Processing","3자거래","spc","공급업체가 고객에게 직접 납품하는 조달. 판매오더(품목범주 TAS)에서 구매요청이 자동 생성되고, PO 품목범주 S로 발주한다. 자사 재고를 거치지 않는다.",["VA01","ME57","ME21N","MIRO"],["EBAN","EKPO"],"자사 입고는 선택(통계성)이며, 고객 대금청구는 공급업체 송장 수량 기준으로 하는 설정이 일반적.",["itemcat","pr"]],
+
+// ── 재고실사
+["pidoc","Physical Inventory Document (MI01)","재고실사 문서(MI01)","pi","실사 대상 자재·저장위치를 지정해 실사 문서를 생성. 문서 생성 시 전기차단(Posting block)을 걸면 실사 중 재고 이동이 막힌다. 대량 생성은 MI31.",["MI01","MI31","MI21","MI03"],["IKPF","ISEG"],"MI21로 실사 리스트를 출력해 현장 카운트에 사용. 전기차단 여부는 실사 운영 방식(일시정지 vs 연속 운영)에 맞게 결정.",["picount","pipost"]],
+["picount","Enter Inventory Count (MI04)","실사수량 입력(MI04)","pi","현장에서 센 수량을 실사 문서에 입력. 재실사가 필요하면 MI11로 재실사 문서를 만든다.",["MI04","MI05","MI11"],["ISEG"],null,["pidoc","pipost"]],
+["pipost","Post Inventory Difference (MI07)","실사차이 전기(MI07)","pi","장부 수량과 실사 수량의 차이를 재고에 반영. 부족분 701/초과분 702 이동유형으로 재고계정(BSX)과 실사차이 계정(GBB-INV)이 전기된다.",["MI07","MI20"],["ISEG","MATDOC"],"MI20 차이 리스트에서 금액 기준으로 검토 후 전기. 차이 전기 금액 한도는 사용자 허용범위로 통제 가능.",["gbb","picount"]],
+["cycle","Cycle Counting","순환실사","pi","재고 회전·중요도에 따라 자재별로 다른 주기로 실사하는 방식. 자재마스터의 순환실사 지시자(A/B/C/D)와 주기(연간 실사 횟수)를 정의한다.",["MICN","OMCO"],["MARC"],"MARC-ABCIN에 지시자를 지정하고 MICN으로 실사 문서를 일괄 생성. 연 1회 전수실사 부담을 분산시킨다.",["pidoc"]],
+
+// ── MRP·소요량
+["mrprun","MRP Run (MD01N)","MRP 실행(MD01N)","mrp","소요량과 가용재고를 비교해 부족분에 대한 조달 제안(계획오더·구매요청·일정라인)을 생성. S/4HANA의 MRP Live(MD01N)는 HANA DB에서 실행되어 빠르다.",["MD01N","MD02","MD03"],["PLAF","EBAN"],"MD02는 단일 자재 다단계, MD03은 단일 자재 단일단계. 외부조달 자재는 생성 지시자에 따라 구매요청 또는 계획오더로 생성된다.",["md04","mrptype","lotsize"]],
+["md04","Stock/Requirements List","재고/소요량 리스트(MD04)","mrp","자재의 현재 재고, 입고 예정(PO·계획오더), 소요(판매오더·예약·계획독립소요)를 실시간으로 보여주는 화면. MRP 결과 확인과 예외메시지 분석의 기본 도구.",["MD04","MD05","MD06","MD07"],["PLAF","EBAN"],"MD04는 실시간 동적, MD05는 마지막 MRP 실행 시점의 정적 리스트.",["mrprun","safety"]],
+["mrptype","MRP Type","MRP 유형","mrp","자재의 계획 방식을 결정하는 키(MARC-DISMM). PD MRP, VB 수동 재주문점, VM 자동 재주문점, VV 예측 기반, ND 계획 안 함.",["MM02","OMDQ"],["MARC"],"재주문점 계획(VB)은 재고가 재주문점(MARC-MINBE) 이하로 떨어지면 조달 제안을 만든다.",["mrprun"]],
+["lotsize","Lot Size","로트크기","mrp","조달 제안 수량을 계산하는 규칙(MARC-DISLS). EX 정확한 부족량(Lot-for-lot), FX 고정, HB 최대재고까지 보충, WB 주간, MB 월간 로트.",["OMI4","MM02"],["MARC"],"최소 로트(BSTMI), 반올림값(BSTRF)과 함께 쓰면 포장 단위 발주를 맞출 수 있다.",["mrprun","safety"]],
+["safety","Safety Stock","안전재고","mrp","수요·공급 변동에 대비해 MRP가 가용재고에서 제외하고 유지하는 수량(MARC-EISBE). 커버리지 프로파일을 쓰면 일수 기반 동적 안전재고도 가능.",["MM02","MD04"],["MARC"],null,["md04"]],
+["plord","Planned Order","계획오더","mrp","MRP가 생성하는 내부 조달 제안. 자체생산은 생산오더로, 외부조달은 구매요청으로 전환한다.",["MD11","MD12","MD14","MD15"],["PLAF"],"MD14는 계획오더 개별 → 구매요청 전환, MD15는 일괄 전환.",["mrprun","pr"]],
+
+// ── 테이블
+["ekko","EKKO — Purchasing Document Header","구매문서 헤더","tbl","PO·계약·일정계약·견적요청 공통 헤더. 구매문서 범주(BSTYP: F PO, K 계약, L 일정계약, A 견적요청), 문서유형(BSART), 공급업체(LIFNR), 구매조직(EKORG).",["ME23N","SE16N"],["EKKO"],null,["ekpo","po"]],
+["ekpo","EKPO — Purchasing Document Item","구매문서 품목","tbl","구매문서 품목. 자재(MATNR), 플랜트(WERKS), 수량(MENGE), 단가(NETPR), 품목범주(PSTYP), 계정지정범주(KNTTP), 입고기준 송장검증(WEBRE).",["ME23N","SE16N"],["EKPO"],"PSTYP은 내부코드(0·1·2·3·5·7·9)로 저장되므로 화면 코드(공란·B·K·L·S·U·D)와 구분해야 한다.",["ekko","itemcat"]],
+["ekbe","EKBE — Purchasing Document History","구매문서 이력","tbl","PO 품목별 입고·송장 이력. 거래유형 BEWTP E=입고, Q=송장. 수량·금액과 참조 자재문서·송장문서 번호를 담는다.",["ME23N","MB5S"],["EKBE"],"GR/IR 잔액 분석이나 ABAP 리포트에서 입고·송장 누계를 구할 때 기본이 되는 테이블.",["grir","migo","miro"]],
+["eban","EBAN — Purchase Requisition","구매요청","tbl","구매요청 번호(BANFN)·품목(BNFPO) 단위 데이터. 자재, 수량, 소요일, 릴리즈 상태, 전환된 PO 번호(EBELN) 등.",["ME53N","ME5A"],["EBAN"],null,["pr"]],
+["eina","EINA / EINE — Purchasing Info Record","구매정보레코드","tbl","EINA는 일반 데이터(자재·공급업체), EINE는 구매조직·플랜트별 데이터(계획납기, 표준수량, 정보범주 등). 단가 조건은 조건 테이블(KONP 등)에 저장.",["ME13","ME1M"],["EINA","EINE"],null,["inforec"]],
+["eord","EORD — Source List","소스리스트","tbl","자재·플랜트별 공급원 레코드. 유효기간, 공급업체(LIFNR), 고정 공급원(FLIFN), 차단(NOTKZ), MRP 지시자(AUTET).",["ME03"],["EORD"],null,["srclist"]],
+["mara","MARA — General Material Data","자재 일반데이터","tbl","클라이언트 수준 자재 데이터. 자재유형(MTART), 자재그룹(MATKL), 기본단위(MEINS), 산업군(MBRSH) 등.",["MM03","SE16N"],["MARA"],null,["matmaster","marc"]],
+["marc","MARC — Plant Data for Material","자재 플랜트데이터","tbl","플랜트 수준 자재 데이터. MRP 유형(DISMM), MRP 관리자(DISPO), 로트크기(DISLS), 조달유형(BESKZ), 특별조달(SOBSL), 계획납기(PLIFZ), 안전재고(EISBE).",["MM03","SE16N"],["MARC"],null,["mara","mrptype"]],
+["mard","MARD — Storage Location Data","자재 저장위치데이터","tbl","저장위치 수준 자재 데이터. S/4HANA에서 재고 수량 필드는 MATDOC 기준으로 계산되며 호환뷰를 통해 조회된다.",["MMBE","SE16N"],["MARD"],null,["sloc","t_matdoc"]],
+["mbew","MBEW — Material Valuation","자재 평가데이터","tbl","평가영역 수준 자재 회계 데이터. 평가클래스(BKLAS), 가격관리(VPRSV), 이동평균가(VERPR), 표준가(STPRS), 가격단위(PEINH).",["MM03","SE16N"],["MBEW"],"S/4HANA에서 재고 수량·금액은 MATDOC·ACDOCA(자재원장) 기준이며, MBEW는 호환뷰를 통해 값을 제공한다.",["valclass","pricectl"]],
+["t_matdoc","MATDOC — Material Documents","자재문서 테이블","tbl","S/4HANA 재고 이동의 단일 테이블. 기존 MKPF·MSEG와 다수의 재고 집계 테이블을 대체한다. 자재문서번호(MBLNR), 연도(MJAHR), 품목(ZEILE), 이동유형(BWART).",["MB51","SE16N"],["MATDOC"],null,["matdoc"]],
+["rbkp","RBKP — Invoice Document Header","송장문서 헤더","tbl","MIRO 송장문서 헤더. 송장번호(BELNR), 회계연도(GJAHR), 송장 발행처(LIFNR), 총액(RMWWR), 지급보류(ZLSPR).",["MIR4","SE16N"],["RBKP"],null,["rseg","miro"]],
+["rseg","RSEG — Invoice Document Item","송장문서 품목","tbl","MIRO 송장 품목. 참조 PO(EBELN·EBELP), 수량(MENGE), 금액(WRBTR), 보류 사유 필드 등.",["MIR4","SE16N"],["RSEG"],null,["rbkp","ekbe"]],
+["t156","T156 — Movement Type","이동유형 테이블","tbl","이동유형(BWART) 설정 테이블. 이동유형별 통제 데이터와 계정결정 연결 정보가 관련 T156 계열 테이블에 저장된다.",["OMJJ"],["T156"],null,["mvt"]],
+["t030","T030 — Standard Accounts Table","자동계정결정 테이블","tbl","OBYC 설정이 저장되는 테이블. 키: 계정과목표(KTOPL), 거래키(KTOSL), 평가그룹코드(BWMOD), 계정수정자(KOMOK), 평가클래스(BKLAS). 차변계정 KONTS, 대변계정 KONTH.",["OBYC"],["T030"],null,["obyc"]]
+];
+
+const DATA = T.map(r=>({id:r[0],en:r[1],ko:r[2],cat:r[3],desc:r[4],tc:r[5],tb:r[6],tip:r[7],rel:r[8]}));
+const byId = Object.fromEntries(DATA.map(d=>[d.id,d]));
+
+// state
+let tab="list", cat="all", query="";
+let favs = new Set();
+try{ favs = new Set(JSON.parse(localStorage.getItem("mm-favs")||"[]")); }catch(e){}
+const saveFavs=()=>{ try{ localStorage.setItem("mm-favs",JSON.stringify([...favs])); }catch(e){} };
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const hl=(s)=>{ s=esc(s); if(!query) return s; const q=query.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"); return s.replace(new RegExp(q,"gi"),m=>`<mark>${m}</mark>`); };
+
+$("#total").textContent = `${DATA.length}개 용어`;
+
+function renderChips(){
+  const all=[["all","전체"],...Object.entries(CATS)];
+  $("#chips").innerHTML = all.map(([k,v])=>`<button class="chip ${cat===k?"on":""}" data-c="${k}">${v}</button>`).join("");
+}
+$("#chips").addEventListener("click",e=>{
+  const b=e.target.closest(".chip"); if(!b) return;
+  cat=b.dataset.c; renderChips(); render();
+});
+
+function match(d){
+  if(cat!=="all" && d.cat!==cat) return false;
+  if(!query) return true;
+  const q=query.toLowerCase();
+  return [d.en,d.ko,d.desc,...d.tc,...d.tb].some(x=>x.toLowerCase().includes(q));
+}
+
+function card(d){
+  const tags=[...d.tc.slice(0,3).map(t=>`<span class="tag">${hl(t)}</span>`),...d.tb.slice(0,2).map(t=>`<span class="tag tb">${hl(t)}</span>`)].join("");
+  return `<div class="item" data-id="${d.id}">
+    <div class="body">
+      <div><span class="en">${hl(d.en)}</span><span class="ko">${hl(d.ko)}</span></div>
+      <div class="d">${hl(d.desc)}</div>
+      ${tags?`<div class="tags">${tags}</div>`:""}
+    </div>
+    <button class="star ${favs.has(d.id)?"on":""}" data-star="${d.id}" aria-label="즐겨찾기">★</button>
+  </div>`;
+}
+
+function render(){
+  const v=$("#view");
+  $("header").style.display = tab==="study" ? "none" : "";
+  if(tab==="study") return renderStudy();
+  let list = DATA.filter(match);
+  if(tab==="fav") list = list.filter(d=>favs.has(d.id));
+  if(!list.length){
+    v.innerHTML = `<div class="empty">${tab==="fav"&&!favs.size?"아직 즐겨찾기한 용어가 없습니다.<br>용어 옆 ★을 눌러 추가하세요.":"검색 결과가 없습니다."}</div>`;
+    return;
+  }
+  v.innerHTML = `<div class="count">${list.length}개</div><div class="list">${list.map(card).join("")}</div>`;
+}
+
+$("#view").addEventListener("click",e=>{
+  const s=e.target.closest("[data-star]");
+  if(s){ e.stopPropagation(); toggleFav(s.dataset.star); render(); return; }
+  const it=e.target.closest(".item"); if(it) openSheet(it.dataset.id);
+});
+
+function toggleFav(id){ favs.has(id)?favs.delete(id):favs.add(id); saveFavs(); }
+
+// detail sheet
+function openSheet(id){
+  const d=byId[id];
+  const sh=$("#sheet");
+  const codeBtns=(arr,cls)=>arr.map(c=>`<button class="code ${cls}" data-copy="${esc(c)}">${esc(c)}</button>`).join("");
+  sh.innerHTML = `<div class="grip"></div>
+    <div class="cat">${CATS[d.cat]}</div>
+    <h2>${esc(d.en)}</h2>
+    <div class="kot">${esc(d.ko)}</div>
+    <p>${esc(d.desc)}</p>
+    ${d.tip?`<div class="tip"><b>실무 포인트</b><br>${esc(d.tip)}</div>`:""}
+    ${d.tc.length?`<div class="sec">T-CODE · 탭하여 복사</div><div class="codes">${codeBtns(d.tc,"")}</div>`:""}
+    ${d.tb.length?`<div class="sec">테이블</div><div class="codes">${codeBtns(d.tb,"tb")}</div>`:""}
+    ${d.rel.length?`<div class="sec">관련 용어</div><div class="rel">${d.rel.filter(r=>byId[r]).map(r=>`<button data-go="${r}">${esc(byId[r].ko)}</button>`).join("")}</div>`:""}
+    <div class="row">
+      <button class="btn" data-fav="${d.id}">${favs.has(d.id)?"★ 즐겨찾기 해제":"☆ 즐겨찾기"}</button>
+      <button class="btn pri" data-close>닫기</button>
+    </div>`;
+  sh.scrollTop=0;
+  sh.classList.add("open"); $("#bg").classList.add("open");
+}
+function closeSheet(){ $("#sheet").classList.remove("open"); $("#bg").classList.remove("open"); }
+$("#bg").addEventListener("click",closeSheet);
+$("#sheet").addEventListener("click",async e=>{
+  const t=e.target;
+  if(t.dataset.close!==undefined) return closeSheet();
+  if(t.dataset.go) return openSheet(t.dataset.go);
+  if(t.dataset.fav){ toggleFav(t.dataset.fav); openSheet(t.dataset.fav); render(); return; }
+  if(t.dataset.copy){
+    try{ await navigator.clipboard.writeText(t.dataset.copy); toast(`${t.dataset.copy} 복사됨`); }
+    catch(err){ toast("복사할 수 없습니다"); }
+  }
+});
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeSheet(); });
+
+let tt;
+function toast(m){ const el=$("#toast"); el.textContent=m; el.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove("show"),1400); }
+
+// search
+const qi=$("#q");
+qi.addEventListener("input",()=>{ query=qi.value.trim(); $("#clr").style.display=query?"block":"none"; render(); });
+$("#clr").addEventListener("click",()=>{ qi.value=""; query=""; $("#clr").style.display="none"; render(); qi.focus(); });
+
+// nav
+document.querySelector("nav").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  tab=b.dataset.tab;
+  document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
+  if(tab==="study") initStudy();
+  render(); window.scrollTo(0,0);
+});
+
+// study (flashcards)
+let deck=[], idx=0, mode="ko", src="all", known=0, unknown=0;
+function initStudy(){
+  let pool = src==="fav" ? DATA.filter(d=>favs.has(d.id)) : src==="all" ? DATA : DATA.filter(d=>d.cat===src);
+  deck = pool.slice().sort(()=>Math.random()-.5);
+  idx=0; known=0; unknown=0;
+}
+function renderStudy(){
+  const v=$("#view");
+  const opts=[["all","전체"],["fav","즐겨찾기"],...Object.entries(CATS)].map(([k,n])=>`<option value="${k}" ${src===k?"selected":""}>${n}</option>`).join("");
+  const top = `<div style="padding-top:calc(4px + env(safe-area-inset-top))">
+    <div class="brand" style="margin:6px 0 12px"><h1>학습 <span>카드</span></h1>
+      <select id="src" style="font:inherit;font-size:13px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)">${opts}</select></div>
+    <div class="seg"><button data-m="ko" class="${mode==="ko"?"on":""}">한글 → 영문</button><button data-m="en" class="${mode==="en"?"on":""}">영문 → 한글</button><button data-m="desc" class="${mode==="desc"?"on":""}">설명 → 용어</button></div>`;
+  if(!deck.length){ v.innerHTML = top+`<div class="empty">카드가 없습니다.<br>즐겨찾기를 추가하거나 다른 범위를 선택하세요.</div></div>`; bindStudy(); return; }
+  if(idx>=deck.length){
+    v.innerHTML = top+`<div class="empty" style="padding-top:40px"><div style="font-size:40px">🎯</div><b style="font-size:18px;color:var(--ink)">한 바퀴 완료</b><br>알았음 ${known} · 다시 볼 것 ${unknown}<div class="row" style="max-width:320px;margin:20px auto 0"><button class="btn pri" id="again">다시 섞기</button></div></div></div>`;
+    bindStudy(); $("#again").onclick=()=>{initStudy();render();}; return;
+  }
+  const d=deck[idx];
+  const front = mode==="ko" ? `<div class="q">영문 용어는?</div><div class="big">${esc(d.ko)}</div><div class="hint">${CATS[d.cat]}</div>`
+              : mode==="en" ? `<div class="q">한글 용어는?</div><div class="big">${esc(d.en)}</div><div class="hint">${CATS[d.cat]}</div>`
+              : `<div class="q">이 설명에 해당하는 용어는?</div><div class="hint" style="font-size:15px;color:var(--ink);margin:0">${esc(d.desc)}</div>`;
+  const back = `<div class="cat" style="font-size:12px;color:var(--sub)">${CATS[d.cat]}</div>
+    <div style="font-size:21px;font-weight:700;margin-top:4px">${esc(d.en)}</div>
+    <div style="color:var(--accent);font-weight:500;margin-bottom:10px">${esc(d.ko)}</div>
+    <div style="font-size:14px;line-height:1.7;color:var(--sub)">${esc(d.desc)}</div>
+    ${d.tc.length?`<div class="tags" style="margin-top:12px">${d.tc.map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div>`:""}`;
+  v.innerHTML = top+`
+    <div class="prog"><i style="width:${idx/deck.length*100}%"></i></div>
+    <div class="fc-meta"><span>${idx+1} / ${deck.length}</span><div class="score"><span>✓ ${known}</span><span>↻ ${unknown}</span></div></div>
+    <div class="fc-wrap"><div class="fc" id="fc"><div class="face">${front}<div class="tap">탭하여 뒤집기</div></div><div class="face back">${back}</div></div></div>
+    <div class="row"><button class="btn" id="no">↻ 다시 볼래요</button><button class="btn pri" id="yes">✓ 알아요</button></div>
+    <div class="row" style="margin-top:8px"><button class="btn" id="star">${favs.has(d.id)?"★ 즐겨찾기됨":"☆ 즐겨찾기 추가"}</button></div>
+  </div>`;
+  bindStudy();
+  $("#fc").onclick=()=>$("#fc").classList.toggle("flip");
+  $("#yes").onclick=()=>{known++;idx++;render();};
+  $("#no").onclick=()=>{unknown++;deck.push(d);idx++;render();};
+  $("#star").onclick=()=>{toggleFav(d.id);render();};
+}
+function bindStudy(){
+  const s=$("#src"); if(s) s.onchange=()=>{src=s.value;initStudy();render();};
+  document.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>{mode=b.dataset.m;render();});
+}
+
+renderChips(); render();
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#354A5F;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+</body>
+</html>

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SAP FI 용어집</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff;--card:#fff;--ink:#1b1d22;--sub:#5f6470;--line:#e6e8ec;
+  --accent:#0A6ED1;--accent-soft:#EBF5FE;--gold:#E9730C;--chip:#F7F7F7;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:'Noto Sans KR',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;z-index:10;background:var(--bg);padding:calc(12px + env(safe-area-inset-top)) 16px 8px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+.brand h1{font-size:19px;font-weight:700;letter-spacing:-.3px}
+.brand h1 span{color:var(--accent)}
+.brand small{color:var(--sub);font-size:12px}
+header{background:#354A5F;border-bottom:0}
+.brand h1{color:#fff}.brand h1 span{color:#91C8F6}.brand small{color:#D1E8FF}
+.search{position:relative}
+.search input{width:100%;font:inherit;font-size:15px;padding:11px 36px 11px 38px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);outline:none}
+.search input:focus{border-color:var(--accent)}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.5}
+.search button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--sub);font-size:18px;padding:6px 8px;display:none;cursor:pointer}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:0;font:inherit;font-size:13px;padding:6px 12px;border-radius:999px;background:var(--chip);color:var(--sub);cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--accent);color:#fff}
+main{padding:12px 16px;max-width:760px;margin:0 auto}
+.count{font-size:12px;color:var(--sub);margin:2px 2px 10px}
+.list{display:grid;gap:8px}
+.item{background:var(--card);box-shadow:0 1px 2px rgba(16,24,40,.04);border:1px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+.item:active{transform:scale(.99)}
+.item .body{flex:1;min-width:0}
+.item .en{font-weight:700;font-size:15px}
+.item .ko{color:var(--accent);font-size:14px;margin-left:6px;font-weight:500}
+.item .d{color:var(--sub);font-size:13px;margin-top:4px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.tag{font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:6px;background:var(--accent-soft);color:var(--accent)}
+.tag.tb{background:var(--chip);color:var(--sub)}
+.star{border:0;background:none;font-size:19px;color:var(--line);cursor:pointer;padding:0 2px;line-height:1}
+.star.on{color:var(--gold)}
+.empty{text-align:center;color:var(--sub);padding:48px 12px;font-size:14px;line-height:1.7}
+mark{background:#ffe58a;color:inherit;border-radius:2px}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:none;font:inherit;font-size:12px;color:var(--sub);padding:9px 0 10px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+nav button.on{color:var(--accent);font-weight:700}
+nav svg{width:22px;height:22px}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+.sheet-bg.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;background:var(--card);border-radius:20px 20px 0 0;max-height:86vh;overflow-y:auto;transform:translateY(100%);transition:transform .25s ease;padding:8px 20px calc(24px + env(safe-area-inset-bottom));max-width:760px;margin:0 auto}
+.sheet.open{transform:none}
+.grip{width:40px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 14px}
+.sheet .cat{font-size:12px;color:var(--sub)}
+.sheet h2{font-size:22px;margin:4px 0 2px;letter-spacing:-.3px}
+.sheet .kot{color:var(--accent);font-size:16px;font-weight:500}
+.sheet .abbr{font-family:var(--mono);font-size:12px;color:var(--sub);margin-left:6px}
+.sheet p{font-size:15px;line-height:1.75;margin:14px 0}
+.tip{background:var(--accent-soft);border-radius:12px;padding:11px 13px;font-size:14px;line-height:1.65;margin:12px 0}
+.tip b{color:var(--accent)}
+.sec{font-size:12px;color:var(--sub);margin:16px 0 6px;font-weight:700;letter-spacing:.3px}
+.codes{display:flex;flex-wrap:wrap;gap:6px}
+.code{font-family:var(--mono);font-size:13px;padding:6px 10px;border-radius:8px;background:var(--accent-soft);color:var(--accent);border:0;cursor:pointer}
+.code.tb{background:var(--chip);color:var(--ink)}
+.rel{display:flex;flex-wrap:wrap;gap:6px}
+.rel button{font:inherit;font-size:13px;border:1px solid var(--line);background:none;color:var(--ink);padding:5px 10px;border-radius:999px;cursor:pointer}
+.row{display:flex;gap:8px;margin-top:20px}
+.btn{flex:1;font:inherit;font-size:14px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:13px;opacity:0;transition:.2s;z-index:50;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%)}
+/* flashcards */
+.fc-wrap{perspective:1200px;margin-top:6px}
+.fc{position:relative;height:340px;transform-style:preserve-3d;transition:transform .45s;cursor:pointer}
+.fc.flip{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;justify-content:center;text-align:center}
+.face.back{transform:rotateY(180deg);text-align:left;justify-content:flex-start;overflow-y:auto}
+.face .q{font-size:13px;color:var(--sub);margin-bottom:10px}
+.face .big{font-size:26px;font-weight:700;color:var(--accent);letter-spacing:-.3px}
+.face .hint{font-size:14px;color:var(--sub);line-height:1.6;margin-top:14px}
+.face .tap{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-size:12px;color:var(--sub)}
+.fc-meta{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--sub);margin:4px 2px 10px}
+.prog{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:12px}
+.prog i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.seg{display:flex;background:var(--chip);border-radius:10px;padding:3px;margin-bottom:12px}
+.seg button{flex:1;border:0;background:none;font:inherit;font-size:13px;padding:7px;border-radius:8px;color:var(--sub);cursor:pointer}
+.seg button.on{background:var(--card);color:var(--ink);font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.score{display:flex;gap:8px;font-size:13px}
+.score span{padding:3px 9px;border-radius:999px;background:var(--chip)}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><h1>SAP <span>FI</span> 용어집</h1><small id="total"></small></div>
+  <div class="search">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="q" type="search" placeholder="용어 · 한글 · T-code · 테이블 검색" autocomplete="off">
+    <button id="clr" aria-label="지우기">✕</button>
+  </div>
+  <div class="chips" id="chips"></div>
+</header>
+
+<main id="view"></main>
+
+<nav>
+  <button data-tab="list" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>용어</button>
+  <button data-tab="fav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>즐겨찾기</button>
+  <button data-tab="study"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h10M7 14h6"/></svg>학습카드</button>
+</nav>
+
+<div class="sheet-bg" id="bg"></div>
+<div class="sheet" id="sheet"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const CATS = {
+  org:"조직구조·기본설정", gl:"총계정원장(GL)", ap:"채무(AP)", ar:"채권(AR)",
+  aa:"고정자산(AA)", bank:"은행·자금", close:"결산", tax:"세금", int:"모듈통합", s4:"S/4HANA"
+};
+// id, en, ko, cat, desc, tc, tb, tip, rel
+const T = [
+// ── 조직구조·기본설정
+["cc","Company Code","회사코드","org","법적으로 독립된 회계 단위로, 재무제표(B/S, P/L)를 작성하는 최소 단위. 모든 FI 전표는 반드시 하나의 회사코드에 전기된다.",["OX02","EC01"],["T001"],"회사코드 신규 생성은 EC01로 기존 회사코드를 복사하는 방식이 표준. 통화·국가·언어는 생성 후 변경이 어렵다.",["coa","fyv","ca"]],
+["coa","Chart of Accounts","계정과목표","org","G/L 계정의 목록과 구조를 정의한 체계. 운영(Operating) COA는 일상 전기에, 그룹 COA는 연결용, 국가 COA는 법정보고용으로 쓰인다.",["OB13","OB62"],["T004","SKA1"],"하나의 회사코드는 운영 COA 1개만 가질 수 있지만, 하나의 COA는 여러 회사코드가 공유 가능.",["cc","gla"]],
+["fyv","Fiscal Year Variant","회계연도변형","org","회계연도의 기간 수(정규기간 + 특별기간)와 기간-월 매핑을 정의. 국내 표준은 K4(12개 정규 + 4개 특별기간, 역년 기준).",["OB29","OB37"],["T009"],null,["ppv","cc"]],
+["ppv","Posting Period Variant","전기기간변형","org","전기 가능한 기간을 계정유형별로 열고 닫는 통제 단위. 월마감 시 이전 월을 닫아 추가 전기를 막는다.",["OBBO","OBBP","OB52"],["T010O","T001B"],"OB52에서 계정유형 '+'는 전체, A·D·K·M·S는 자산·고객·공급업체·자재·G/L 계정별 통제.",["fyv","yec"]],
+["ba","Business Area","사업영역","org","회사코드를 가로질러 사업부·지역 단위의 내부 재무제표를 만들기 위한 조직 단위. 신규 구축에서는 Profit Center·Segment로 대체되는 추세.",["OX03"],["TGSB"],null,["pc","seg"]],
+["fa","Functional Area","기능영역","org","매출원가법(Cost of Sales Accounting) 손익계산서 작성을 위한 분류(제조·판매·관리·연구개발 등).",["OKBD"],["TFKB"],null,["pc"]],
+["cca","Credit Control Area","여신관리영역","org","고객 신용한도를 관리하는 조직 단위. 하나 이상의 회사코드를 포함할 수 있다. S/4HANA에서는 FSCM 여신관리(Credit Segment)로 대체.",["OB45"],["T014"],null,["credit","cust"]],
+["ca","Controlling Area","관리회계영역","org","CO 모듈의 최상위 조직 단위. 하나 이상의 회사코드를 할당하며, 같은 COA·회계연도변형을 써야 한다.",["OKKP","OX19"],["TKA01"],null,["cc","pc"]],
+["pc","Profit Center","손익센터","org","내부 손익을 관리하는 책임 단위. S/4HANA에서는 Universal Journal에 직접 기록되어 손익센터별 재무상태표까지 작성 가능.",["KE51","KE52"],["CEPC"],null,["seg","split","acdoca"]],
+["seg","Segment","세그먼트","org","IFRS 8 / K-IFRS 1108 부문보고를 위한 단위. Profit Center 마스터에 할당되어 전기 시 자동 도출된다.",[],["FAGL_SEGM"],null,["pc","split"]],
+["fsv","Field Status Variant","필드상태변형","org","전표 입력 시 각 필드의 필수·선택·숨김 여부를 통제. G/L 계정에 지정된 Field Status Group과 Posting Key 설정이 결합되어 최종 결정된다.",["OBC4","OBC5"],["T004V"],"필드 충돌 시 우선순위: 숨김 < 표시 < 선택 < 필수 — 더 엄격한 쪽이 이기되, '숨김+필수'는 오류.",["pk","gla"]],
+["dt","Document Type","전표유형","org","전표의 성격을 구분하고 번호범위·허용 계정유형을 통제. 예: SA(G/L), KR(공급업체 송장), KZ(지급), DR(고객 송장), DZ(입금), AA(자산), WE(입고), RE(MIRO), RV(SD 대금청구).",["OBA7"],["T003"],null,["nr","pk"]],
+["pk","Posting Key","전기키","org","라인의 차/대변 구분과 계정유형을 결정하는 2자리 키. 40/50 G/L 차·대, 01/11 고객 차·대, 21/31 공급업체 차·대, 70/75 자산 차·대.",["OB41"],["TBSL"],"외우기: 0x=고객, 2x/3x=공급업체, 4x/5x=G/L, 7x=자산, 8x/9x=자재. 짝수 십의자리는 대체로 차변.",["dt","sgl"]],
+["nr","Number Range","번호범위","org","전표유형별로 할당되는 전표번호 구간. 내부채번/외부채번을 구분하며 회계연도별로 관리 가능.",["FBN1"],["NRIV"],null,["dt"]],
+["tol","Tolerance Group","허용오차그룹","org","사용자별 전기 한도(전표당·라인당 금액)와 지급차이 허용 범위를 정의. 고객/공급업체용 허용오차는 반제 시 소액 차이 자동처리에 쓰인다.",["OBA4","OB57","OBA3"],["T043T","T043G"],null,["clr","resid"]],
+["ledger","Ledger","원장","org","회계 기록을 담는 단위. 주원장(Leading Ledger, 0L)은 그룹 회계기준(보통 IFRS), 비주원장은 현지 GAAP·세무 등 병행회계에 사용.",["FINSC_LEDGER"],["FINSC_LEDGER"],null,["acdoca","da"]],
+["curtype","Currency Type","통화유형","org","하나의 거래를 여러 통화로 동시 기록하기 위한 구분. 10=회사코드 통화, 30=그룹 통화, 00=거래통화.",["FINSC_LEDGER","OB22"],[],null,["exrate","fcv"]],
+
+// ── GL
+["gla","G/L Account","총계정원장 계정","gl","COA 수준(계정명·유형)과 회사코드 수준(통화·세금·미결관리 등) 두 세그먼트로 구성. S/4HANA는 원가요소도 G/L 계정 유형으로 통합되었다.",["FS00"],["SKA1","SKB1"],"S/4 계정유형: X=재무상태표, N=영업외손익, P=1차원가/수익, S=2차원가.",["coa","acg","recon"]],
+["acg","Account Group","계정그룹","gl","계정 마스터 생성 시 번호범위와 필드상태를 통제하는 그룹. G/L·고객·공급업체 각각 별도 정의.",["OBD4","OBD2","OBD3"],["T077S"],null,["gla"]],
+["recon","Reconciliation Account","조정계정","gl","고객·공급업체·자산 등 보조원장의 거래가 총계정원장에 자동 집계되는 통제계정. 직접 전기는 불가하며 보조원장 전기로만 갱신된다.",["FS00"],["SKB1"],"FS00 회사코드 세그먼트의 'Recon. account for acct type' 필드(D/K/A)로 지정.",["cust","vend","sgl"]],
+["oim","Open Item Management","미결관리","gl","라인 항목을 '미결/반제'로 관리하는 계정 설정. GR/IR, 은행 중간계정, 가지급금 등 반드시 상계되어야 하는 계정에 설정한다.",["FS00","FBL3N"],["BSIS","BSAS"],"이미 잔액이 있는 계정의 미결관리 전환은 FAGL_ACTIVATE_OP 프로그램으로 처리.",["clr","li","grir"]],
+["li","Line Item Display","개별항목조회","gl","계정별 개별 전기 라인을 조회하는 기능. G/L·고객·공급업체 각각 FBL3N·FBL5N·FBL1N, S/4에서는 FAGLL03H 또는 Fiori 앱 사용.",["FBL3N","FBL1N","FBL5N","FAGLL03H"],["ACDOCA"],null,["oim"]],
+["re","Retained Earnings Account","이익잉여금계정","gl","연말 이월 시 손익계정 잔액이 집계되는 계정. 손익계정 마스터의 P&L statement account type으로 연결된다.",["OB53"],["T030"],null,["bcf","gla"]],
+["park","Parked Document","보류전표","gl","전기되지 않은 채 저장된 전표. 번호가 부여되며 승인 후 전기(Post)한다. 결재 워크플로와 연계하기 좋다.",["FV50","FV60","FV70","FBV0"],["VBKPF"],"Held Document(임시저장)는 번호·잔액 검증 없이 단순 저장, Parked는 번호를 받는 보류 상태라는 점이 다르다.",["fb50"]],
+["fb50","G/L Account Posting","G/L 계정 전기","gl","G/L 계정 간의 일반 전표 입력. Enjoy 화면(FB50) 또는 전기키 기반 일반 화면(FB01)을 쓴다.",["FB50","FB01","FB03"],["BKPF","BSEG"],null,["park","rev"]],
+["rec","Recurring Entry","반복전표","gl","임차료·보험료처럼 주기적으로 반복되는 전기를 원본으로 등록해두고 일괄 실행하는 기능.",["FBD1","F.14","FBD3"],[],null,["accr"]],
+["accr","Accrual / Deferral Document","발생·이연 전표","gl","기간귀속을 위한 전표로, 역분개 일자를 함께 지정해 다음 기간 초에 일괄 역분개한다.",["FBS1","F.81"],[],null,["rev","rec"]],
+["rev","Reversal","역분개","gl","잘못 전기된 전표를 반대 분개로 취소. 역분개 사유(Reason)로 일자·부(-)전기 여부를 통제한다.",["FB08","F.80","FBR2"],["T041C"],"Negative Posting은 차대변을 바꾸는 대신 원래 쪽에 음수로 기록해 거래합계(Transaction figures)를 부풀리지 않는다. 회사코드 허용 필요(OBY6).",["fb50","accr"]],
+["clr","Clearing","반제","gl","미결항목을 서로 상계해 '반제' 상태로 만드는 처리. 수동 반제와 자동반제(F.13)가 있다.",["F-03","F-32","F-44","F.13"],["BSAS","BSAD","BSAK"],null,["oim","resid","tol"]],
+["fsvv","Financial Statement Version","재무제표버전","gl","재무상태표·손익계산서의 계층 구조(계정 그룹핑·순서)를 정의. 보고서 출력 기준이 된다.",["OB58","F.01"],["T011"],null,["tb","gla"]],
+["vs","Validation / Substitution","검증 / 대체","gl","Validation은 조건에 맞지 않는 입력을 오류로 막고, Substitution은 조건에 따라 필드값을 자동 치환한다. 시점(Callup point)은 헤더·라인·전체전표.",["OB28","OBBH","GGB0","GGB1"],["GB93","GB922"],null,["fsv"]],
+["split","Document Splitting","전표분할","gl","전표의 각 라인에 Profit Center·Segment 등 특성을 비례 배분해, 그 단위로 균형 잡힌 재무상태표를 작성하게 하는 New GL 기능.",["GSP_RD"],["ACDOCA"],"활성화 후 비활성화 불가에 가까우므로 구축 초기에 결정해야 한다.",["pc","seg","acdoca"]],
+
+// ── AP
+["vend","Vendor / Supplier","공급업체","ap","매입처 마스터. 일반데이터·회사코드·구매조직 세그먼트로 구성. S/4HANA에서는 Business Partner(BP)로 통합 관리된다.",["BP","XK01","FK01"],["LFA1","LFB1","LFM1"],"S/4에서 XK01/FK01은 BP로 자동 리다이렉트.",["bp","recon"]],
+["fb60","Vendor Invoice","공급업체 송장","ap","PO 없이 FI에서 직접 입력하는 매입송장. PO 기반이면 MM의 MIRO로 입력하며 GR/IR 계정이 상계된다.",["FB60","MIRO","FB65"],["BSIK","RBKP"],null,["grir","pt","3wm"]],
+["pay","Outgoing Payment","지급","ap","공급업체 채무 지급. 수동 지급(F-53, F-58) 또는 자동지급프로그램(F110)을 사용.",["F-53","F-58","F110"],["PAYR"],null,["app","hb"]],
+["app","Automatic Payment Program","자동지급프로그램","ap","지급 대상 미결항목을 조건(지급일·방법·은행)에 따라 일괄 선정 → 제안(Proposal) → 지급실행 → 지급매체(DME) 생성까지 수행.",["F110","FBZP"],["REGUH","REGUP"],"실행 순서: 파라미터 → 제안 실행 → 제안 편집(지급보류 해제 등) → 지급 실행 → 매체 출력.",["pay","pm","hb"]],
+["pt","Payment Terms","지급조건","ap","기준일과 현금할인율·기간으로 만기일을 계산하는 규칙. 예: 30일 이내 2% 할인, 60일 순액.",["OBB8"],["T052"],null,["cd","app"]],
+["cd","Cash Discount","현금할인","ap","조기 지급·입금 시 받는(주는) 할인. 매입할인(SKE)·매출할인(SKT) 계정으로 자동 전기된다.",["OBB8","OBXI"],["T052"],null,["pt"]],
+["dp","Down Payment","선급금","ap","재화 수령 전 지급하는 선급금. Special G/L 지시자 A로 별도 조정계정에 기록되며 송장 입력 후 반제(F-54)한다.",["F-47","F-48","F-54"],["BSIK"],"흐름: 선급금 요청(F-47, 통계성) → 선급금 지급(F-48 또는 F110) → 송장 입력 → 선급금 반제(F-54).",["sgl","ardp"]],
+["sgl","Special G/L Transaction","특별 G/L 거래","ap","선급금·어음·보증금 등 일반 채권채무와 구분할 거래. 지시자(A 선급금, F 선급금요청, W 어음 등)에 따라 다른 조정계정으로 전기된다.",["OBXR","OBYR"],["T074U","T074"],null,["dp","boe","recon"]],
+["hb","House Bank","거래은행","ap","회사가 거래하는 은행 마스터. 하위에 계좌 ID(Account ID)를 두고 G/L 은행계정과 연결한다.",["FI12","FI12_HBANK"],["T012","T012K"],"S/4HANA에서 은행계좌는 Bank Account Management(NWBC/Fiori)로 관리.",["app","ebs"]],
+["pm","Payment Method","지급방법","ap","송금·수표·어음 등 지급 수단. 국가 수준(서식·필수정보)과 회사코드 수준(금액한도·외화 허용)으로 설정한다.",["FBZP"],["T042Z","T042E"],null,["app"]],
+["wht","Withholding Tax","원천세","ap","지급 시 원천징수하는 세금(사업소득·이자 등). 확장 원천세(Extended WHT)는 송장 또는 지급 시점 공제를 모두 지원.",["FTWP","FTWH"],["WITH_ITEM"],null,["tc"]],
+["grir","GR/IR Clearing Account","입고·송장 대사계정","ap","입고(GR) 시 대변, 송장(IR) 시 차변이 기록되어 둘이 일치하면 상계되는 중간계정. 결산 시 잔액을 분석·재분류한다.",["MR11","F.19","MB5S"],["EKBE"],"MR11은 수량·금액 차이 정리, F.19는 결산용 재분류(입고미착송장/송장미입고).",["3wm","obyc","oim"]],
+["3wm","Three-way Match","3자 대사","ap","구매오더(PO)·입고(GR)·송장(IR) 세 문서의 수량·단가를 대조하여 송장을 검증하는 통제. 허용범위 초과 시 송장 지급보류.",["MIRO","MRBR","OMR6"],["RBKP","RSEG"],null,["grir","fb60"]],
+
+// ── AR
+["cust","Customer","고객","ar","매출처 마스터. 일반·회사코드·판매영역 세그먼트로 구성되며, S/4HANA는 Business Partner로 통합.",["BP","XD01","FD01"],["KNA1","KNB1","KNVV"],null,["bp","recon"]],
+["fb70","Customer Invoice","고객 송장","ar","FI에서 직접 입력하는 매출 송장. 일반 매출은 SD 대금청구(VF01)가 회계로 이관되면서 자동 생성된다.",["FB70","FB75","VF01"],["BSID"],null,["vfx3","cust"]],
+["inc","Incoming Payment","입금","ar","고객 대금 수령 및 미결채권 반제. 수동 입금(F-28) 또는 전자은행명세 자동반제로 처리.",["F-28","F-26"],["BSAD"],null,["resid","ebs"]],
+["resid","Residual / Partial Payment","잔액지급 / 부분지급","ar","입금액이 채권보다 적을 때의 처리. 잔액지급은 원채권을 반제하고 차액으로 새 미결항목 생성, 부분지급은 원채권을 남기고 입금을 미결로 연결.",["F-28"],[],"허용오차 이내 차이는 자동으로 할인·잡손실 처리, 초과분만 잔액/부분 처리 대상.",["inc","tol","clr"]],
+["dun","Dunning","독촉","ar","연체 채권에 대해 단계별로 독촉장을 발송하는 기능. 독촉절차(레벨·기간·수수료)를 정의하고 일괄 실행.",["F150","FBMP"],["MHNK","MHND"],null,["cust"]],
+["credit","Credit Management","여신관리","ar","고객별 신용한도와 노출액(미결채권+미청구 주문)을 관리. S/4HANA는 FSCM 여신관리(BP 역할 UKM000)를 사용.",["UKM_BP","FD32"],["UKMBP_CMS_SGM"],null,["cca","cust"]],
+["ardp","Customer Down Payment","선수금","ar","고객으로부터 미리 받는 대금. Special G/L 지시자 A로 기록, 매출 송장 후 반제.",["F-37","F-29","F-39"],["BSID"],null,["dp","sgl"]],
+["boe","Bill of Exchange","어음","ar","약속어음·환어음 거래. Special G/L 지시자 W로 관리하며 할인·추심·부도 처리를 지원.",["F-36","FBWD"],["BSED"],null,["sgl"]],
+
+// ── AA
+["acl","Asset Class","자산클래스","aa","자산의 분류(건물·기계장치·차량 등). 계정결정, 번호범위, 기본 감가상각 조건을 결정하는 핵심 키.",["OAOA"],["ANKA"],null,["am","da"]],
+["am","Asset Master","자산마스터","aa","개별 고정자산의 마스터 레코드. 메인번호와 서브번호로 구성되며 취득일·내용연수·코스트센터 등을 관리.",["AS01","AS02","AS03"],["ANLA","ANLZ","ANLB"],null,["acl","dk"]],
+["cod","Chart of Depreciation","감가상각표","aa","국가별 감가상각 영역의 묶음. 회사코드에 하나씩 할당된다. 표준 복사본을 기반으로 생성.",["EC08","OAOB"],["T093"],null,["da"]],
+["da","Depreciation Area","감가상각영역","aa","동일 자산에 대해 장부·세무·IFRS 등 서로 다른 기준의 가치를 병행 관리하는 영역. 영역 01은 장부(Book)가 일반적.",["OADB"],["T093A"],"S/4HANA에서는 각 영역이 원장(Ledger)·회계기준(Accounting Principle)과 연결되어 병행회계로 동작.",["cod","ledger"]],
+["dk","Depreciation Key","감가상각키","aa","정액법·정률법 등 계산 방법을 정의하는 키(예: LINR 정액). 계산방법·기간통제·전환규칙을 포함.",["AFAMA"],["T090NA"],null,["dr","ul"]],
+["ul","Useful Life","내용연수","aa","자산의 감가상각 기간(년·기간). 자산클래스 기본값을 상속하고 자산마스터에서 변경 가능.",["AS02"],["ANLB"],null,["dk"]],
+["dr","Depreciation Run","감가상각실행","aa","월별로 계획된 감가상각비를 G/L에 전기하는 배치. 테스트 실행 후 운영 실행한다.",["AFAB","AFAR"],["ANLP"],"S/4에서는 상각비가 자산 거래 시 실시간 계산되고, AFAB는 G/L 전기만 담당.",["dk","mclose"]],
+["acq","Asset Acquisition","자산취득","aa","자산 취득 기록. 공급업체 송장 연동(F-90), 자동 상대계정(ABZON), PO 기반(MIGO/MIRO) 방식이 있다.",["F-90","ABZON","AB01"],["ANEP"],null,["am","auc"]],
+["ret","Asset Retirement","자산처분","aa","매각·폐기 등 자산 처분. 매각대금 고객 연동(F-92), 폐기(ABAVN). 처분손익이 자동 계산된다.",["F-92","ABAON","ABAVN"],["ANEP"],null,["acq"]],
+["tr","Asset Transfer","자산대체","aa","회사코드 내 다른 자산(또는 클래스)으로 가치를 이전. 회사 간 대체는 ABT1N.",["ABUMN","ABT1N"],[],null,["auc"]],
+["auc","Asset under Construction","건설중인자산","aa","완성 전 공사 중인 자산(CIP). 완공 시 정산(Settlement)을 통해 본자산으로 대체된다.",["AIAB","AIBU"],[],null,["tr","acq"]],
+["ahs","Asset History Sheet","자산변동명세서","aa","기초·취득·처분·대체·감가상각·기말 잔액을 보여주는 법정 보고서.",["S_ALR_87011990"],[],null,["ayc"]],
+["ayc","Asset Fiscal Year Change / Closing","자산 회계연도 이월·마감","aa","AJRW로 새 회계연도를 열고, AJAB로 전년도를 마감한다. 감가상각 완료 여부가 마감 전제조건.",["AJRW","AJAB","OAAQ"],[],null,["dr","yec"]],
+
+// ── 은행·자금
+["ebs","Electronic Bank Statement","전자은행거래명세","bank","은행 거래내역 파일(MT940 등)을 업로드해 입출금을 자동 전기·반제하는 기능. 내부 전기규칙(Posting Rule)으로 계정을 결정.",["FF_5","FEBAN","OT83"],["FEBKO","FEBEP"],null,["brec","inc"]],
+["mbs","Manual Bank Statement","수기 은행명세","bank","은행 명세를 화면에서 직접 입력해 일괄 전기하는 방식.",["FF67"],["FEBKO"],null,["ebs"]],
+["brec","Bank Reconciliation","은행계정 대사","bank","장부 은행잔액과 은행 실제잔액을 대조. 일반적으로 본계정과 입금·출금 중간계정(Clearing)을 분리해 미달거래를 관리한다.",["FEBAN","FBL3N"],[],null,["ebs","oim"]],
+["cj","Cash Journal","현금출납장","bank","소액현금(전도금) 입출금을 기록하고 G/L로 전기하는 기능.",["FBCJ","FBCJC0"],["TCJ_DOCUMENTS"],null,[]],
+["cm","Cash Management","자금관리","bank","단기 자금포지션(Cash Position)과 유동성 예측(Liquidity Forecast)을 제공. S/4HANA는 One Exposure 기반 Fiori 앱 사용.",["FF7A","FF7B"],["FDES"],null,["ebs"]],
+["chk","Check Management","수표관리","bank","수표 번호 대역(Check Lot) 관리와 수표 발행·무효화 처리.",["FCHI","FCH1","FCH8"],["PAYR"],null,["pay"]],
+
+// ── 결산
+["mclose","Month-end Closing","월마감","close","기간 열기/닫기, 반복·발생 전표, 감가상각, GR/IR 정리, 외화평가, 배부, 재분류, 재무제표 확인으로 이어지는 마감 절차.",["OB52","FCLOCO"],[],"S/4HANA는 Financial Closing cockpit(SAP S/4HANA Cloud for advanced financial closing)으로 작업 스케줄 관리.",["ppv","fcv","dr"]],
+["fcv","Foreign Currency Valuation","외화평가","close","결산일 환율로 외화 미결항목과 외화잔액 계정을 재평가해 평가손익을 인식.",["FAGL_FCV","OBA1"],["T030S"],"S/4에서는 FAGL_FCV 하나로 미결항목·잔액 평가를 모두 처리(F.05 대체).",["exrate","curtype"]],
+["exrate","Exchange Rate","환율","close","환율유형(M=평균, B=매입, G=매도 등)별로 일자별 환율을 관리.",["OB08","OB07"],["TCURR"],null,["fcv","curtype"]],
+["reclass","Reclassification","재분류","close","결산 시 채권·채무를 만기(유동/비유동)나 대변잔액 채권 등으로 재분류해 표시.",["FAGLF101","F.19"],[],null,["grir"]],
+["bcf","Balance Carryforward","잔액이월","close","연말에 재무상태표 잔액은 다음 연도로, 손익 잔액은 이익잉여금으로 이월.",["FAGLGVTR","F.07"],[],"G/L은 FAGLGVTR, 고객·공급업체는 F.07. 이월 후 전년도 전기 시 자동 갱신된다.",["re","yec"]],
+["yec","Year-end Closing","연말결산","close","월마감 절차에 더해 잔액이월, 자산 연도마감, 특별기간(13~16) 조정 전기, 감사 대응을 수행.",["FAGLGVTR","AJAB","OB52"],[],null,["bcf","ayc","fyv"]],
+["tb","Trial Balance","시산표","close","계정별 차변·대변 합계 및 잔액표. 마감 전 균형 검증용.",["S_ALR_87012277","FAGLB03"],["ACDOCA"],null,["fsvv"]],
+["icr","Intercompany Reconciliation","관계사 대사","close","관계사 간 채권·채무, 매출·매입 거래를 대사하여 연결 제거 전 차이를 해소.",["FBICR","ICADOC"],[],null,[]],
+
+// ── 세금
+["tc","Tax Code","세금코드","tax","매입·매출 부가세율과 세금계정을 정의하는 2자리 코드. 국가별 세금절차에 속한다.",["FTXP","OB40"],["T007A","A003"],null,["tp","vat"]],
+["tp","Tax Procedure","세금계산절차","tax","국가별 세금 계산 로직(조건유형·계정키)을 정의. 한국 표준은 TAXKR.",["OBQ3","OBBG"],["T005"],null,["tc"]],
+["vat","Input / Output Tax","매입세 / 매출세","tax","매입세(V·선급부가세)와 매출세(A·예수부가세). 신고 기간에 상계 후 납부/환급한다.",["S_ALR_87012357"],["BSET"],null,["tc","eti"]],
+["eti","Electronic Tax Invoice","전자세금계산서","tax","한국 국세청 전자세금계산서 발행·수취 연동. SAP Document and Reporting Compliance 또는 파트너 솔루션으로 구현.",[],[],null,["vat"]],
+
+// ── 모듈통합
+["obyc","MM Account Determination","MM 자동계정결정","int","자재 이동·송장 시 자동 전기 계정을 결정. 평가클래스 × 거래키(BSX 재고, WRX GR/IR, GBB 상대계정, PRD 가격차이) 조합.",["OBYC","OMWB"],["T030"],null,["vc","grir"]],
+["vkoa","SD Revenue Account Determination","SD 수익계정결정","int","대금청구 시 매출·할인 계정을 결정. 고객/자재 계정지정그룹과 계정키(ERL 매출, ERS 할인) 조합.",["VKOA"],["C001"],null,["vfx3"]],
+["vc","Valuation Class","평가클래스","int","자재 마스터 회계뷰에서 지정하며, 같은 자재유형이라도 다른 재고계정으로 전기되게 한다.",["OMSK"],["T025"],null,["obyc"]],
+["vfx3","Billing Release to Accounting","대금청구 회계이관","int","SD 대금청구 전표가 FI로 넘어가지 못한 경우(계정결정 오류 등) 원인 확인 후 재이관.",["VFX3","VF02"],["VBRK"],null,["vkoa","fb70"]],
+["ml","Material Ledger","자재원장","int","재고를 다중 통화·다중 평가로 관리하고 실제원가를 계산. S/4HANA에서는 필수 활성화.",["CKMLCP","CKM3"],["CKMLHD"],null,["obyc"]],
+
+// ── S/4HANA
+["acdoca","Universal Journal","유니버설 저널","s4","FI·CO·AA·ML 데이터를 하나의 라인 테이블(ACDOCA)에 기록하는 S/4HANA 핵심 구조. 별도 합계·인덱스 테이블이 사라지고 대사 문제가 근본적으로 해소된다.",["FAGLL03H"],["ACDOCA"],"BSEG는 여전히 존재(문서 라인), BSIS/BSAS 등 인덱스와 GLT0/FAGLFLEXT 합계는 호환뷰(Compatibility View)로만 남는다.",["ledger","split","bkpf"]],
+["bkpf","BKPF / BSEG","전표 헤더 / 라인","s4","FI 전표의 헤더(BKPF: 회사코드·전표번호·회계연도·전표유형)와 라인(BSEG: 계정·금액·전기키) 테이블.",["FB03","SE16N"],["BKPF","BSEG"],"BSEG는 클러스터 테이블(ECC)이라 조인 대신 키로 읽는다. S/4 분석은 ACDOCA가 유리.",["acdoca"]],
+["bp","Business Partner","비즈니스 파트너","s4","S/4HANA에서 고객·공급업체를 통합 관리하는 마스터. BP 역할(FLCU01 고객 회계, FLVN01 공급업체 회계 등)로 세그먼트를 구성하며 CVI로 기존 테이블과 동기화된다.",["BP"],["BUT000","KNA1","LFA1"],null,["cust","vend"]],
+["fiori","SAP Fiori","피오리","s4","S/4HANA의 역할 기반 웹 UI. 'Manage Journal Entries', 'Display Line Items', 'Trial Balance' 등 FI 업무용 앱 제공.",["/UI2/FLP"],[],null,["acdoca"]],
+["cfin","Central Finance","센트럴 파이낸스","s4","여러 원천 ERP의 회계 전표를 실시간 복제해 하나의 S/4HANA에 통합하는 시나리오. 단계적 전환 전략에 활용.",[],[],null,["acdoca"]]
+];
+
+const DATA = T.map(r=>({id:r[0],en:r[1],ko:r[2],cat:r[3],desc:r[4],tc:r[5],tb:r[6],tip:r[7],rel:r[8]}));
+const byId = Object.fromEntries(DATA.map(d=>[d.id,d]));
+
+// state
+let tab="list", cat="all", query="";
+let favs = new Set();
+try{ favs = new Set(JSON.parse(localStorage.getItem("fi-favs")||"[]")); }catch(e){}
+const saveFavs=()=>{ try{ localStorage.setItem("fi-favs",JSON.stringify([...favs])); }catch(e){} };
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const hl=(s)=>{ s=esc(s); if(!query) return s; const q=query.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"); return s.replace(new RegExp(q,"gi"),m=>`<mark>${m}</mark>`); };
+
+$("#total").textContent = `${DATA.length}개 용어`;
+
+function renderChips(){
+  const all=[["all","전체"],...Object.entries(CATS)];
+  $("#chips").innerHTML = all.map(([k,v])=>`<button class="chip ${cat===k?"on":""}" data-c="${k}">${v}</button>`).join("");
+}
+$("#chips").addEventListener("click",e=>{
+  const b=e.target.closest(".chip"); if(!b) return;
+  cat=b.dataset.c; renderChips(); render();
+});
+
+function match(d){
+  if(cat!=="all" && d.cat!==cat) return false;
+  if(!query) return true;
+  const q=query.toLowerCase();
+  return [d.en,d.ko,d.desc,...d.tc,...d.tb].some(x=>x.toLowerCase().includes(q));
+}
+
+function card(d){
+  const tags=[...d.tc.slice(0,3).map(t=>`<span class="tag">${hl(t)}</span>`),...d.tb.slice(0,2).map(t=>`<span class="tag tb">${hl(t)}</span>`)].join("");
+  return `<div class="item" data-id="${d.id}">
+    <div class="body">
+      <div><span class="en">${hl(d.en)}</span><span class="ko">${hl(d.ko)}</span></div>
+      <div class="d">${hl(d.desc)}</div>
+      ${tags?`<div class="tags">${tags}</div>`:""}
+    </div>
+    <button class="star ${favs.has(d.id)?"on":""}" data-star="${d.id}" aria-label="즐겨찾기">★</button>
+  </div>`;
+}
+
+function render(){
+  const v=$("#view");
+  $("header").style.display = tab==="study" ? "none" : "";
+  if(tab==="study") return renderStudy();
+  let list = DATA.filter(match);
+  if(tab==="fav") list = list.filter(d=>favs.has(d.id));
+  if(!list.length){
+    v.innerHTML = `<div class="empty">${tab==="fav"&&!favs.size?"아직 즐겨찾기한 용어가 없습니다.<br>용어 옆 ★을 눌러 추가하세요.":"검색 결과가 없습니다."}</div>`;
+    return;
+  }
+  v.innerHTML = `<div class="count">${list.length}개</div><div class="list">${list.map(card).join("")}</div>`;
+}
+
+$("#view").addEventListener("click",e=>{
+  const s=e.target.closest("[data-star]");
+  if(s){ e.stopPropagation(); toggleFav(s.dataset.star); render(); return; }
+  const it=e.target.closest(".item"); if(it) openSheet(it.dataset.id);
+});
+
+function toggleFav(id){ favs.has(id)?favs.delete(id):favs.add(id); saveFavs(); }
+
+// detail sheet
+function openSheet(id){
+  const d=byId[id];
+  const sh=$("#sheet");
+  const codeBtns=(arr,cls)=>arr.map(c=>`<button class="code ${cls}" data-copy="${esc(c)}">${esc(c)}</button>`).join("");
+  sh.innerHTML = `<div class="grip"></div>
+    <div class="cat">${CATS[d.cat]}</div>
+    <h2>${esc(d.en)}</h2>
+    <div class="kot">${esc(d.ko)}</div>
+    <p>${esc(d.desc)}</p>
+    ${d.tip?`<div class="tip"><b>실무 포인트</b><br>${esc(d.tip)}</div>`:""}
+    ${d.tc.length?`<div class="sec">T-CODE · 탭하여 복사</div><div class="codes">${codeBtns(d.tc,"")}</div>`:""}
+    ${d.tb.length?`<div class="sec">테이블</div><div class="codes">${codeBtns(d.tb,"tb")}</div>`:""}
+    ${d.rel.length?`<div class="sec">관련 용어</div><div class="rel">${d.rel.filter(r=>byId[r]).map(r=>`<button data-go="${r}">${esc(byId[r].ko)}</button>`).join("")}</div>`:""}
+    <div class="row">
+      <button class="btn" data-fav="${d.id}">${favs.has(d.id)?"★ 즐겨찾기 해제":"☆ 즐겨찾기"}</button>
+      <button class="btn pri" data-close>닫기</button>
+    </div>`;
+  sh.scrollTop=0;
+  sh.classList.add("open"); $("#bg").classList.add("open");
+}
+function closeSheet(){ $("#sheet").classList.remove("open"); $("#bg").classList.remove("open"); }
+$("#bg").addEventListener("click",closeSheet);
+$("#sheet").addEventListener("click",async e=>{
+  const t=e.target;
+  if(t.dataset.close!==undefined) return closeSheet();
+  if(t.dataset.go) return openSheet(t.dataset.go);
+  if(t.dataset.fav){ toggleFav(t.dataset.fav); openSheet(t.dataset.fav); render(); return; }
+  if(t.dataset.copy){
+    try{ await navigator.clipboard.writeText(t.dataset.copy); toast(`${t.dataset.copy} 복사됨`); }
+    catch(err){ toast("복사할 수 없습니다"); }
+  }
+});
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeSheet(); });
+
+let tt;
+function toast(m){ const el=$("#toast"); el.textContent=m; el.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove("show"),1400); }
+
+// search
+const qi=$("#q");
+qi.addEventListener("input",()=>{ query=qi.value.trim(); $("#clr").style.display=query?"block":"none"; render(); });
+$("#clr").addEventListener("click",()=>{ qi.value=""; query=""; $("#clr").style.display="none"; render(); qi.focus(); });
+
+// nav
+document.querySelector("nav").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  tab=b.dataset.tab;
+  document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
+  if(tab==="study") initStudy();
+  render(); window.scrollTo(0,0);
+});
+
+// study (flashcards)
+let deck=[], idx=0, mode="ko", src="all", known=0, unknown=0;
+function initStudy(){
+  let pool = src==="fav" ? DATA.filter(d=>favs.has(d.id)) : src==="all" ? DATA : DATA.filter(d=>d.cat===src);
+  deck = pool.slice().sort(()=>Math.random()-.5);
+  idx=0; known=0; unknown=0;
+}
+function renderStudy(){
+  const v=$("#view");
+  const opts=[["all","전체"],["fav","즐겨찾기"],...Object.entries(CATS)].map(([k,n])=>`<option value="${k}" ${src===k?"selected":""}>${n}</option>`).join("");
+  const top = `<div style="padding-top:calc(4px + env(safe-area-inset-top))">
+    <div class="brand" style="margin:6px 0 12px"><h1>학습 <span>카드</span></h1>
+      <select id="src" style="font:inherit;font-size:13px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)">${opts}</select></div>
+    <div class="seg"><button data-m="ko" class="${mode==="ko"?"on":""}">한글 → 영문</button><button data-m="en" class="${mode==="en"?"on":""}">영문 → 한글</button><button data-m="desc" class="${mode==="desc"?"on":""}">설명 → 용어</button></div>`;
+  if(!deck.length){ v.innerHTML = top+`<div class="empty">카드가 없습니다.<br>즐겨찾기를 추가하거나 다른 범위를 선택하세요.</div></div>`; bindStudy(); return; }
+  if(idx>=deck.length){
+    v.innerHTML = top+`<div class="empty" style="padding-top:40px"><div style="font-size:40px">🎯</div><b style="font-size:18px;color:var(--ink)">한 바퀴 완료</b><br>알았음 ${known} · 다시 볼 것 ${unknown}<div class="row" style="max-width:320px;margin:20px auto 0"><button class="btn pri" id="again">다시 섞기</button></div></div></div>`;
+    bindStudy(); $("#again").onclick=()=>{initStudy();render();}; return;
+  }
+  const d=deck[idx];
+  const front = mode==="ko" ? `<div class="q">영문 용어는?</div><div class="big">${esc(d.ko)}</div><div class="hint">${CATS[d.cat]}</div>`
+              : mode==="en" ? `<div class="q">한글 용어는?</div><div class="big">${esc(d.en)}</div><div class="hint">${CATS[d.cat]}</div>`
+              : `<div class="q">이 설명에 해당하는 용어는?</div><div class="hint" style="font-size:15px;color:var(--ink);margin:0">${esc(d.desc)}</div>`;
+  const back = `<div class="cat" style="font-size:12px;color:var(--sub)">${CATS[d.cat]}</div>
+    <div style="font-size:21px;font-weight:700;margin-top:4px">${esc(d.en)}</div>
+    <div style="color:var(--accent);font-weight:500;margin-bottom:10px">${esc(d.ko)}</div>
+    <div style="font-size:14px;line-height:1.7;color:var(--sub)">${esc(d.desc)}</div>
+    ${d.tc.length?`<div class="tags" style="margin-top:12px">${d.tc.map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div>`:""}`;
+  v.innerHTML = top+`
+    <div class="prog"><i style="width:${idx/deck.length*100}%"></i></div>
+    <div class="fc-meta"><span>${idx+1} / ${deck.length}</span><div class="score"><span>✓ ${known}</span><span>↻ ${unknown}</span></div></div>
+    <div class="fc-wrap"><div class="fc" id="fc"><div class="face">${front}<div class="tap">탭하여 뒤집기</div></div><div class="face back">${back}</div></div></div>
+    <div class="row"><button class="btn" id="no">↻ 다시 볼래요</button><button class="btn pri" id="yes">✓ 알아요</button></div>
+    <div class="row" style="margin-top:8px"><button class="btn" id="star">${favs.has(d.id)?"★ 즐겨찾기됨":"☆ 즐겨찾기 추가"}</button></div>
+  </div>`;
+  bindStudy();
+  $("#fc").onclick=()=>$("#fc").classList.toggle("flip");
+  $("#yes").onclick=()=>{known++;idx++;render();};
+  $("#no").onclick=()=>{unknown++;deck.push(d);idx++;render();};
+  $("#star").onclick=()=>{toggleFav(d.id);render();};
+}
+function bindStudy(){
+  const s=$("#src"); if(s) s.onchange=()=>{src=s.value;initStudy();render();};
+  document.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>{mode=b.dataset.m;render();});
+}
+
+renderChips(); render();
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#354A5F;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+</body>
+</html>

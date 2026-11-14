@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAP CO 실습 앱 — 원가센터에서 수익성 분석까지</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --shell:#354A5F; --brand:#0A6ED1; --brand2:#0854A0; --sel:#EBF5FE;
+  --ink:#1D2D3E; --sub:#556B82; --line:#D9DEE3; --soft:#F5F6F7;
+  --ok:#107E3E; --okbg:#F1FDF6; --ng:#BB0000; --ngbg:#FFEBEB; --warn:#E9730C;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;color:var(--ink);font-family:"Noto Sans KR","Malgun Gothic",system-ui,sans-serif;font-size:15px;line-height:1.6}
+button,select,input{font:inherit;color:inherit}
+.shell{background:var(--shell);color:#fff}
+.shell .in{max-width:1100px;margin:0 auto;padding:16px 18px 14px}
+.shell .eyebrow{font-size:12px;letter-spacing:.08em;color:#BCD4EA;font-weight:700}
+.shell h1{margin:2px 0 0;font-size:22px;font-weight:900;letter-spacing:-.02em}
+.shell p{margin:2px 0 0;color:#D5E1EC;font-size:13px}
+nav{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 1px 3px rgba(0,0,0,.04)}
+nav .in{max-width:1100px;margin:0 auto;display:flex;gap:2px;overflow-x:auto;padding:0 10px;scrollbar-width:none}
+nav .in::-webkit-scrollbar{display:none}
+nav a{flex:none;padding:12px 12px;text-decoration:none;color:var(--sub);font-weight:500;border-bottom:3px solid transparent;white-space:nowrap;font-size:14px}
+nav a.on{color:var(--brand);border-color:var(--brand);font-weight:700}
+main{max-width:1100px;margin:0 auto;padding:22px 18px 60px}
+section{display:none}
+section.on{display:block}
+h2{font-size:21px;margin:0 0 4px;font-weight:900;color:var(--shell)}
+h3{font-size:16px;margin:22px 0 8px;color:var(--shell)}
+.lead{color:var(--sub);margin:0 0 18px}
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.card{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:#fff}
+.card h4{margin:0 0 6px;font-size:15px;color:var(--shell)}
+.card p{margin:0;color:var(--sub);font-size:14px}
+.card.sel{background:var(--sel);border-color:#B0D4F7}
+button.card{text-align:left;cursor:pointer;width:100%}
+button.card:hover{border-color:var(--brand)}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border-radius:20px;background:var(--sel);color:var(--brand2);margin:0 4px 4px 0;font-family:ui-monospace,Menlo,Consolas,monospace}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{background:var(--shell);color:#fff;font-weight:700;text-align:left;padding:8px 10px;white-space:nowrap}
+td{border-bottom:1px solid var(--line);padding:8px 10px;vertical-align:top}
+tr:hover td{background:#FAFBFC}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+.btn{border:1px solid var(--brand);background:#fff;color:var(--brand);border-radius:8px;padding:7px 14px;cursor:pointer;font-weight:700;font-size:14px}
+.btn:hover{background:var(--sel)}
+.btn.pri{background:var(--brand);color:#fff}
+.btn.pri:hover{background:var(--brand2)}
+.btn:disabled{opacity:.4;cursor:default}
+input[type=number],input[type=text],select{border:1px solid #B8C3CE;border-radius:6px;padding:6px 8px;width:100%;background:#fff}
+input:focus,select:focus{outline:2px solid var(--brand);outline-offset:-1px}
+label.f{display:block;font-size:13px;color:var(--sub);font-weight:500}
+/* flow */
+.flow{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch}
+.step{flex:1 1 150px;border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;background:#fff;position:relative;text-align:left}
+.step .n{font-size:12px;color:var(--brand);font-weight:700}
+.step .t{font-weight:900;font-size:16px;color:var(--shell)}
+.step .c{font-size:13px;color:var(--sub)}
+.step.on{background:var(--sel);border-color:var(--brand);box-shadow:inset 0 0 0 1px var(--brand)}
+.detail{margin-top:12px;border:1px solid #B0D4F7;background:var(--sel);border-radius:10px;padding:16px}
+.detail h4{margin:0 0 6px;color:var(--shell)}
+.detail dl{display:grid;grid-template-columns:110px 1fr;gap:4px 12px;margin:10px 0 0;font-size:14px}
+.detail dt{color:var(--sub);font-weight:700}
+.detail dd{margin:0;min-width:0}
+/* org tree */
+.tree{font-size:14px}
+.node{display:inline-block;border:1px solid var(--line);border-radius:8px;padding:6px 12px;background:#fff;margin:4px 0;cursor:pointer}
+.node b{color:var(--shell)}
+.node.on{border-color:var(--brand);background:var(--sel)}
+.tree ul{list-style:none;margin:0;padding-left:26px;border-left:2px solid var(--line)}
+.tree li{position:relative;padding-left:10px}
+.tree li::before{content:"";position:absolute;left:-2px;top:20px;width:10px;border-top:2px solid var(--line)}
+/* sim */
+.sim{display:grid;grid-template-columns:300px 1fr;gap:16px}
+.sim>div{min-width:0}
+@media(max-width:820px){.sim{grid-template-columns:1fr}}
+.panel{border:1px solid var(--line);border-radius:10px;padding:14px}
+.panel h4{margin:0 0 10px;font-size:15px;color:var(--shell)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.seg{display:flex;border:1px solid var(--brand);border-radius:8px;overflow:hidden;margin-bottom:10px}
+.seg button{flex:1;border:0;background:#fff;color:var(--brand);padding:6px;cursor:pointer;font-weight:700;font-size:13px}
+.seg button.on{background:var(--brand);color:#fff}
+.stock{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stock div{background:var(--soft);border-radius:8px;padding:8px 10px;min-width:0}
+.stock small{display:block;color:var(--sub);font-size:12px}
+.stock b{font-size:18px;color:var(--shell);word-break:break-all}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.je{margin-bottom:10px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.je .h{background:var(--soft);padding:6px 10px;font-size:13px;font-weight:700;color:var(--shell);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.je .tb{overflow-x:auto}
+.je table{min-width:520px}
+.tbl table{min-width:560px}
+.je td:first-child,.tbl td:first-child{white-space:nowrap}
+.je table td,.je table th{padding:5px 10px;font-size:13px}
+.je table th{background:#fff;color:var(--sub);border-bottom:1px solid var(--line)}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.note{font-size:13px;color:var(--sub);margin-top:6px}
+.empty{color:var(--sub);font-size:14px;padding:20px;text-align:center;border:1px dashed var(--line);border-radius:8px}
+.taccts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:6px}
+.tacc{border:1px solid var(--line);border-radius:8px;padding:8px}
+.tacc .nm{font-weight:700;font-size:13px;color:var(--shell);text-align:center;border-bottom:2px solid var(--shell);padding-bottom:4px}
+.tacc .sides{display:grid;grid-template-columns:1fr 1fr;font-size:13px}
+.tacc .sides div{padding:4px 6px}
+.tacc .sides div:first-child{border-right:2px solid var(--shell)}
+.tacc .bal{font-size:12px;color:var(--sub);text-align:center;margin-top:4px}
+/* search */
+.search{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.search input{flex:1 1 240px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#fff;border-radius:20px;padding:4px 12px;cursor:pointer;font-size:13px;color:var(--sub)}
+.chip.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:700}
+/* special */
+.sp-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.lane{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:10px 0}
+.box{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:#fff;font-size:13px;min-width:110px;max-width:100%}
+.box b{display:block;color:var(--shell);font-size:14px}
+.arr{color:var(--brand);font-weight:900}
+/* close checklist */
+.ck{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:6px 0;background:#fff;cursor:pointer}
+.ck:hover{border-color:var(--brand)}
+.ck.on{background:var(--sel);border-color:var(--brand)}
+.ck .bx{flex:none;width:20px;height:20px;border:2px solid #B8C3CE;border-radius:5px;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;font-weight:900}
+.ck.done .bx{background:var(--ok);border-color:var(--ok)}
+.ck .ct{font-weight:700;color:var(--shell)}
+.ck .cs{font-size:13px;color:var(--sub)}
+.pos{color:var(--ng)} .negv{color:var(--ok)}
+tr.sum td{font-weight:900;background:var(--soft)}
+/* quiz */
+.q{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+.q .qt{font-weight:700;margin-bottom:8px}
+.opt{display:block;width:100%;text-align:left;border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:5px 0;background:#fff;cursor:pointer}
+.opt:hover{border-color:var(--brand)}
+.opt.ok{background:var(--okbg);border-color:var(--ok);color:var(--ok);font-weight:700}
+.opt.ng{background:var(--ngbg);border-color:var(--ng);color:var(--ng)}
+.exp{font-size:13px;color:var(--sub);margin-top:6px;display:none}
+.exp.on{display:block}
+.score{position:sticky;top:52px;background:#fff;padding:8px 0;font-weight:700;color:var(--shell);z-index:5}
+footer{max-width:1100px;margin:0 auto;padding:0 18px 30px;color:var(--sub);font-size:12px}
+</style>
+</head>
+<body>
+<div class="shell"><div class="in">
+  <div class="eyebrow">SAP CO · GLOBAL BIKE · USD</div>
+  <h1>SAP CO 실습 앱 — 원가센터에서 수익성 분석까지</h1>
+  <p>S/4HANA 관리회계 구조, 배부·분배, 오더 정산, 제품원가, 차이, Material Ledger, CO-PA를 눌러 보며 익힘</p>
+</div></div>
+<nav><div class="in" id="nav"></div></nav>
+<main id="main"></main>
+<footer>곰선비의 ERP 실무노트 · 학습용 예시 데이터(Global Bike 기준 가정, 관리회계영역 NA00 · 회사코드 US00, 계정번호·코드·금액은 가상)</footer>
+
+<script>
+const TABS=[
+ ["org","CO 구조"],["ce","원가요소"],["cca","원가센터 시뮬레이터"],["io","내부오더"],["pc","제품원가 산정"],
+ ["var","생산오더 차이·정산"],["ml","Material Ledger"],["pa","CO-PA 수익성"],["close","기간마감 순서"],["dict","T-code·테이블"],["quiz","퀴즈"]
+];
+const $=s=>document.querySelector(s);
+const fmt=n=>(Math.round(n*100)/100).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const sfmt=n=>(n<0?"−":n>0?"+":"")+fmt(Math.abs(n));
+const val=id=>{const e=$("#"+id);return e?(Number(e.value)||0):0};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function jeHtml(docs,cols){
+ return docs.map(j=>`<div class="je"><div class="h"><span>${j.title}</span>${j.sub?`<span style="font-weight:500;color:var(--sub)">${j.sub}</span>`:""}</div><div class="tb"><table><tr><th>${cols[0]}</th><th>${cols[1]}</th><th class="num">차변</th><th class="num">대변</th><th>근거</th></tr>${j.lines.map(l=>`<tr><td>${l[0]}</td><td class="mono">${l[1]}</td><td class="num">${l[2]>0?fmt(l[2]):""}</td><td class="num">${l[2]<0?fmt(-l[2]):""}</td><td style="color:var(--sub)">${l[3]||""}</td></tr>`).join("")}</table></div></div>`).join("");
+}
+
+/* ---------------- ORG ---------------- */
+const ORG={
+ oc:["Operating Concern GB00","경영단위 (CO-PA)","수익성 분석의 최상위 단위. 특성(고객·제품·지역 등)을 정의하고 관리회계영역에 할당(KEKK). 여러 관리회계영역이 하나의 경영단위를 공유할 수 있음.","KEA0 · KEKK","코드 GB00은 예시"],
+ ka:["Controlling Area NA00","관리회계영역","원가센터·오더·손익센터가 속하는 CO의 기본 조직 단위. 통화, 계정과목표, 회계연도변형, 표준계층을 지정(OKKP).","TKA01","같은 관리회계영역에 묶이는 회사코드는 운영 계정과목표와 회계연도변형이 같아야 함"],
+ cc:["Company Code US00","회사코드","재무제표를 내는 법인 단위(Global Bike Inc.). 관리회계영역에 할당(OX19). 하나의 회사코드는 하나의 관리회계영역에만 속함.","T001 · TKA02 (할당)","여러 회사코드를 하나의 관리회계영역에 할당하면 회사 간 원가 배분이 가능"],
+ sh:["Std. Hierarchy NA00","원가센터 표준계층","관리회계영역의 모든 원가센터가 반드시 한 노드에 속하는 트리. 원가센터 생성 시 필수 입력(OKEON).","SETHEADER · SETNODE","대체 계층은 원가센터 그룹(KSH1)으로 따로 만듦"],
+ n1:["노드 NA-ADM","관리 부문","관리·IT 같은 지원 원가센터를 묶는 노드.","OKEON",""],
+ n2:["노드 NA-OPS","운영 부문","생산·영업 같은 수신(운영) 원가센터를 묶는 노드.","OKEON",""],
+ k1:["CC 1000 관리","원가센터","총무·재무 등 관리 비용을 모음. 기간말 배부의 송신자.","CSKS (마스터) · CSKT (텍스트)","원가센터 범주(관리·생산·영업 등)로 활동유형 사용 여부 등을 통제"],
+ k2:["CC 2000 IT","원가센터","IT 인프라 비용. 고정 비율로 운영 원가센터에 배분.","CSKS",""],
+ k3:["CC 3000 생산 조립","원가센터","조립 라인. 활동유형(조립 시간)을 생산오더에 배부.","CSKS · CSLA (활동유형)",""],
+ k4:["CC 4000 영업","원가센터","영업 비용. 최종적으로 CO-PA로 배부 가능(KEU5).","CSKS",""],
+ pc:["Profit Center PC-BIKE","손익센터","내부 손익을 보는 단위. 원가센터·자재·오더에 손익센터를 지정해 ACDOCA의 PRCTR에 자동 기록.","CEPC","S/4HANA에서는 별도 EC-PCA 원장 없이 ACDOCA에 통합. 손익센터별 재무상태표는 문서분할로"],
+};
+function renderOrg(){
+ const n=k=>`<span class="node" data-k="${k}"><b>${ORG[k][0]}</b> · ${ORG[k][1]}</span>`;
+ return `<h2>CO 조직구조</h2><p class="lead">Global Bike 미국 법인 기준 예시. 상자를 누르면 설명과 테이블이 보임</p>
+ <div class="grid g2"><div class="card tree">
+ ${n("oc")}<ul><li>${n("ka")}<ul>
+  <li>${n("cc")}</li>
+  <li>${n("sh")}<ul>
+   <li>${n("n1")}<ul><li>${n("k1")}</li><li>${n("k2")}</li></ul></li>
+   <li>${n("n2")}<ul><li>${n("k3")}</li><li>${n("k4")}</li></ul></li>
+  </ul></li>
+  <li>${n("pc")}</li>
+ </ul></li></ul>
+ </div><div class="detail" id="orgd" style="margin-top:0"></div></div>
+ <h3>할당 규칙</h3>
+ <div class="grid g3">
+  <div class="card"><h4>회사코드 → 관리회계영역 <span class="tag">OX19</span></h4><p>회사코드는 하나의 관리회계영역에만 할당. 관리회계영역은 여러 회사코드를 가질 수 있음</p></div>
+  <div class="card"><h4>관리회계영역 → 경영단위 <span class="tag">KEKK</span></h4><p>관리회계영역 하나에 경영단위 하나. 경영단위는 여러 관리회계영역에서 공유 가능</p></div>
+  <div class="card"><h4>원가센터 → 표준계층 <span class="tag">OKEON</span></h4><p>모든 원가센터는 표준계층의 한 노드에 반드시 속함. 손익센터도 자체 표준계층이 있음</p></div>
+ </div>
+ <h3>Universal Journal — ACDOCA 한 줄에 FI와 CO가 함께</h3>
+ <p class="note" style="margin-top:-4px">S/4HANA에서는 FI·CO·AA·ML·CO-PA(계정 기반) 실적이 ACDOCA 하나에 기록됨. 별도의 FI-CO 조정 원장이 필요 없음</p>
+ <div class="tbl"><table><tr><th>RLDNR</th><th>RBUKRS</th><th>KOKRS</th><th>RACCT</th><th class="num">HSL (USD)</th><th>RCNTR</th><th>PRCTR</th><th>AUFNR</th><th>설명</th></tr>
+  <tr><td class="mono">0L</td><td class="mono">US00</td><td class="mono">NA00</td><td class="mono">610000</td><td class="num">5,000.00</td><td class="mono">1000</td><td class="mono">PC-ADM</td><td></td><td>급여 (1차 원가, FI 전표)</td></tr>
+  <tr><td class="mono">0L</td><td class="mono">US00</td><td class="mono">NA00</td><td class="mono">942100</td><td class="num">−1,250.00</td><td class="mono">1000</td><td class="mono">PC-ADM</td><td></td><td>배부 송신 (2차 원가, CO 전표)</td></tr>
+  <tr><td class="mono">0L</td><td class="mono">US00</td><td class="mono">NA00</td><td class="mono">942100</td><td class="num">1,250.00</td><td class="mono">3000</td><td class="mono">PC-BIKE</td><td></td><td>배부 수신 (2차 원가, CO 전표)</td></tr>
+  <tr><td class="mono">0L</td><td class="mono">US00</td><td class="mono">NA00</td><td class="mono">943000</td><td class="num">900.00</td><td></td><td class="mono">PC-BIKE</td><td class="mono">1000123</td><td>활동배부 → 생산오더</td></tr>
+ </table></div>
+ <p class="note">계정번호·오더번호는 예시. 2차 원가 행도 ACDOCA에 기록되며, 손익센터가 다르면 손익센터별 손익이 바로 바뀜. ECC의 COEP·COSP·COSS 실적은 ACDOCA 기반 호환 뷰로 읽힘</p>`;
+}
+function orgDetail(k){const o=ORG[k];document.querySelectorAll(".node").forEach(e=>e.classList.toggle("on",e.dataset.k==k));$("#orgd").innerHTML=`<h4>${o[0]}</h4><div><b>${o[1]}</b> — ${o[2]}</div><dl><dt>T-code·테이블</dt><dd class="mono">${o[3]}</dd>${o[4]?`<dt>실무 포인트</dt><dd>${o[4]}</dd>`:""}</dl>`;}
+
+/* ---------------- COST ELEMENTS ---------------- */
+const CE=[
+ ["1","1차 원가 / 원가감소 수익","1차","급여, 임차료, 감가상각, 자재 소비 등 FI에서 들어오는 비용","610000 급여 · 640000 임차료","원가 오브젝트(원가센터·오더 등) 지정 필수"],
+ ["11","수익","1차","매출. 수익 계정에 원가 오브젝트가 있으면 통계적으로 기록","800000 매출","CO-PA 특성 도출의 출발점"],
+ ["12","판매차감","1차","할인·리베이트 등 매출 차감","880000 매출할인","SD 가격결정 조건에서 계정결정"],
+ ["21","내부 정산","2차","오더·프로젝트를 CO 내부 수신자(원가센터·다른 오더)로 정산","921000 오더 정산","배분구조(OKO6)에서 지정"],
+ ["22","외부 정산","1차","CO 밖 수신자(G/L·고정자산·자재)로 정산할 때 쓰는 정산 원가요소","922000 외부 정산","또는 원가요소별(원래 원가요소)로 정산"],
+ ["31","오더/프로젝트 결과분석","2차","결과분석(RA)·WIP 결과를 CO에 기록","931000 WIP 결과분석","재공품·결과분석 키와 함께 사용"],
+ ["41","간접비율","2차","원가계산표(costing sheet)로 간접비를 부과할 때 원가센터 대변·오더 차변","941000 제조간접비 부과","KZS2 신용(credit) 키에 지정"],
+ ["42","배부 (Assessment)","2차","원가센터 배부 시 송신·수신에 쓰는 원가요소. 원래 1차 원가요소는 사라짐","942100 관리비 배부","KSU1 세그먼트에 지정"],
+ ["43","내부 활동배부","2차","활동유형 × 단가로 원가센터 대변·수신 오브젝트 차변","943000 조립 활동배부","활동유형(KL01)·직접 활동배부(KB21N)·생산 확정"]
+];
+let ceK=0;
+function renderCE(){
+ return `<h2>원가요소 = G/L 계정</h2><p class="lead">S/4HANA에서는 원가요소를 따로 만들지 않음. FS00에서 G/L 계정 유형으로 1차/2차를 정하고 원가요소 범주를 지정</p>
+ <div class="grid g3">
+  <div class="card sel"><h4>G/L 계정 유형 <span class="tag">FS00</span></h4><p>'1차 원가 또는 수익' 또는 '2차 원가'를 선택하면 원가요소 범주 필드가 열림</p></div>
+  <div class="card"><h4>1차 원가요소</h4><p>손익계산서에 나타나는 FI 계정. FI 전기와 함께 CO로 들어옴</p></div>
+  <div class="card"><h4>2차 원가요소</h4><p>CO 내부 배분 전용. FI 손익 합계에는 영향 없지만 ACDOCA에 기록되고 손익센터·회사코드가 다르면 그 단위 손익은 바뀜</p></div>
+ </div>
+ <h3>원가요소 범주 — 카드를 누르면 상세</h3>
+ <div class="grid g4" id="cec">${CE.map((c,i)=>`<button class="card${i==ceK?' sel':''}" data-ce="${i}"><h4><span class="tag">${c[0]}</span>${c[1]}</h4><p>${c[2]} 원가요소</p></button>`).join("")}</div>
+ <div class="detail" id="ced"></div>
+ <div class="grid g2" style="margin-top:14px">
+  <div class="card"><h4>ECC와 달라진 점</h4><p>KA01·KA06으로 원가요소를 만들던 방식은 FS00으로 통합. ECC 원가요소 마스터(CSKA·CSKB)를 직접 유지하지 않음</p></div>
+  <div class="card"><h4>원가요소 그룹 <span class="tag">KAH1</span></h4><p>보고서·배부 사이클에서 원가요소 범위를 묶어 지정할 때 사용</p></div>
+ </div>`;
+}
+function ceDetail(){const c=CE[ceK];document.querySelectorAll("#cec .card").forEach(e=>e.classList.toggle("sel",+e.dataset.ce==ceK));
+ $("#ced").innerHTML=`<h4>범주 ${c[0]} · ${c[1]}</h4><div>${c[3]}</div><dl><dt>유형</dt><dd>${c[2]} 원가요소</dd><dt>예시 계정</dt><dd class="mono">${c[4]} (가상 번호)</dd><dt>실무 포인트</dt><dd>${c[5]}</dd></dl>`;}
+
+/* ---------------- CCA SIM ---------------- */
+const CCS=[["1000","관리","s"],["2000","IT","s"],["3000","생산 조립","r"],["4000","영업","r"]];
+const PE=[["610000","급여"],["640000","임차료"]];
+const DEF={1000:[30000,10000],2000:[20000,4000],3000:[50000,16000],4000:[24000,6000]};
+const CEN={"610000":"급여","640000":"임차료","942100":"관리비 배부","942200":"IT비 배부","943000":"조립 활동배부"};
+let C={mode:"A",ran:false,act:false,docs:[],bal:{}};
+function renderCCA(){
+ return `<h2>원가센터회계 시뮬레이터</h2><p class="lead">지원 원가센터(관리·IT)의 원가를 운영 원가센터로 보내고, 생산 조립 원가센터의 활동을 생산오더에 배부</p>
+ <div class="sim"><div class="panel"><h4>1차 원가 입력 (USD)</h4>
+  ${CCS.map(c=>`<div style="font-size:13px;font-weight:700;color:var(--shell);margin-top:6px">CC ${c[0]} ${c[1]} ${c[2]=="s"?'<span class="tag">송신</span>':'<span class="tag">수신</span>'}</div>
+  <div class="row">${PE.map((e,j)=>`<label class="f">${e[1]} ${e[0]}<input type="number" id="p_${c[0]}_${j}" value="${DEF[c[0]][j]}" min="0"></label>`).join("")}</div>`).join("")}
+  <h4 style="margin-top:12px">배분 기준</h4>
+  <div class="note" style="margin:-6px 0 6px">관리 → 인원(통계 주요지표)</div>
+  <div class="row"><label class="f">생산 조립 인원<input type="number" id="b_hc3" value="30" min="0"></label><label class="f">영업 인원<input type="number" id="b_hc4" value="10" min="0"></label></div>
+  <div class="note" style="margin:-2px 0 6px">IT → 고정 비율 %</div>
+  <div class="row"><label class="f">생산 조립 %<input type="number" id="b_p3" value="40" min="0"></label><label class="f">영업 %<input type="number" id="b_p4" value="60" min="0"></label></div>
+  <h4 style="margin-top:12px">활동 (생산 조립)</h4>
+  <div class="row"><label class="f">활동 단가 KP26 (USD/H)<input type="number" id="a_rate" value="60" step="0.01" min="0"></label><label class="f">조립 시간 H<input type="number" id="a_hrs" value="1700" min="0"></label></div>
+  <p class="note">활동유형 ASSY(조립 시간) · 생산오더 1000123 · 모두 예시</p>
+ </div><div style="min-width:0">
+  <div class="seg" id="ccseg"><button class="${C.mode=='A'?'on':''}" data-m="A">배부 Assessment KSU5</button><button class="${C.mode=='D'?'on':''}" data-m="D">분배 Distribution KSV5</button></div>
+  <div class="acts"><button class="btn pri" id="cc_run">① 사이클 실행</button><button class="btn pri" id="cc_act">② 활동배부 KB21N</button><button class="btn" id="cc_reset">처음부터</button></div>
+  <div class="note" id="ccmsg" style="margin:-4px 0 10px;font-weight:700;color:var(--brand2)"></div>
+  <h3 style="margin-top:4px">원가센터 잔액 (원가요소별)</h3>
+  <div class="tbl" id="ccbal"></div>
+  <h3>전표 라인</h3><div id="ccje"></div>
+ </div></div>
+ <h3>배부 vs 분배</h3>
+ <div class="tbl"><table><tr><th>구분</th><th>배부 Assessment</th><th>분배 Distribution</th></tr>
+  <tr><td><b>T-code</b></td><td class="mono">KSU1 정의 · KSU5 실행</td><td class="mono">KSV1 정의 · KSV5 실행</td></tr>
+  <tr><td><b>원가요소</b></td><td>2차 원가요소(범주 42) 하나로 묶어 보냄 — 원래 1차 원가요소는 수신자에서 보이지 않음</td><td>원래 1차 원가요소를 그대로 유지</td></tr>
+  <tr><td><b>대상 원가</b></td><td>1차·2차 원가 모두</td><td>1차 원가만</td></tr>
+  <tr><td><b>언제 쓰나</b></td><td>수신자가 '관리비 배부액' 한 줄이면 충분할 때. 전표 라인이 적음</td><td>수신자가 급여·임차료 등 원래 구성을 봐야 할 때</td></tr>
+ </table></div>`;
+}
+function ccRead(){const p={};CCS.forEach(c=>{p[c[0]]=PE.map((e,j)=>val(`p_${c[0]}_${j}`))});return p;}
+function ccInit(){
+ const p=ccRead();C.bal={};C.docs=[];C.ran=false;C.act=false;C.order=0;
+ CCS.forEach(c=>{C.bal[c[0]]={};PE.forEach((e,j)=>C.bal[c[0]][e[0]]=p[c[0]][j]);});
+ drawCC();
+}
+function ccRun(){
+ if(C.ran) ccInit();
+ const segs=[{s:"1000",nm:"관리비",ce:"942100",w:{3000:val("b_hc3"),4000:val("b_hc4")},basis:"인원"},{s:"2000",nm:"IT비",ce:"942200",w:{3000:val("b_p3"),4000:val("b_p4")},basis:"고정 %"}];
+ segs.forEach(g=>{
+  const W=g.w[3000]+g.w[4000]; if(W<=0) return;
+  const sh={3000:g.w[3000]/W,4000:g.w[4000]/W}; const L=[];
+  const pct=r=>Math.round(sh[r]*1000)/10+"%";
+  if(C.mode=="A"){
+   const tot=Object.values(C.bal[g.s]).reduce((a,b)=>a+b,0);
+   L.push([`CC ${g.s}`,g.ce,-tot,"송신 원가 합계 (범주 42)"]);
+   ["3000","4000"].forEach(r=>{const a=tot*sh[r];L.push([`CC ${r}`,g.ce,a,`${g.basis} ${pct(r)}`]);C.bal[r][g.ce]=(C.bal[r][g.ce]||0)+a;});
+   C.bal[g.s][g.ce]=(C.bal[g.s][g.ce]||0)-tot;
+  }else{
+   PE.forEach(e=>{const amt=C.bal[g.s][e[0]];if(!amt)return;
+    L.push([`CC ${g.s}`,e[0],-amt,`${e[1]} 그대로 송신`]);
+    ["3000","4000"].forEach(r=>{const a=amt*sh[r];L.push([`CC ${r}`,e[0],a,`${g.basis} ${pct(r)}`]);C.bal[r][e[0]]+=a;});
+    C.bal[g.s][e[0]]-=amt;});
+  }
+  C.docs.push({title:`${C.mode=="A"?"KSU5 배부":"KSV5 분배"} · 세그먼트 ${g.nm} (송신 CC ${g.s})`,sub:"CO 전표",lines:L});
+ });
+ C.ran=true; drawCC();
+}
+function ccAct(){
+ const amt=val("a_rate")*val("a_hrs");
+ C.bal["3000"]["943000"]=(C.bal["3000"]["943000"]||0)-amt; C.order=amt;
+ C.docs.push({title:"KB21N 직접 활동배부 · ASSY",sub:"CO 전표 (생산오더 확정 CO11N에서도 자동 발생)",lines:[["생산오더 1000123","943000",amt,`${val("a_hrs").toLocaleString()} H × ${fmt(val("a_rate"))}`],["CC 3000","943000",-amt,"활동 송신 (범주 43)"]]});
+ C.act=true; drawCC();
+}
+function drawCC(){
+ const els=[...PE.map(e=>e[0])];["942100","942200","943000"].forEach(k=>{if(CCS.some(c=>C.bal[c[0]]&&C.bal[c[0]][k]!==undefined))els.push(k)});
+ const rows=CCS.map(c=>{const b=C.bal[c[0]];const t=els.reduce((a,k)=>a+(b[k]||0),0);return `<tr><td><b>CC ${c[0]}</b> ${c[1]}</td>${els.map(k=>`<td class="num">${b[k]!==undefined&&Math.abs(b[k])>0.004?fmt(b[k]):""}</td>`).join("")}<td class="num"><b>${fmt(t)}</b></td></tr>`;});
+ if(C.act) rows.push(`<tr><td><b>생산오더</b> 1000123</td>${els.map(k=>`<td class="num">${k=="943000"?fmt(C.order):""}</td>`).join("")}<td class="num"><b>${fmt(C.order)}</b></td></tr>`);
+ const grand=CCS.reduce((a,c)=>a+Object.values(C.bal[c[0]]).reduce((x,y)=>x+y,0),0)+(C.act?C.order:0);
+ rows.push(`<tr class="sum"><td>합계</td>${els.map(k=>`<td class="num">${fmt(CCS.reduce((a,c)=>a+(C.bal[c[0]][k]||0),0)+(C.act&&k=="943000"?C.order:0))}</td>`).join("")}<td class="num">${fmt(grand)}</td></tr>`);
+ $("#ccbal").innerHTML=`<table><tr><th>오브젝트</th>${els.map(k=>`<th class="num">${k}<br><span style="font-weight:500">${CEN[k]}</span></th>`).join("")}<th class="num">합계</th></tr>${rows.join("")}</table>`;
+ $("#ccje").innerHTML=C.docs.length?jeHtml(C.docs,["오브젝트","원가요소"]):`<div class="empty">배부 또는 분배를 고르고 ① 사이클 실행을 누름</div>`;
+ $("#cc_act").disabled=!C.ran||C.act; $("#cc_run").disabled=C.ran;
+ let m="1차 원가만 있음 — 지원 원가센터(1000·2000)에 원가가 쌓여 있음";
+ if(C.ran) m=C.mode=="A"?"배부 완료 — 수신자에는 942100·942200(범주 42) 한 줄씩. 급여·임차료 구분은 사라짐":"분배 완료 — 수신자에 급여·임차료 원가요소가 그대로 남음";
+ if(C.act){const r=Object.values(C.bal["3000"]).reduce((a,b)=>a+b,0);m=Math.abs(r)<0.005?"활동배부 완료 — 생산 조립 원가센터 잔액 0 (완전 흡수)":r>0?`활동배부 완료 — CC 3000에 ${fmt(r)} 과소 흡수(차변 잔액). 실제 활동가격(KSII) 재계산 대상`:`활동배부 완료 — CC 3000이 ${fmt(-r)} 과대 흡수(대변 잔액)`;}
+ $("#ccmsg").textContent=m;
+}
+
+/* ---------------- INTERNAL ORDER ---------------- */
+let IO={rcv:"CTR",done:false};
+function renderIO(){
+ return `<h2>내부오더 (Internal Order)</h2><p class="lead">행사·수리·투자처럼 기간이 정해진 일의 원가를 따로 모았다가 정산. 마스터 테이블은 AUFK</p>
+ <div class="grid g2">
+  <div class="card"><h4>실제 오더 (Real) <span class="tag">KO01</span></h4><p>원가를 오더에 실제로 모으고 기간말에 정산 규칙에 따라 원가센터·자산·G/L 등으로 정산(KO88). 정산 후 오더 잔액 0</p></div>
+  <div class="card"><h4>통계 오더 (Statistical)</h4><p>원가는 실제 CO 오브젝트(예: 원가센터)에 기록되고 오더에는 통계적으로만 쌓임. 정산하지 않음 — 집계·예산 확인용</p></div>
+ </div>
+ <h3>오더 유형과 정산 설정</h3>
+ <div class="grid g4">
+  <div class="card"><h4>오더 유형 <span class="tag">KOT2</span></h4><p>번호범위, 정산 프로파일, 예산 프로파일, 상태 프로파일을 묶음</p></div>
+  <div class="card"><h4>정산 프로파일 <span class="tag">OKO7</span></h4><p>허용 수신자 유형(CTR·FXA·G/L 등)과 배분구조를 지정</p></div>
+  <div class="card"><h4>배분구조 <span class="tag">OKO6</span></h4><p>어떤 원가요소를 어떤 정산 원가요소로 보낼지 (내부 21 · 외부 22 또는 원래 원가요소)</p></div>
+  <div class="card"><h4>정산 규칙 <span class="tag">KO02</span></h4><p>오더별 수신자와 비율·금액. 정산 전 반드시 있어야 함</p></div>
+ </div>
+ <h3>정산 실습 — 무역박람회 오더 / 설비 개선 오더</h3>
+ <div class="sim"><div class="panel"><h4>오더 실적 (USD)</h4>
+  <div class="row"><label class="f">외부 서비스 1차<input type="number" id="o_svc" value="8000" min="0"></label><label class="f">자재 소비 1차<input type="number" id="o_mat" value="2000" min="0"></label></div>
+  <div class="row"><label class="f">내부 활동 2차<input type="number" id="o_act" value="1500" min="0"></label><div></div></div>
+  <h4 style="margin-top:8px">정산 수신자</h4>
+  <div class="seg" id="ioseg"><button data-r="CTR" class="${IO.rcv=='CTR'?'on':''}">원가센터</button><button data-r="FXA" class="${IO.rcv=='FXA'?'on':''}">고정자산</button><button data-r="GL" class="${IO.rcv=='GL'?'on':''}">G/L</button></div>
+  <div id="iorule"></div>
+  <button class="btn pri" id="io_run" style="width:100%;margin-top:8px">KO88 정산 실행</button>
+  <button class="btn" id="io_reset" style="width:100%;margin-top:6px">처음부터</button>
+ </div><div style="min-width:0">
+  <div class="stock" id="iostk"></div>
+  <div class="note" id="iomsg" style="margin:-4px 0 10px;font-weight:700;color:var(--brand2)"></div>
+  <div id="ioje"></div>
+  <h3 style="margin-top:14px">오더 T계정</h3><div class="taccts" id="iotacc"></div>
+ </div></div>`;
+}
+function ioRule(){
+ const r=IO.rcv;
+ $("#iorule").innerHTML=r=="CTR"?`<div class="row"><label class="f">CC 4000 영업 %<input type="number" id="o_p4" value="70" min="0" max="100"></label><label class="f">CC 1000 관리 %<input type="number" id="o_p1" value="30" min="0" max="100"></label></div><p class="note">합계가 100%가 아니면 나머지는 오더에 남음</p>`
+ :r=="FXA"?`<p class="note">설비 개선 투자 → 자산 번호 1000045-0 (예시) 100%. 실무에서는 건설중자산(AuC)을 거쳐 최종 자산으로 정산하는 경우가 많음</p>`
+ :`<p class="note">G/L 계정 172000 (예시) 100%. 원가 오브젝트가 아닌 계정으로 보내는 경우</p>`;
+}
+function ioTot(){return val("o_svc")+val("o_mat")+val("o_act");}
+function ioRun(){
+ const tot=ioTot(),L=[];let sub="CO 전표";
+ if(IO.rcv=="CTR"){const p4=val("o_p4"),p1=val("o_p1");
+  const a4=tot*p4/100,a1=tot*p1/100; IO.settled=a4+a1;
+  L.push(["내부오더 600010","921000",-(a4+a1),"정산 원가요소 (범주 21)"]);
+  if(a4)L.push(["CC 4000","921000",a4,`정산 규칙 ${p4}%`]); if(a1)L.push(["CC 1000","921000",a1,`정산 규칙 ${p1}%`]);
+ }else if(IO.rcv=="FXA"){IO.settled=tot;sub="FI 전표 + CO 전표";
+  L.push(["자산 1000045-0","자산 B/S 계정",tot,"자산 취득가 증가"]);L.push(["내부오더 600010","922000",-tot,"외부 정산 원가요소 (범주 22)"]);
+ }else{IO.settled=tot;sub="FI 전표 + CO 전표";
+  L.push(["G/L 172000","172000",tot,"수신 G/L 계정"]);L.push(["내부오더 600010","922000",-tot,"외부 정산 원가요소 (범주 22)"]);}
+ IO.docs=[{title:`KO88 정산 · 수신자 ${IO.rcv=="CTR"?"원가센터":IO.rcv=="FXA"?"고정자산":"G/L"}`,sub,lines:L}];IO.done=true;drawIO();
+}
+function ioReset(){IO.done=false;IO.docs=[];IO.settled=0;drawIO();}
+function drawIO(){
+ const tot=ioTot(),st=IO.done?IO.settled:0,bal=tot-st;
+ $("#iostk").innerHTML=`<div><small>오더 차변 (실적)</small><b>${fmt(tot)}</b></div><div><small>정산 대변</small><b>${fmt(st)}</b></div><div><small>오더 잔액</small><b>${fmt(bal)}</b></div>`;
+ $("#ioje").innerHTML=IO.done?jeHtml(IO.docs,["오브젝트","원가요소·계정"]):`<div class="empty">수신자를 고르고 KO88 정산 실행을 누름</div>`;
+ $("#iotacc").innerHTML=`<div class="tacc"><div class="nm">내부오더 600010</div><div class="sides"><div class="num">${fmt(tot)}</div><div class="num">${st?fmt(st):""}</div></div><div class="bal">잔액 ${fmt(bal)}</div></div>`;
+ $("#io_run").disabled=IO.done;
+ $("#iomsg").textContent=!IO.done?"정산 전 — 실적이 오더에 쌓여 있음":Math.abs(bal)<0.005?"정산 완료 — 오더 잔액 0. 기간을 다시 정산하면 증분만 정산됨":`정산 완료 — 비율 합계가 100%가 아니어서 ${fmt(bal)}이 오더에 남음`;
+}
+
+/* ---------------- PRODUCT COSTING ---------------- */
+const BOM=[["RM-FRAME","프레임",1,180],["RM-WHEEL","휠 어셈블리",2,45],["RM-HDBR","핸들바",1,25],["RM-GEAR","기어세트",1,60],["RM-MISC","기타 부품",1,30]];
+const ACT=[["ASSY","조립 시간 (CC 3000)",1.5,60],["QCHK","검사 시간 (CC 3100)",0.25,50]];
+function renderPC(){
+ return `<h2>제품원가 산정</h2><p class="lead">BOM(재료) + 작업장 활동(라우팅 시간 × 활동 단가) + 간접비(원가계산표) = 표준원가. 완제품 DXTR1000 디럭스 투어링 바이크(예시)</p>
+ <div class="lane">
+  <div class="box"><b>1. 원가 추정 CK11N</b>원가계산 변형 PPC1로 BOM·라우팅을 읽어 계산</div><span class="arr">→</span>
+  <div class="box"><b>2. 표시 CK24 Mark</b>미래 표준가로 표시 (자재마스터 원가 뷰)</div><span class="arr">→</span>
+  <div class="box"><b>3. 해제 CK24 Release</b>현재 표준가가 됨 · 재고 재평가</div><span class="arr">→</span>
+  <div class="box"><b>대량: CK40N</b>원가계산 실행으로 여러 자재를 한 번에</div>
+ </div>
+ <div class="sim"><div class="panel"><h4>BOM — 수량 · 단가 (USD)</h4>
+  ${BOM.map((b,i)=>`<div style="font-size:13px;font-weight:700;color:var(--shell)">${b[1]} <span class="mono" style="font-weight:500;color:var(--sub)">${b[0]}</span></div><div class="row"><label class="f">수량<input type="number" id="bq${i}" value="${b[2]}" min="0" step="0.01"></label><label class="f">단가<input type="number" id="bp${i}" value="${b[3]}" min="0" step="0.01"></label></div>`).join("")}
+  <h4 style="margin-top:10px">라우팅 활동</h4>
+  ${ACT.map((a,i)=>`<div style="font-size:13px;font-weight:700;color:var(--shell)">${a[0]} ${a[1]}</div><div class="row"><label class="f">시간/EA<input type="number" id="ah${i}" value="${a[2]}" min="0" step="0.01"></label><label class="f">단가 KP26<input type="number" id="ar${i}" value="${a[3]}" min="0" step="0.01"></label></div>`).join("")}
+  <div class="row"><label class="f">셋업 시간/로트 (ASSY)<input type="number" id="pc_su" value="2" min="0" step="0.1"></label><label class="f">원가계산 로트 EA<input type="number" id="pc_lot" value="100" min="1"></label></div>
+  <h4 style="margin-top:10px">원가계산표 (KZS2)</h4>
+  <div class="row"><label class="f">재료간접비 % (재료비 기준)<input type="number" id="oh_m" value="10" min="0" step="0.1"></label><label class="f">제조간접비 % (활동 기준)<input type="number" id="oh_p" value="20" min="0" step="0.1"></label></div>
+  <h4 style="margin-top:10px">해제 시 재고 재평가</h4>
+  <div class="row"><label class="f">현재 표준가<input type="number" id="pc_old" value="560" min="0" step="0.01"></label><label class="f">보유 재고 EA<input type="number" id="pc_stk" value="40" min="0"></label></div>
+ </div><div style="min-width:0">
+  <div class="stock" id="pcstk"></div>
+  <h3 style="margin-top:4px">원가 추정 항목 (CK11N 항목화)</h3><div class="tbl" id="pcit"></div>
+  <h3>원가요소 구성 분할 (Cost Component Split)</h3><div class="tbl" id="pccc"></div>
+  <h3>CK24 해제 시 전표</h3><div id="pcje"></div>
+ </div></div>
+ <h3>설정 요소</h3>
+ <div class="grid g3">
+  <div class="card"><h4>원가계산 변형 PPC1 <span class="tag">OKKN</span></h4><p>표준원가 추정용. 원가계산 유형(01 표준원가)·평가 변형(어느 단가로 재료·활동을 평가할지)·일자 관리·수량 구조 관리를 묶음</p></div>
+  <div class="card"><h4>원가요소 구성 구조 <span class="tag">OKTZ</span></h4><p>원가요소 범위를 재료비·노무비·간접비 등 구성요소에 매핑. 결과는 KEKO(헤더)·KEPH(구성요소)에 저장</p></div>
+  <div class="card"><h4>원가계산표 <span class="tag">KZS2</span></h4><p>기준(base) 행 → 간접비율(overhead rate) → 신용(credit) 키로 간접비를 계산하고 원가센터 대변(범주 41)</p></div>
+ </div>`;
+}
+function pcCalc(){
+ let mat=0,lab=0;const items=[];
+ BOM.forEach((b,i)=>{const q=val("bq"+i),p=val("bp"+i),a=q*p;mat+=a;items.push(["M",`${b[0]} ${b[1]}`,`${q} EA × ${fmt(p)}`,a]);});
+ ACT.forEach((x,i)=>{const h=val("ah"+i),r=val("ar"+i),a=h*r;lab+=a;items.push(["E",`${x[0]} ${x[1]}`,`${h} H × ${fmt(r)}`,a]);});
+ const lot=Math.max(1,val("pc_lot")),su=val("pc_su")*val("ar0")/lot; lab+=su; items.push(["E","ASSY 셋업 (로트 고정)",`${val("pc_su")} H × ${fmt(val("ar0"))} ÷ ${lot} EA`,su]);
+ const ohm=mat*val("oh_m")/100,ohp=lab*val("oh_p")/100;
+ items.push(["G","재료간접비",`재료비 × ${val("oh_m")}%`,ohm]);items.push(["G","제조간접비",`활동 × ${val("oh_p")}%`,ohp]);
+ return {mat,lab,oh:ohm+ohp,items,tot:mat+lab+ohm+ohp};
+}
+function drawPC(){
+ const r=pcCalc();
+ $("#pcstk").innerHTML=`<div><small>표준원가 / EA</small><b>${fmt(r.tot)}</b></div><div><small>원가계산 로트</small><b>${Math.max(1,val("pc_lot"))} EA</b></div><div><small>로트 총원가</small><b>${fmt(r.tot*Math.max(1,val("pc_lot")))}</b></div>`;
+ const tn={M:"자재",E:"활동",G:"간접비"};
+ $("#pcit").innerHTML=`<table><tr><th>범주</th><th>항목</th><th>계산</th><th class="num">USD/EA</th></tr>${r.items.map(i=>`<tr><td><span class="tag">${i[0]}</span>${tn[i[0]]}</td><td>${i[1]}</td><td style="color:var(--sub)">${i[2]}</td><td class="num">${fmt(i[3])}</td></tr>`).join("")}<tr class="sum"><td colspan="3">합계 = 표준가</td><td class="num">${fmt(r.tot)}</td></tr></table>`;
+ const cc=[["10","재료비",r.mat,"BOM 자재"],["20","노무비",r.lab,"ASSY·QCHK 활동 + 셋업"],["30","제조간접비",r.oh,"원가계산표 간접비"]];
+ $("#pccc").innerHTML=`<table><tr><th>구성요소</th><th>내용</th><th class="num">USD/EA</th><th class="num">비중</th></tr>${cc.map(c=>`<tr><td><span class="tag">${c[0]}</span><b>${c[1]}</b></td><td style="color:var(--sub)">${c[3]}</td><td class="num">${fmt(c[2])}</td><td class="num">${r.tot?(c[2]/r.tot*100).toFixed(1):"0.0"}%</td></tr>`).join("")}</table>`;
+ const d=(r.tot-val("pc_old"))*val("pc_stk");
+ $("#pcje").innerHTML=Math.abs(d)<0.005?`<div class="empty">표준가 변동 없음 또는 재고 없음 — 재평가 전표 없음</div>`:jeHtml([{title:"CK24 해제 → 자재 가격 변경 (재고 재평가)",sub:`${val("pc_stk")} EA × (${fmt(r.tot)} − ${fmt(val("pc_old"))})`,lines:d>0?[["완제품 재고","BSX",d,"새 표준가로 재평가"],["재평가 손익","UMB",-d,"가격 변경 상대계정"]]:[["재평가 손익","UMB",-d,"가격 변경 상대계정"],["완제품 재고","BSX",d,"새 표준가로 재평가"]]}],["계정","거래키"]);
+}
+
+/* ---------------- VARIANCE ---------------- */
+let V={st:"DLV",ran:false};
+function renderVar(){
+ return `<h2>생산오더 차이와 정산</h2><p class="lead">오더에 실제 원가가 쌓이고, 입고는 표준가로 대변. 그 차이를 완료 오더는 차이(KKS2)로, 진행 중 오더는 재공품(KKAX)으로 처리한 뒤 정산(KO88)</p>
+ <div class="lane"><div class="box"><b>오더 차변</b>자재 출고 261 · 활동 확정 CO11N · 간접비 KGI2</div><span class="arr">−</span><div class="box"><b>오더 대변</b>입고 101 (표준가 × 입고 수량)</div><span class="arr">=</span><div class="box" style="border-color:var(--warn)"><b>잔액</b>완료: 차이 / 진행 중: WIP</div><span class="arr">→</span><div class="box"><b>정산 KO88 · CO88</b>가격차이 계정 또는 WIP 전기</div></div>
+ <div class="sim"><div class="panel"><h4>오더 상태</h4>
+  <div class="seg" id="vseg"><button data-s="DLV" class="${V.st=='DLV'?'on':''}">완료 DLV/TECO</button><button data-s="REL" class="${V.st=='REL'?'on':''}">진행 중 REL</button></div>
+  <h4>계획 (표준원가 기준, USD)</h4>
+  <div class="row"><label class="f">계획 로트 EA<input type="number" id="v_lot" value="100" min="1"></label><label class="f">실제 입고 EA<input type="number" id="v_out" value="95" min="0"></label></div>
+  <div class="row"><label class="f">프레임 계획단가<input type="number" id="v_pf" value="180" step="0.01"></label><label class="f">휠 계획단가 (2개/EA)<input type="number" id="v_pw" value="45" step="0.01"></label></div>
+  <div class="row"><label class="f">ASSY 시간/EA<input type="number" id="v_h" value="1.5" step="0.01"></label><label class="f">ASSY 단가<input type="number" id="v_r" value="60" step="0.01"></label></div>
+  <div class="row"><label class="f">셋업 시간/로트 (고정)<input type="number" id="v_su" value="2" step="0.1"></label><div></div></div>
+  <h4 style="margin-top:8px">실적</h4>
+  <div class="row"><label class="f">프레임 실제 수량<input type="number" id="a_fq" value="97" min="0"></label><label class="f">프레임 실제 단가<input type="number" id="a_fp" value="185" step="0.01"></label></div>
+  <div class="row"><label class="f">휠 실제 수량<input type="number" id="a_wq" value="190" min="0"></label><label class="f">휠 실제 단가<input type="number" id="a_wp" value="45" step="0.01"></label></div>
+  <div class="row"><label class="f">ASSY 실제 시간<input type="number" id="a_h" value="150" min="0" step="0.1"></label><label class="f">셋업 실제 시간<input type="number" id="a_su" value="2" min="0" step="0.1"></label></div>
+  <div class="row"><label class="f">계획 외 자재 투입액<input type="number" id="a_un" value="0" min="0" step="0.01"></label><div></div></div>
+  <button class="btn pri" id="v_run" style="width:100%">차이 계산 · 정산</button>
+  <p class="note">간접비는 단순화를 위해 제외. 자재는 표준가(S) 관리 가정</p>
+ </div><div style="min-width:0">
+  <div class="stock" id="vstk"></div>
+  <div class="note" id="vmsg" style="margin:-4px 0 10px;font-weight:700;color:var(--brand2)"></div>
+  <div id="vout"></div>
+ </div></div>
+ <h3>차이 범주 (KKS2 · 차이 키 / 대상원가 버전 0)</h3>
+ <div class="tbl"><table><tr><th>구분</th><th>차이 범주</th><th>의미</th></tr>
+  <tr><td>투입</td><td><b>투입 가격차이</b></td><td>실제 단가 ≠ 계획 단가. (실제단가 − 계획단가) × 실제수량</td></tr>
+  <tr><td>투입</td><td><b>자원 사용 차이</b></td><td>계획에 없는 자재·활동을 쓰거나 계획 자원을 쓰지 않음</td></tr>
+  <tr><td>투입</td><td><b>투입 수량차이</b></td><td>실제 투입량 ≠ 실제 산출량 기준 대상수량. (실제수량 − 대상수량) × 계획단가</td></tr>
+  <tr><td>투입</td><td><b>잔여 투입 차이</b></td><td>위 범주로 나눌 수 없는 투입 차이</td></tr>
+  <tr><td>산출</td><td><b>로트 크기 차이</b></td><td>셋업 같은 고정원가가 계획 로트와 다른 산출량에 배분되어 생김</td></tr>
+  <tr><td>산출</td><td><b>산출 가격차이</b></td><td>오더 대변(입고 단가)이 표준원가와 다를 때. 예: 이동평균가 자재·다른 원가 추정으로 대변</td></tr>
+  <tr><td>산출</td><td><b>혼합 가격차이</b></td><td>혼합원가(mixed costing)로 표준가를 정한 경우</td></tr>
+ </table></div>`;
+}
+function varCalc(){
+ const lot=Math.max(1,val("v_lot")),Qo=val("v_out"),pf=val("v_pf"),pw=val("v_pw"),h=val("v_h"),r=val("v_r"),su=val("v_su");
+ const fixed=su*r, varU=pf+2*pw+h*r, std=varU+fixed/lot;
+ const fq=val("a_fq"),fp=val("a_fp"),wq=val("a_wq"),wp=val("a_wp"),ah=val("a_h"),asu=val("a_su"),un=val("a_un");
+ const actM=fq*fp,actW=wq*wp,actH=ah*r,actS=asu*r,actual=actM+actW+actH+actS+un;
+ const credit=Qo*std, target=Qo*varU+fixed;
+ const price=(fp-pf)*fq+(wp-pw)*wq;
+ const qty=(fq-Qo)*pf+(wq-2*Qo)*pw+(ah-h*Qo)*r+(asu-su)*r;
+ const res=un, lotv=fixed-fixed/lot*Qo;
+ return {lot,Qo,std,credit,target,actual,price,qty,res,lotv,actM,actW,actH,actS,un,fq,fp,wq,wp,ah,asu,r,total:actual-credit};
+}
+function drawVar(){
+ const c=varCalc();
+ $("#vstk").innerHTML=`<div><small>오더 실제 차변</small><b>${fmt(c.actual)}</b></div><div><small>입고 대변 (${c.Qo} × ${fmt(c.std)})</small><b>${fmt(c.credit)}</b></div><div><small>잔액 (정산 대상)</small><b>${fmt(c.total)}</b></div>`;
+ if(!V.ran){$("#vout").innerHTML=`<div class="empty">조건을 정하고 차이 계산 · 정산을 누름</div>`;$("#vmsg").textContent=`표준원가 ${fmt(c.std)}/EA = 프레임 + 휠 2개 + ASSY + 셋업 ÷ 로트`;return;}
+ const docs=[
+  {title:"① 자재 출고 261 · 활동 확정 CO11N",sub:"오더 차변",lines:[["생산오더 1000123","소비 GBB-VBR",c.actM+c.actW+c.un,"프레임·휠·기타 자재 (실제)"],["원자재 재고","BSX",-(c.actM+c.actW+c.un),""],["생산오더 1000123","943000",c.actH+c.actS,`${c.ah+c.asu} H × ${fmt(c.r)}`],["CC 3000","943000",-(c.actH+c.actS),"활동 송신"]]},
+  {title:"② 완제품 입고 101",sub:"표준가로 오더 대변",lines:[["완제품 재고","BSX",c.credit,`${c.Qo} EA × ${fmt(c.std)}`],["생산 산출 (오더 대변)","GBB-AUF",-c.credit,""]]}
+ ];
+ let out="";
+ if(V.st=="DLV"){
+  const rows=[["투입 가격차이",c.price],["자원 사용 차이",c.res],["투입 수량차이",c.qty],["로트 크기 차이",c.lotv],["산출 가격차이",0],["혼합 가격차이",0]];
+  out+=`<h3 style="margin-top:4px">KKS2 차이 분석</h3><div class="tbl"><table><tr><th>차이 범주</th><th class="num">USD</th><th>방향</th></tr>${rows.map(x=>`<tr><td>${x[0]}</td><td class="num">${sfmt(x[1])}</td><td style="color:var(--sub)">${Math.abs(x[1])<0.005?"—":x[1]>0?"불리 (원가 초과)":"유리 (원가 절감)"}</td></tr>`).join("")}<tr class="sum"><td>총 차이 = 실제 − 대변</td><td class="num">${sfmt(c.total)}</td><td></td></tr></table></div>
+  <p class="note">대상원가 = 실제 입고 ${c.Qo} EA 기준 변동원가 + 계획 고정원가(셋업) = ${fmt(c.target)}. 산출·혼합 가격차이는 표준가 자재·표준 원가 추정 대변이라 0</p>`;
+  if(Math.abs(c.total)>0.004) docs.push({title:"③ KO88 정산 → 가격차이",sub:"FI 전표 · ML에 가격차이로 기록",lines:c.total>0?[["가격차이 (오더 정산)","PRD / PRF",c.total,"불리 차이"],["생산 산출 (오더 대변)","GBB-AUF",-c.total,"오더 잔액 0"]]:[["생산 산출 (오더 차변)","GBB-AUF",-c.total,"오더 잔액 0"],["가격차이 (오더 정산)","PRD / PRF",c.total,"유리 차이"]]});
+  $("#vmsg").textContent="완료 오더 — 잔액 전부가 차이로 분석되고 정산으로 오더 잔액 0";
+ }else{
+  out+=`<h3 style="margin-top:4px">KKAX 재공품 계산</h3><div class="card"><p>진행 중(REL) 오더는 차이를 계산하지 않음. 잔액 ${fmt(c.total)}이 실제원가 기준 WIP. 결과분석 원가요소(범주 31)로 오더에 기록되고, 정산(KO88) 때 FI로 전기됨</p></div>`;
+  if(Math.abs(c.total)>0.004) docs.push({title:"③ KO88 정산 → WIP 전기",sub:"FI 전표 (오더 잔액은 그대로)",lines:[["재공품 (재무상태표)","WIP B/S",c.total,"KKAX 결과"],["재공품 변동 (손익)","WIP P&L",-c.total,""]]});
+  $("#vmsg").textContent="진행 중 오더 — WIP만 전기. 오더가 완료(DLV/TECO)되면 WIP가 취소되고 차이가 계산됨";
+ }
+ const ordD=c.actual,ordC=c.credit+(V.st=="DLV"?c.total:0);
+ out+=`<h3>전표 라인</h3>${jeHtml(docs,["오브젝트·계정","원가요소·거래키"])}
+  <h3>생산오더 T계정</h3><div class="taccts"><div class="tacc"><div class="nm">생산오더 1000123</div><div class="sides"><div class="num">${fmt(ordD)}</div><div class="num">${fmt(ordC)}</div></div><div class="bal">잔액 ${fmt(ordD-ordC)}</div></div></div>`;
+ $("#vout").innerHTML=out;
+}
+
+/* ---------------- ML ---------------- */
+function renderML(){
+ return `<h2>Material Ledger · 실제원가</h2><p class="lead">S/4HANA에서 재고 평가는 Material Ledger가 필수. 실제원가계산(Actual Costing)은 선택 기능으로, 켜면 기간말 CKMLCP로 실제 원가를 계산</p>
+ <div class="grid g3">
+  <div class="card sel"><h4>ML 필수 (재고 평가)</h4><p>모든 평가영역에서 ML이 켜져 있음. 재고를 여러 통화·평가(법인·그룹 등)로 동시에 관리</p></div>
+  <div class="card"><h4>실제원가계산 (선택)</h4><p>기간 중에는 표준가로 전기하고, 모인 가격차이를 기간말에 재고와 소비로 나눠 기간 단위 실제가격을 계산</p></div>
+  <div class="card"><h4>조회 <span class="tag">CKM3</span></h4><p>자재 가격 분석. 기초·입고·소비·기말별 표준가 금액과 가격차이를 한 화면에</p></div>
+ </div>
+ <h3>실제원가 계산 흐름</h3>
+ <div class="lane">
+  <div class="box"><b>기간 중</b>표준가로 입고·출고</div><span class="arr">→</span>
+  <div class="box"><b>가격차이 수집</b>구매(PPV)·생산 정산 차이를 자재별로</div><span class="arr">→</span>
+  <div class="box"><b>CKMLCP 실행</b>선택 → 순서 결정 → 정산 → 소비 재평가 → 마감 전기</div><span class="arr">→</span>
+  <div class="box"><b>다단계 롤업</b>원자재 → 반제품 → 완제품 → 매출원가</div><span class="arr">→</span>
+  <div class="box"><b>결과</b>기말 재고 재평가 · 기간 단위 가격</div>
+ </div>
+ <p class="note">CKMLCP 단계 구성과 명칭은 릴리스에 따라 다를 수 있음. 마지막에 실제가격을 다음 기간 표준가로 표시하는 단계는 선택</p>
+ <h3>가격차이 롤업 예시</h3>
+ <div class="sim"><div class="panel"><h4>조건 (USD)</h4>
+  <label class="f">프레임 구매 가격차이 PPV<input type="number" id="m_ppv" value="1000" step="0.01"></label>
+  <div class="row" style="margin-top:8px"><label class="f">프레임 중 생산 투입 %<input type="number" id="m_c" value="60" min="0" max="100"></label><label class="f">완제품 중 판매 %<input type="number" id="m_s" value="75" min="0" max="100"></label></div>
+  <label class="f">완제품 생산오더 정산 차이<input type="number" id="m_pv" value="300" step="0.01"></label>
+  <p class="note">단일 레벨: 자재 자체 차이를 기초+입고 대비 기말재고·소비로 배분. 다단계: 소비된 몫이 상위 자재로 올라감</p>
+ </div><div style="min-width:0"><div class="tbl" id="mlt"></div><div class="lane" id="mll"></div></div></div>
+ <div class="grid g3" style="margin-top:14px">
+  <div class="card"><h4>가격결정 2 · 3</h4><p>2 = 거래 기반(이동평균 성격). 3 = 단일·다단계 실제원가 — 실제원가계산과 함께 사용</p></div>
+  <div class="card"><h4>테이블</h4><p><span class="tag">CKMLHD</span> ML 헤더(자재·평가영역별 원가추정번호) <span class="tag">MLDOC</span> ML 문서. 재고 평가 전기는 ACDOCA</p></div>
+  <div class="card"><h4>CO-PA와 연결</h4><p>소비 재평가로 매출원가 계정이 조정되면 계정 기반 CO-PA의 매출원가도 실제원가에 가까워짐</p></div>
+ </div>`;
+}
+function drawML(){
+ const ppv=val("m_ppv"),c=Math.min(100,Math.max(0,val("m_c")))/100,s=Math.min(100,Math.max(0,val("m_s")))/100,pv=val("m_pv");
+ const rmStock=ppv*(1-c),toFG=ppv*c,fgTot=toFG+pv,cogs=fgTot*s,fgStock=fgTot*(1-s);
+ $("#mlt").innerHTML=`<table><tr><th>자재 레벨</th><th>들어온 차이</th><th class="num">기말 재고에 남음</th><th class="num">상위로 / 소비</th></tr>
+ <tr><td><b>원자재</b> 프레임</td><td>PPV ${fmt(ppv)}</td><td class="num">${fmt(rmStock)}</td><td class="num">${fmt(toFG)} → 완제품</td></tr>
+ <tr><td><b>완제품</b> DXTR1000</td><td>롤업 ${fmt(toFG)} + 정산 차이 ${fmt(pv)}</td><td class="num">${fmt(fgStock)}</td><td class="num">${fmt(cogs)} → 매출원가</td></tr>
+ <tr class="sum"><td colspan="2">검증: 전체 차이 ${fmt(ppv+pv)}</td><td class="num">${fmt(rmStock+fgStock)}</td><td class="num">${fmt(cogs)}</td></tr></table>`;
+ $("#mll").innerHTML=`<div class="box"><b>재고 재평가</b>${fmt(rmStock+fgStock)}</div><span class="arr">+</span><div class="box"><b>소비 재평가 (매출원가)</b>${fmt(cogs)}</div><span class="arr">=</span><div class="box"><b>배분된 차이</b>${fmt(rmStock+fgStock+cogs)}</div>`;
+}
+
+/* ---------------- CO-PA ---------------- */
+const PA=[
+ ["C-1000 Rocky Mountain Bikes","DXTR1000","서부",40,650,3],["C-2000 Philly Bikes","DXTR1000","동부",30,640,2],["C-3000 Bayside Bikes","DXTR1000","서부",25,660,5],["C-2000 Philly Bikes","PRTR1000","동부",20,520,2]
+];
+let paF={reg:"전체"};
+function renderPA(){
+ return `<h2>CO-PA 수익성 분석</h2><p class="lead">S/4HANA의 기본은 계정 기반 Margin Analysis. 고객·제품·지역 같은 특성으로 손익을 자름</p>
+ <div class="tbl"><table><tr><th>구분</th><th>계정 기반 (Margin Analysis)</th><th>원가 기반 (Costing-based)</th></tr>
+  <tr><td><b>S/4HANA 위치</b></td><td>기본·권장. 신규 기능은 계정 기반 중심</td><td>온프레미스에서 병행 활성화 가능</td></tr>
+  <tr><td><b>값의 단위</b></td><td>G/L 계정 (원가요소)</td><td>값필드 (KEA6)</td></tr>
+  <tr><td><b>저장</b></td><td>ACDOCA — 특성이 같은 행의 필드로</td><td>별도 테이블 CE1xxxx 등 (xxxx = 경영단위)</td></tr>
+  <tr><td><b>FI와 조정</b></td><td>항상 일치 (같은 전표)</td><td>별도 조정 필요</td></tr>
+  <tr><td><b>매출원가</b></td><td>출고(PGI) 시점에 특성과 함께 기록. 원가요소 구성별 계정 분할 설정 가능</td><td>청구 시점에 원가 추정에서 값필드로</td></tr>
+ </table></div>
+ <div class="grid g3" style="margin-top:12px">
+  <div class="card"><h4>특성 <span class="tag">KEA5</span></h4><p>고객, 제품, 지역, 고객 그룹, 판매조직 등. 경영단위(KEA0)에서 정의</p></div>
+  <div class="card"><h4>특성 도출 <span class="tag">KEDR</span></h4><p>전표에 없는 특성을 규칙·테이블로 채움 (예: 고객 → 지역)</p></div>
+  <div class="card"><h4>보고서 <span class="tag">KE30</span></h4><p>수익성 보고서 실행. Fiori 분석 앱으로도 조회</p></div>
+ </div>
+ <h3>마진 워터폴 — 특성으로 자르기</h3>
+ <div class="chips" id="pac" style="margin-bottom:10px">${["전체","동부","서부"].map(c=>`<button class="chip${c==paF.reg?' on':''}" data-c="${c}">지역: ${c}</button>`).join("")}</div>
+ <div class="sim"><div class="panel"><h4>조건 (USD)</h4>
+  <div class="row"><label class="f">DXTR1000 표준원가<input type="number" id="pa_s1" value="547.94" step="0.01"></label><label class="f">PRTR1000 표준원가<input type="number" id="pa_s2" value="430" step="0.01"></label></div>
+  <div class="row"><label class="f">생산 차이 (제품별 비율 배분)<input type="number" id="pa_v" value="1200" step="0.01"></label><label class="f">ML 소비 재평가<input type="number" id="pa_ml" value="450" step="0.01"></label></div>
+  <label class="f">영업 원가센터 배부 KEU5<input type="number" id="pa_sg" value="6000" step="0.01"></label>
+  <p class="note">차이·재평가·영업비는 매출액 비율로 세그먼트에 배분한 단순 예시. 실제로는 생산 차이는 제품 특성까지만 도출되고 고객은 비어 있음</p>
+ </div><div style="min-width:0"><div class="tbl" id="pat"></div><h3>청구 품목 (특성 → 세그먼트)</h3><div class="tbl" id="pal"></div></div></div>`;
+}
+function drawPA(){
+ const all=PA.map(p=>({c:p[0],m:p[1],r:p[2],q:p[3],rev:p[3]*p[4],ded:p[3]*p[4]*p[5]/100,cogs:p[3]*(p[1]=="DXTR1000"?val("pa_s1"):val("pa_s2"))}));
+ const totRev=all.reduce((a,x)=>a+x.rev,0);
+ const sel=all.filter(x=>paF.reg=="전체"||x.r==paF.reg);
+ const rev=sel.reduce((a,x)=>a+x.rev,0),ded=sel.reduce((a,x)=>a+x.ded,0),cogs=sel.reduce((a,x)=>a+x.cogs,0),sh=totRev?rev/totRev:0;
+ const v=val("pa_v")*sh,ml=val("pa_ml")*sh,sg=val("pa_sg")*sh;
+ const rows=[["매출 (청구 VF01)","800000",rev,0],["판매차감","880000",-ded,0],["순매출","",rev-ded,1],["매출원가 — 표준 (PGI 601)","500000",-cogs,0],["생산 차이 (오더 정산)","PRD/PRF",-v,0],["ML 소비 재평가","실제원가",-ml,0],["매출총이익 (실제원가 기준)","",rev-ded-cogs-v-ml,1],["영업 원가센터 배부","KEU5",-sg,0],["세그먼트 영업이익","",rev-ded-cogs-v-ml-sg,1]];
+ $("#pat").innerHTML=`<table><tr><th>항목</th><th>계정·출처</th><th class="num">USD</th><th class="num">매출 대비</th></tr>${rows.map(r=>`<tr class="${r[3]?'sum':''}"><td>${r[0]}</td><td class="mono" style="color:var(--sub)">${r[1]}</td><td class="num">${fmt(r[2])}</td><td class="num">${rev?(r[2]/rev*100).toFixed(1):"0.0"}%</td></tr>`).join("")}</table>`;
+ $("#pal").innerHTML=`<table><tr><th>고객</th><th>제품</th><th>지역</th><th class="num">수량</th><th class="num">매출</th><th class="num">매출원가</th></tr>${sel.map(x=>`<tr><td>${x.c}</td><td class="mono">${x.m}</td><td>${x.r}</td><td class="num">${x.q}</td><td class="num">${fmt(x.rev)}</td><td class="num">${fmt(x.cogs)}</td></tr>`).join("")}</table>`;
+}
+
+/* ---------------- CLOSE ---------------- */
+const CL=[
+ ["기간 오픈","MMPV · OB52 · OKP1","MM 기간 오픈(MMPV), FI 전기기간(OB52), CO 기간 잠금(OKP1) 확인","기간 잠금은 거래별(배부·정산 등)로 막을 수 있음"],
+ ["반복전표·발생·감가상각","F.14 · AFAB","반복전표 실행, 발생 처리, 감가상각 전기(원가센터로 1차 원가 유입)","배부 전에 원가센터의 1차 원가가 모두 들어와 있어야 함"],
+ ["간접비 내부오더 정산","KO8G","원가센터로 정산될 내부오더를 먼저 정산","오더 정산 결과가 배부 사이클의 송신 원가에 포함되도록"],
+ ["원가센터 간접비·재분류","KSW5","정기 재분류(KSW5) 등 원가센터 내부 조정","재분류는 원래 원가요소 유지"],
+ ["원가센터 분배·배부","KSV5 · KSU5","지원 원가센터 원가를 운영 원가센터로. 사이클 순서가 중요","반복 실행 시 이전 결과를 취소 후 다시 실행"],
+ ["실제 활동가격 계산","KSII","원가센터 실제 원가 ÷ 실제 활동량으로 실제 단가. 설정에 따라 오더 재평가","과소·과대 흡수 정리"],
+ ["생산오더 간접비","CO43 · KGI2","원가계산표로 실제 간접비 부과 (범주 41)","CO43 = 생산·공정오더 일괄"],
+ ["재공품 계산","KKAO · KKAX","진행 중 오더의 WIP 계산","완료 오더는 WIP 취소"],
+ ["차이 계산","KKS1 · KKS2","완료 오더의 차이 범주별 분석","대상원가 버전 0"],
+ ["생산오더 정산","CO88 · KO88","WIP·차이를 FI로 전기. 차이는 가격차이 계정 → ML","정산 후 오더 잔액 0 (완료 오더)"],
+ ["Material Ledger 마감","CKMLCP","실제원가계산 실행 (활성화 시) · 재고·소비 재평가","CKM3으로 결과 확인"],
+ ["CO-PA 배부·확인","KEU5 · KE30","영업 원가센터 → CO-PA 배부, 수익성 보고서 확인","FI 손익과 CO-PA 일치 확인"]
+];
+let clK=0,clD={};
+function renderClose(){
+ return `<h2>기간마감 순서</h2><p class="lead">앞 단계 결과가 뒤 단계의 입력이 됨. 항목을 누르면 상세, 오른쪽 상자로 완료 체크</p>
+ <div class="score" id="clsc" style="top:46px"></div>
+ <div class="grid g2"><div id="cll"></div><div><div class="detail" id="cld" style="margin-top:6px;position:sticky;top:90px"></div></div></div>
+ <button class="btn" id="clreset" style="margin-top:10px">체크 초기화</button>`;
+}
+function drawClose(){
+ $("#cll").innerHTML=CL.map((c,i)=>`<div class="ck${i==clK?' on':''}${clD[i]?' done':''}" data-cl="${i}"><span class="bx" data-ckb="${i}">${clD[i]?"✓":""}</span><span><span class="ct">${i+1}. ${c[0]}</span><br><span class="cs mono">${c[1]}</span></span></div>`).join("");
+ const c=CL[clK];
+ $("#cld").innerHTML=`<h4>${clK+1}. ${c[0]} <span class="tag">${c[1]}</span></h4><div>${c[2]}</div><dl><dt>실무 포인트</dt><dd>${c[3]}</dd></dl><div style="margin-top:10px"><button class="btn pri" data-ckb="${clK}">${clD[clK]?"완료 취소":"완료 체크"}</button></div>`;
+ const n=Object.values(clD).filter(Boolean).length;$("#clsc").textContent=`진행 ${n} / ${CL.length}`;
+}
+
+/* ---------------- DICT ---------------- */
+const DICT=[
+ ["T-code","FS00","G/L 계정 = 원가요소 (S/4HANA)"],["T-code","KAH1","원가요소 그룹 생성"],["T-code","OKKP","관리회계영역 정의"],["T-code","OX19","회사코드 → 관리회계영역 할당"],["T-code","OKEON","원가센터 표준계층"],
+ ["T-code","KS01","원가센터 생성"],["T-code","KSH1","원가센터 그룹 생성"],["T-code","KL01","활동유형 생성"],["T-code","KE51","손익센터 생성"],
+ ["T-code","KP06","원가센터 원가 계획"],["T-code","KP26","활동 단가·계획 활동량"],["T-code","KSPI","계획 활동가격 계산"],["T-code","KSII","실제 활동가격 계산"],
+ ["T-code","KSU1","배부 사이클 생성"],["T-code","KSU5","배부 실행"],["T-code","KSV1","분배 사이클 생성"],["T-code","KSV5","분배 실행"],["T-code","KSW5","정기 재분류 실행"],["T-code","KB21N","직접 활동배부"],
+ ["T-code","KSB1","원가센터 실적 라인아이템"],["T-code","S_ALR_87013611","원가센터 실적/계획/차이 보고서"],
+ ["T-code","KO01","내부오더 생성"],["T-code","KO02","내부오더 변경 (정산 규칙)"],["T-code","KOT2","내부오더 유형"],["T-code","OKO6","배분구조"],["T-code","OKO7","정산 프로파일"],["T-code","KO88","오더 개별 정산"],["T-code","KO8G","내부오더 일괄 정산"],["T-code","KOB1","오더 실적 라인아이템"],
+ ["T-code","OKKN","원가계산 변형 (예: PPC1)"],["T-code","OKTZ","원가요소 구성 구조"],["T-code","KZS2","원가계산표"],["T-code","CK11N","자재 원가 추정 생성"],["T-code","CK13N","원가 추정 조회"],["T-code","CK24","표준가 표시·해제"],["T-code","CK40N","원가계산 실행 (대량)"],
+ ["T-code","KGI2","오더 개별 간접비 계산"],["T-code","CO43","생산·공정오더 일괄 간접비"],["T-code","KKAX","재공품 계산 (개별)"],["T-code","KKAO","재공품 계산 (일괄)"],["T-code","KKS2","차이 계산 (개별)"],["T-code","KKS1","차이 계산 (일괄)"],["T-code","CO88","생산오더 일괄 정산"],
+ ["T-code","CKMLCP","실제원가계산 실행 (ML)"],["T-code","CKM3","자재 가격 분석 (ML)"],
+ ["T-code","KEA0","경영단위 정의"],["T-code","KEKK","관리회계영역 → 경영단위 할당"],["T-code","KEA5","CO-PA 특성"],["T-code","KEA6","CO-PA 값필드 (원가 기반)"],["T-code","KEDR","특성 도출"],["T-code","KEU5","원가센터 → CO-PA 배부"],["T-code","KE30","수익성 보고서 실행"],
+ ["T-code","OKP1","CO 기간 잠금"],
+ ["테이블","TKA01","관리회계영역"],["테이블","TKA02","회사코드 → 관리회계영역 할당"],["테이블","CSKS","원가센터 마스터"],["테이블","CSKT","원가센터 텍스트"],["테이블","CSLA","활동유형 마스터"],["테이블","CEPC","손익센터 마스터"],
+ ["테이블","CSKA / CSKB","ECC 원가요소 마스터 (레거시) — S/4HANA에서는 FS00으로 관리"],["테이블","SKA1 / SKB1","G/L 계정 (계정과목표 / 회사코드)"],
+ ["테이블","AUFK","오더 마스터 (내부·생산오더)"],["테이블","COSP / COSS","1차 / 2차 원가 합계 — S/4HANA에서는 ACDOCA 기반 호환 뷰"],["테이블","ACDOCA","Universal Journal 실적 라인아이템"],
+ ["테이블","KEKO","제품 원가 추정 헤더"],["테이블","KEPH","원가 추정 원가요소 구성"],["테이블","CKIS","원가 추정 항목"],["테이블","CKMLHD","Material Ledger 헤더"],["테이블","MLDOC","Material Ledger 문서"],["테이블","CE1xxxx","원가 기반 CO-PA 실적 라인아이템 (xxxx = 경영단위)"]
+];
+let dictF="전체";
+function renderDict(){
+ return `<h2>T-code · 테이블 사전</h2><p class="lead">CO 실습에서 가장 자주 쓰는 T-code와 테이블</p>
+ <div class="search"><input type="text" id="dq" placeholder="검색 (예: 배부, KSU, ACDOCA, 정산)"></div>
+ <div class="chips" id="dc" style="margin-bottom:12px">${["전체","T-code","테이블"].map(c=>`<button class="chip${c==dictF?' on':''}" data-c="${c}">${c}</button>`).join("")}</div>
+ <div class="grid g4" id="db"></div>`;
+}
+function drawDict(){
+ const q=($("#dq").value||"").trim().toLowerCase();
+ const r=DICT.filter(d=>(dictF=="전체"||d[0]==dictF)&&(!q||d.join(" ").toLowerCase().includes(q)));
+ $("#db").innerHTML=r.length?r.map(d=>`<div class="card"><span class="tag">${d[1]}</span><p style="margin-top:4px">${d[2]}</p></div>`).join(""):`<div class="empty">결과 없음</div>`;
+}
+
+/* ---------------- QUIZ ---------------- */
+const QZ=[
+ ["S/4HANA에서 2차 원가요소를 만드는 곳은?",["KA06","FS00 (G/L 계정 유형 '2차 원가')","KA01","OKKP"],1,"S/4HANA에서는 원가요소가 G/L 계정. FS00에서 계정 유형과 원가요소 범주를 지정. KA01/KA06 방식은 FS00으로 통합"],
+ ["수신 원가센터에서 원래 1차 원가요소(급여·임차료)가 그대로 보이는 배분 방법은?",["배부 KSU5","분배 KSV5","활동배부 KB21N","정산 KO88"],1,"분배는 1차 원가만 대상으로 원래 원가요소를 유지. 배부는 2차 원가요소(범주 42)로 묶어 보냄"],
+ ["원가센터 배부(Assessment)에 쓰는 원가요소 범주는?",["21","41","42","43"],2,"42 = 배부. 43은 내부 활동배부, 41은 간접비율, 21은 내부 정산"],
+ ["활동유형 × 단가로 생산오더를 차변하고 원가센터를 대변하는 원가요소 범주는?",["1","31","42","43"],3,"범주 43 내부 활동배부. 단가는 KP26에서 계획"],
+ ["통계 내부오더에 대한 설명으로 맞는 것은?",["기간말 반드시 정산","원가는 실제 CO 오브젝트에 기록되고 오더는 통계용","FI 전표 없이 CO만 기록","자산으로만 정산 가능"],1,"통계 오더는 원가센터 등 실제 오브젝트를 함께 지정하고, 정산하지 않음"],
+ ["원가 추정을 표준가로 표시·해제하는 T-code는?",["CK11N","CK24","CK13N","KKS2"],1,"CK11N으로 추정, CK24로 Mark & Release. 대량은 CK40N"],
+ ["계획 로트 100 EA에 셋업원가가 고정인데 95 EA만 생산했을 때 생기는 차이는?",["투입 가격차이","혼합 가격차이","로트 크기 차이","자원 사용 차이"],2,"고정 셋업원가가 계획 로트와 다른 산출량에 배분되어 로트 크기 차이 발생"],
+ ["완료된 생산오더(표준가 자재)를 KO88로 정산할 때 차이는 어디로?",["완제품 재고 BSX","가격차이 계정 (ML에 기록)","원가센터","CO-PA 값필드만"],1,"차이는 가격차이 계정으로 전기되고 ML에 자재별 가격차이로 쌓여 실제원가계산 대상이 됨"],
+ ["S/4HANA에서 Material Ledger에 대한 설명으로 맞는 것은?",["선택 기능, 기본 비활성","재고 평가에 필수, 실제원가계산은 선택","CO-PA 대체 기능","ECC와 동일하게 별도 활성화 필요"],1,"ML은 S/4HANA 재고 평가에 필수. CKMLCP 실제원가계산은 선택적으로 활성화"],
+ ["S/4HANA에서 FI와 CO 실적 라인아이템, 계정 기반 CO-PA가 함께 저장되는 테이블은?",["COEP","CE1xxxx","ACDOCA","BSEG"],2,"Universal Journal ACDOCA. 계정 기반 Margin Analysis가 기본이며 특성도 ACDOCA 필드로"]
+];
+let qs={};
+function renderQuiz(){
+ qs={};
+ return `<h2>CO 퀴즈 10문항</h2><p class="lead">답을 누르면 정답과 해설이 바로 보임</p>
+ <div class="score" id="qsc"></div>
+ ${QZ.map((q,i)=>`<div class="q"><div class="qt">${i+1}. ${q[0]}</div>${q[1].map((o,j)=>`<button class="opt" data-q="${i}" data-o="${j}">${String.fromCharCode(65+j)}. ${o}</button>`).join("")}<div class="exp" id="e${i}">${q[3]}</div></div>`).join("")}
+ <button class="btn" id="qreset">다시 풀기</button>`;
+}
+function drawScore(){const n=Object.keys(qs).length,c=Object.values(qs).filter(Boolean).length;$("#qsc").textContent=`점수 ${c} / ${QZ.length}  ·  푼 문제 ${n}`;}
+
+/* ---------------- ROUTER ---------------- */
+const R={org:[renderOrg,()=>orgDetail("ka")],ce:[renderCE,ceDetail],cca:[renderCCA,ccInit],io:[renderIO,()=>{ioRule();drawIO()}],pc:[renderPC,drawPC],var:[renderVar,drawVar],ml:[renderML,drawML],pa:[renderPA,drawPA],close:[renderClose,drawClose],dict:[renderDict,drawDict],quiz:[renderQuiz,drawScore]};
+$("#nav").innerHTML=TABS.map(t=>`<a href="#${t[0]}" data-t="${t[0]}">${t[1]}</a>`).join("");
+let cur="";
+function go(){
+ let t=location.hash.slice(1); if(!R[t]) t="org"; cur=t;
+ document.querySelectorAll("nav a").forEach(a=>a.classList.toggle("on",a.dataset.t==t));
+ $("#main").innerHTML=`<section class="on">${R[t][0]()}</section>`;
+ if(R[t][1]) R[t][1]();
+ const a=document.querySelector(`nav a[data-t="${t}"]`); if(a) a.scrollIntoView({inline:"center",block:"nearest"});
+}
+window.addEventListener("hashchange",()=>{go();window.scrollTo(0,0)});
+document.addEventListener("click",e=>{
+ const el=e.target.closest("button,.node,.ck,[data-ckb]"); if(!el) return;
+ if(el.classList.contains("node")) orgDetail(el.dataset.k);
+ else if(el.dataset.ce!==undefined){ceK=+el.dataset.ce;ceDetail();}
+ else if(el.closest("#ccseg")){C.mode=el.dataset.m;document.querySelectorAll("#ccseg button").forEach(b=>b.classList.toggle("on",b===el));ccInit();}
+ else if(el.id=="cc_run") ccRun(); else if(el.id=="cc_act") ccAct(); else if(el.id=="cc_reset") ccInit();
+ else if(el.closest("#ioseg")){IO.rcv=el.dataset.r;document.querySelectorAll("#ioseg button").forEach(b=>b.classList.toggle("on",b===el));ioRule();ioReset();}
+ else if(el.id=="io_run") ioRun(); else if(el.id=="io_reset") ioReset();
+ else if(el.closest("#vseg")){V.st=el.dataset.s;document.querySelectorAll("#vseg button").forEach(b=>b.classList.toggle("on",b===el));drawVar();}
+ else if(el.id=="v_run"){V.ran=true;drawVar();}
+ else if(el.closest("#pac")){paF.reg=el.dataset.c;document.querySelectorAll("#pac .chip").forEach(c=>c.classList.toggle("on",c===el));drawPA();}
+ else if(el.dataset.ckb!==undefined){const i=+el.dataset.ckb;clD[i]=!clD[i];clK=i;drawClose();}
+ else if(el.dataset.cl!==undefined){clK=+el.dataset.cl;drawClose();}
+ else if(el.id=="clreset"){clD={};drawClose();}
+ else if(el.closest("#dc")){dictF=el.dataset.c;document.querySelectorAll("#dc .chip").forEach(c=>c.classList.toggle("on",c===el));drawDict();}
+ else if(el.classList.contains("opt")){const qi=+el.dataset.q,oi=+el.dataset.o;if(qi in qs)return;const ok=oi==QZ[qi][2];qs[qi]=ok;
+  document.querySelectorAll(`.opt[data-q="${qi}"]`).forEach(b=>{if(+b.dataset.o==QZ[qi][2])b.classList.add("ok");else if(b===el)b.classList.add("ng");});
+  $("#e"+qi).classList.add("on");drawScore();}
+ else if(el.id=="qreset") go();
+});
+document.addEventListener("input",e=>{
+ const id=e.target.id;
+ if(id=="dq") drawDict();
+ else if(cur=="pc") drawPC();
+ else if(cur=="ml") drawML();
+ else if(cur=="pa") drawPA();
+ else if(cur=="var") drawVar();
+ else if(cur=="io"){if(IO.done) ioReset(); else drawIO();}
+ else if(cur=="cca") ccInit();
+});
+go();
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#354A5F;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+</body>
+</html>

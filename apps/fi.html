@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAP FI 모듈 교육 앱</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --shell:#354A5F; --brand:#0A6ED1; --brand2:#0854A0; --sel:#EBF5FE; --sel2:#D1E8FF;
+  --ink:#32363A; --sub:#6A6D70; --line:#E5E5E5; --soft:#F7F7F7;
+  --ok:#107E3E; --okbg:#F1FDF6; --ng:#BB0000; --ngbg:#FFEBEB;
+  --mono:Consolas,"Courier New",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;color:var(--ink);font-family:"Noto Sans KR","Malgun Gothic",system-ui,sans-serif;font-size:15px;line-height:1.6}
+button,select,input{font:inherit;color:inherit}
+.shell{background:var(--shell);color:#fff}
+.shell .in{max-width:1080px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;gap:12px}
+.logo{font-weight:900;font-size:13px;background:var(--brand);padding:3px 8px;border-radius:4px;letter-spacing:.04em}
+.shell h1{margin:0;font-size:17px;font-weight:700}
+.shell small{margin-left:auto;font-size:12px;opacity:.8}
+nav{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line)}
+nav .in{max-width:1080px;margin:0 auto;display:flex;overflow-x:auto;padding:0 10px;scrollbar-width:none}
+nav .in::-webkit-scrollbar{display:none}
+nav a{flex:none;padding:12px 13px;text-decoration:none;color:var(--sub);font-weight:500;border-bottom:3px solid transparent;white-space:nowrap}
+nav a.on{color:var(--brand);border-color:var(--brand);font-weight:700}
+main{max-width:1080px;margin:0 auto;padding:18px 16px 60px}
+h2{font-size:21px;margin:4px 0 4px;font-weight:900;letter-spacing:-.01em}
+h3{font-size:16px;margin:0 0 8px;font-weight:700;color:var(--shell)}
+.lead{color:var(--sub);margin:0 0 16px}
+.card{border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:14px;background:#fff}
+.grid{display:grid;gap:12px}
+@media(min-width:760px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}}
+.btn{border:1px solid var(--brand);background:var(--brand);color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer}
+.btn:hover{background:var(--brand2)}
+.btn.ghost{background:#fff;color:var(--brand)}
+.btn.sm{padding:5px 10px;font-size:13px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{display:inline-block;font-family:var(--mono);font-size:12px;background:var(--sel);border:1px solid var(--sel2);border-radius:5px;padding:0 6px;margin:2px 2px 0 0;color:var(--brand2)}
+.pill{display:inline-block;font-size:12px;font-weight:700;padding:1px 9px;border-radius:99px;background:var(--sel);color:var(--brand2)}
+.pill.done{background:var(--okbg);color:var(--ok)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--shell);color:#fff;font-weight:700;font-size:13px}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tw{overflow-x:auto}
+/* home */
+.hero{border:1px solid var(--line);border-radius:12px;padding:18px;background:linear-gradient(180deg,var(--sel),#fff)}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:10px 0 4px}
+.bar i{display:block;height:100%;background:var(--brand)}
+.lcard{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:14px;cursor:pointer;background:#fff;text-align:left;width:100%}
+.lcard:hover{border-color:var(--brand)}
+.lno{flex:none;width:36px;height:36px;border-radius:8px;background:var(--shell);color:#fff;display:grid;place-items:center;font-weight:900}
+.lcard.done .lno{background:var(--ok)}
+.lcard b{display:block}
+.lcard span{font-size:13px;color:var(--sub)}
+/* org */
+.org{display:grid;gap:6px;justify-items:center;font-size:14px}
+.org .n{border:2px solid var(--shell);border-radius:8px;padding:6px 14px;text-align:center;background:#fff;min-width:150px}
+.org .n.k{background:var(--shell);color:#fff}
+.org .n small{display:block;font-size:12px;opacity:.75}
+.org .v{color:var(--brand);font-weight:900;line-height:1}
+.org .h{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+/* flow */
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch}
+.flow .st{flex:1 1 130px;border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:8px;padding:10px;background:var(--soft)}
+.flow .st b{display:block;color:var(--shell);font-size:14px}
+.flow .st span{font-size:13px;color:var(--sub);display:block}
+.flow .ar{align-self:center;color:var(--brand);font-weight:900}
+.concept{border-left:4px solid var(--shell);padding:2px 0 2px 12px;margin:0 0 12px}
+.concept b{color:var(--shell)}
+.concept p{margin:2px 0 0;font-size:14px}
+.note{background:var(--sel);border-radius:8px;padding:10px 12px;font-size:14px;margin:10px 0}
+.note b{color:var(--brand2)}
+.je-h{font-weight:700;margin:10px 0 4px;font-size:14px}
+.je-h span{font-weight:400;color:var(--sub)}
+.pk{font-family:var(--mono);font-weight:700;color:var(--brand2)}
+/* quiz */
+.opt{display:block;width:100%;text-align:left;border:1px solid #cfd4dd;border-radius:8px;background:#fff;padding:10px 13px;margin:7px 0;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--brand)}
+.opt.ok{border-color:var(--ok);background:var(--okbg)}
+.opt.ng{border-color:var(--ng);background:var(--ngbg)}
+.opt:disabled{cursor:default}
+.ex{font-size:14px;color:var(--sub);margin-top:4px;display:none}
+.ex.on{display:block}
+.score{font-size:40px;font-weight:900;color:var(--brand)}
+/* lab (SAP GUI mock) */
+.gui{border:1px solid #c6c6c6;border-radius:8px;overflow:hidden;background:#fff}
+.gui .tb{background:var(--shell);color:#fff;padding:7px 12px;font-size:13px;display:flex;gap:10px;align-items:center}
+.gui .tb .tc{font-family:var(--mono);background:#fff;color:var(--ink);padding:1px 8px;border-radius:3px;font-size:12px}
+.gui .hd{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;padding:12px;background:var(--soft);border-bottom:1px solid var(--line);font-size:13px}
+.gui .hd label{color:var(--sub);display:block;font-size:12px}
+.gui .hd div b{font-family:var(--mono)}
+.lines{padding:10px 12px}
+.ln{display:grid;grid-template-columns:90px 1fr 120px 34px;gap:6px;margin-bottom:6px;align-items:center}
+@media(max-width:560px){.ln{grid-template-columns:72px 1fr 92px 30px}}
+.ln select,.ln input{width:100%;padding:7px 6px;border:1px solid #bfc4cc;border-radius:5px;background:#fff;font-size:13px}
+.ln input{text-align:right;font-variant-numeric:tabular-nums}
+.ln .x{border:0;background:none;color:var(--sub);cursor:pointer;font-size:16px}
+.lnh{display:grid;grid-template-columns:90px 1fr 120px 34px;gap:6px;font-size:12px;color:var(--sub);padding:0 2px 4px}
+@media(max-width:560px){.lnh{grid-template-columns:72px 1fr 92px 30px}}
+.sum{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;padding:10px 12px;border-top:1px solid var(--line);font-size:13px;font-variant-numeric:tabular-nums}
+.sum .bal{font-weight:700}
+.sum .bal.z{color:var(--ok)} .sum .bal.nz{color:var(--ng)}
+.scene{font-size:16px;font-weight:500;padding:12px 14px;background:var(--sel);border-left:4px solid var(--brand);border-radius:6px;margin:8px 0 12px}
+.fb{margin-top:12px;border-radius:8px;padding:12px 14px;display:none;font-size:14px}
+.fb.ok{display:block;background:var(--okbg);border:1px solid #bfe3cd}
+.fb.ng{display:block;background:var(--ngbg);border:1px solid #f2c6c2}
+.fb .t{font-weight:900;margin-bottom:4px}
+.dots{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.dots button{width:30px;height:30px;border-radius:50%;border:1px solid #cfd4dd;background:#fff;font-size:12px;font-weight:700;cursor:pointer}
+.dots button.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.dots button.cur{outline:2px solid var(--brand);outline-offset:2px}
+.pkref{font-size:13px}
+.pkref td{padding:5px 8px}
+/* tcode */
+.drill{font-family:var(--mono);font-size:40px;font-weight:900;color:var(--brand);text-align:center;margin:4px 0}
+.tcg{display:grid;gap:12px}
+@media(min-width:760px){.tcg{grid-template-columns:repeat(2,1fr)}}
+.tcg table td:first-child{font-family:var(--mono);font-weight:700;color:var(--brand2);white-space:nowrap;width:1%}
+.back{border:0;background:none;color:var(--brand);font-weight:700;cursor:pointer;padding:0;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="shell"><div class="in"><span class="logo">SAP</span><h1>FI 모듈 교육 앱</h1><small>Global Bike · US00 · USD</small></div></div>
+<nav><div class="in" id="nav">
+  <a href="#home" data-v="home">홈</a>
+  <a href="#lessons" data-v="lessons">레슨</a>
+  <a href="#lab" data-v="lab">전표 실습</a>
+  <a href="#quiz" data-v="quiz">종합 퀴즈</a>
+  <a href="#tcode" data-v="tcode">T-code</a>
+</div></nav>
+<main id="app"></main>
+
+<script>
+/* ───────── 실습용 기준정보 (Global Bike 기반, 계정번호는 실습용) ───────── */
+const ACCT = {
+  "113100":"은행 보통예금","140000":"매출채권(조정계정)","160000":"매입채무(조정계정)",
+  "310000":"상품 재고","191100":"GR/IR 대사계정","211000":"기계장치(자산 조정계정)","211099":"감가상각누계액",
+  "800000":"매출","893015":"매출원가","470000":"임차료","476100":"소모품비","481000":"감가상각비",
+  "127000":"고객 Philly Bikes","115000":"공급업체 Mid-West Supply"
+};
+const PK = {
+  "01":"01 고객 차변(송장)","11":"11 고객 대변(대변메모)","15":"15 고객 대변(입금)",
+  "21":"21 공급업체 차변(차변메모)","25":"25 공급업체 차변(지급)","31":"31 공급업체 대변(송장)",
+  "40":"40 G/L 차변","50":"50 G/L 대변","70":"70 자산 차변","75":"75 자산 대변",
+  "81":"81 비용 차변(MM)","86":"86 GR/IR 차변(MM)","89":"89 재고 차변(MM)","96":"96 GR/IR 대변(MM)","99":"99 재고 대변(MM)"
+};
+const DR = new Set(["01","21","25","40","70","81","86","89"]);
+const fmt = n => Number(n).toLocaleString("en-US");
+
+/* ───────── 레슨 ───────── */
+const L = [
+{ t:"FI 개요와 조직구조", g:"FI가 맡는 일과 회사코드 중심의 조직 단위를 이해함",
+  html:`
+  <div class="concept"><b>FI(Financial Accounting)</b><p>외부 보고용 회계. 모든 거래를 회사코드 단위 전표로 기록하고 재무상태표·손익계산서를 만듦. 내부 관리는 CO가 담당함.</p></div>
+  <div class="concept"><b>하위 컴포넌트</b><p>GL(총계정원장) · AP(채무) · AR(채권) · AA(고정자산) · BL(은행) · 결산. AP·AR·AA는 보조원장이고 결과는 GL의 조정계정으로 모임.</p></div>
+  <h3 style="margin-top:16px">Global Bike 조직구조</h3>
+  <div class="org">
+    <div class="n k">Client<small>GBI 실습 클라이언트</small></div><div class="v">↓</div>
+    <div class="n">Chart of Accounts <b>GL00</b><small>계정과목표 — 두 회사가 공유</small></div><div class="v">↓</div>
+    <div class="h"><div class="n k">Company Code <b>US00</b><small>Global Bike Inc. · USD</small></div><div class="n k">Company Code <b>DE00</b><small>Global Bike Germany · EUR</small></div></div><div class="v">↑</div>
+    <div class="n">Controlling Area <b>NA00</b> 등<small>CO 연결 단위</small></div>
+  </div>
+  <div class="note"><b>핵심</b> — 회사코드 = 재무제표를 만드는 최소 단위. 계정과목표·회계연도변형·통화가 회사코드에 붙음.</div>
+  <div class="tw"><table><tr><th>조직 단위</th><th>역할</th><th>T-code</th></tr>
+  <tr><td>Company Code</td><td>법적 독립 회계 단위</td><td><span class="chip">OX02</span></td></tr>
+  <tr><td>Chart of Accounts</td><td>G/L 계정 목록</td><td><span class="chip">OB13</span><span class="chip">OB62</span></td></tr>
+  <tr><td>Fiscal Year Variant</td><td>회계기간 정의(K4 = 12+4)</td><td><span class="chip">OB29</span><span class="chip">OB37</span></td></tr>
+  <tr><td>Posting Period Variant</td><td>기간 열기·닫기</td><td><span class="chip">OB52</span></td></tr></table></div>`,
+  q:[
+   ["재무제표를 작성하는 FI의 최소 조직 단위는?",["Client","Company Code","Plant","Controlling Area"],1,"회사코드가 B/S·P/L 작성 단위임."],
+   ["AP·AR·AA 거래가 GL에 집계되는 계정은?",["임시계정","조정계정(Reconciliation Account)","GR/IR 계정","이익잉여금"],1,"보조원장 → 조정계정으로 자동 집계됨."],
+   ["회계기간을 열고 닫는 T-code는?",["OB52","OB13","FS00","OX02"],0,"OB52에서 계정유형별로 기간을 통제함."]
+  ]},
+{ t:"기준정보: G/L 계정과 BP", g:"전표에 쓰이는 계정·고객·공급업체 마스터 구조를 이해함",
+  html:`
+  <div class="grid g2">
+   <div class="card"><h3>G/L 계정 (FS00)</h3>
+    <p style="margin:0;font-size:14px"><b>COA 세그먼트</b> — 계정번호·계정명·계정유형(재무상태표/손익)<br><b>회사코드 세그먼트</b> — 통화·미결관리·조정계정 유형·필드상태그룹</p>
+    <div><span class="chip">SKA1</span><span class="chip">SKB1</span></div></div>
+   <div class="card"><h3>Business Partner (BP)</h3>
+    <p style="margin:0;font-size:14px">S/4HANA에서 고객·공급업체를 하나의 BP로 관리함. 역할 <b>FLCU01</b>(고객 회계), <b>FLVN01</b>(공급업체 회계)에 회사코드 데이터와 조정계정을 지정함.</p>
+    <div><span class="chip">BP</span><span class="chip">KNA1/KNB1</span><span class="chip">LFA1/LFB1</span></div></div>
+  </div>
+  <h3>보조원장과 조정계정</h3>
+  <div class="flow">
+   <div class="st"><b>고객 127000</b><span>Philly Bikes 송장 10,000</span></div><div class="ar">→</div>
+   <div class="st"><b>140000 매출채권</b><span>조정계정에 자동 반영</span></div><div class="ar">→</div>
+   <div class="st"><b>재무상태표</b><span>매출채권 10,000</span></div>
+  </div>
+  <div class="note"><b>규칙</b> — 조정계정에는 직접 전기할 수 없음. 고객·공급업체 라인으로만 갱신됨. 그래서 보조원장 합계와 GL 잔액이 항상 일치함.</div>
+  <div class="concept"><b>미결관리(Open Item Management)</b><p>반드시 상계되어야 하는 계정(GR/IR, 은행 중간계정)에 켬. 라인이 미결 → 반제 상태로 관리됨.</p></div>`,
+  q:[
+   ["S/4HANA에서 고객과 공급업체를 통합 관리하는 마스터는?",["Customer Master","Business Partner","Vendor Group","Account Group"],1,"BP 하나에 역할로 고객·공급업체 데이터를 붙임."],
+   ["G/L 계정의 회사코드 세그먼트 테이블은?",["SKA1","SKB1","KNB1","T001"],1,"SKA1=COA 수준, SKB1=회사코드 수준."],
+   ["조정계정에 대한 설명으로 옳은 것은?",["FB50으로 직접 전기함","보조원장 전기로만 갱신됨","손익계정임","결산 시 삭제됨"],1,"직접 전기 불가가 핵심 통제임."]
+  ]},
+{ t:"GL 전표의 구조", g:"전표 헤더·라인, 전표유형, 전기키를 읽고 쓸 수 있음",
+  html:`
+  <div class="grid g2">
+   <div class="card"><h3>헤더 (BKPF)</h3><p style="margin:0;font-size:14px">회사코드 · 전표번호 · 회계연도 · 전표유형 · 전표일·전기일 · 통화 · 참조</p></div>
+   <div class="card"><h3>라인 (BSEG / ACDOCA)</h3><p style="margin:0;font-size:14px">전기키 · 계정 · 금액 · 코스트센터 · 손익센터 · 적요</p></div>
+  </div>
+  <div class="tw"><table><tr><th>전표유형</th><th>용도</th><th>발생 화면</th></tr>
+   <tr><td><b>SA</b></td><td>G/L 일반 전표</td><td>FB50</td></tr>
+   <tr><td><b>KR</b> / <b>KZ</b></td><td>공급업체 송장 / 지급</td><td>FB60 / F-53, F110</td></tr>
+   <tr><td><b>DR</b> / <b>DZ</b></td><td>고객 송장 / 입금</td><td>FB70 / F-28</td></tr>
+   <tr><td><b>WE</b> / <b>RE</b></td><td>입고 / 송장검증</td><td>MIGO / MIRO</td></tr>
+   <tr><td><b>RV</b></td><td>SD 대금청구 이관</td><td>VF01</td></tr>
+   <tr><td><b>AF</b></td><td>감가상각</td><td>AFAB</td></tr></table></div>
+  <h3 style="margin-top:16px">전기키 읽는 법</h3>
+  <div class="tw"><table class="pkref"><tr><th>계정유형</th><th>차변</th><th>대변</th></tr>
+   <tr><td>고객 (D)</td><td class="pk">01</td><td class="pk">11 · 15</td></tr>
+   <tr><td>공급업체 (K)</td><td class="pk">21 · 25</td><td class="pk">31</td></tr>
+   <tr><td>G/L (S)</td><td class="pk">40</td><td class="pk">50</td></tr>
+   <tr><td>자산 (A)</td><td class="pk">70</td><td class="pk">75</td></tr>
+   <tr><td>자재 (M, 자동)</td><td class="pk">81 · 86 · 89</td><td class="pk">96 · 99</td></tr></table></div>
+  <div class="note"><b>역분개(FB08)</b> — 잘못된 전표는 지우지 않고 반대 전표로 취소함. Negative Posting을 쓰면 원래 쪽에 음수로 기록되어 거래합계가 부풀지 않음.</div>`,
+  q:[
+   ["공급업체 송장 라인의 전기키는?",["01","31","40","50"],1,"31 = 공급업체 대변(송장)."],
+   ["FB50으로 입력한 G/L 일반 전표의 기본 전표유형은?",["SA","KR","DR","RV"],0,"SA = G/L account document."],
+   ["잘못 전기된 전표를 취소하는 T-code는?",["FB02","FB08","FB03","FBV0"],1,"FB08 역분개. FB02는 일부 필드 변경만 가능함."]
+  ]},
+{ t:"AP: 구매에서 지급까지 (P2P)", g:"구매 프로세스의 단계별 자동 전표와 GR/IR 역할을 설명할 수 있음",
+  html:`
+  <div class="flow">
+   <div class="st"><b>① 구매오더</b><span>ME21N · 전표 없음</span></div><div class="ar">→</div>
+   <div class="st"><b>② 입고 GR</b><span>MIGO · 재고↑ GR/IR↓</span></div><div class="ar">→</div>
+   <div class="st"><b>③ 송장검증 IR</b><span>MIRO · GR/IR↑ 채무↓</span></div><div class="ar">→</div>
+   <div class="st"><b>④ 지급</b><span>F110 · 채무↑ 은행↓</span></div>
+  </div>
+  <p class="lead" style="margin-top:12px">예시: 상품 5 EA × 1,400 USD = 7,000 USD 구매 · 공급업체 115000 Mid-West Supply</p>
+  <div id="je-ap"></div>
+  <div class="note"><b>GR/IR이 필요한 이유</b> — 입고와 송장은 시점이 다름. 둘 사이를 잇는 중간계정이 GR/IR이고, 수량·금액이 맞으면 잔액 0이 됨. 남은 잔액은 결산 때 MR11·F.19로 분석함.</div>
+  <div class="concept"><b>3-way Match</b><p>PO·GR·IR의 수량·단가를 대조함. 허용범위를 넘으면 송장이 지급보류(R)되고 MRBR로 해제함.</p></div>
+  <div class="concept"><b>자동지급 F110</b><p>파라미터 → 제안 → 제안 편집 → 지급 실행 → 지급매체. 지급조건(OBB8)의 만기일로 대상을 고름.</p></div>`,
+  je:{id:"je-ap",list:[
+   ["② 입고 (MIGO, WE)",[["89","310000",7000,0],["96","191100",0,7000]]],
+   ["③ 송장검증 (MIRO, RE)",[["86","191100",7000,0],["31","115000",0,7000]]],
+   ["④ 지급 (F110, KZ)",[["25","115000",7000,0],["50","113100",0,7000]]]]},
+  q:[
+   ["구매오더(ME21N) 저장 시 생성되는 회계전표는?",["재고/GR-IR","GR-IR/채무","없음","비용/은행"],2,"PO는 약정일 뿐 회계전표가 생기지 않음."],
+   ["MIRO 송장검증에서 차변 계정은?",["재고","GR/IR","은행","매출원가"],1,"입고 때 대변에 쌓인 GR/IR을 차변으로 상계함."],
+   ["자동지급프로그램 T-code는?",["F-53","F110","F150","FBZP"],1,"F110 실행, FBZP는 설정."]
+  ]},
+{ t:"AR: 주문에서 수금까지 (O2C)", g:"판매 프로세스에서 FI 전표가 생기는 시점과 계정을 설명할 수 있음",
+  html:`
+  <div class="flow">
+   <div class="st"><b>① 판매오더</b><span>VA01 · 전표 없음</span></div><div class="ar">→</div>
+   <div class="st"><b>② 출고 PGI</b><span>VL02N · 매출원가↑ 재고↓</span></div><div class="ar">→</div>
+   <div class="st"><b>③ 대금청구</b><span>VF01 · 채권↑ 매출↑</span></div><div class="ar">→</div>
+   <div class="st"><b>④ 입금</b><span>F-28 · 은행↑ 채권↓</span></div>
+  </div>
+  <p class="lead" style="margin-top:12px">예시: DXTR1000 5 EA · 판매가 2,000 · 표준원가 1,400 USD · 고객 127000 Philly Bikes</p>
+  <div id="je-ar"></div>
+  <div class="tw" style="margin-top:8px"><table><tr><th>결과</th><th class="n">USD</th></tr>
+   <tr><td>매출</td><td class="n">10,000</td></tr><tr><td>매출원가</td><td class="n">7,000</td></tr>
+   <tr><td><b>매출총이익</b></td><td class="n"><b>3,000</b></td></tr></table></div>
+  <div class="note"><b>FI 연결 지점</b> — 매출계정은 VKOA, 재고·매출원가 계정은 OBYC가 결정함. 회계 이관이 막힌 청구는 VFX3에서 확인함.</div>
+  <div class="concept"><b>잔액지급 vs 부분지급</b><p>잔액지급은 원채권을 반제하고 차액으로 새 미결 생성, 부분지급은 원채권을 남기고 입금을 연결함.</p></div>
+  <div class="concept"><b>독촉 F150</b><p>연체 채권에 독촉 레벨별로 독촉장을 발송함. 절차는 FBMP에서 정의함.</p></div>`,
+  je:{id:"je-ar",list:[
+   ["② 출고 PGI (WL)",[["81","893015",7000,0],["99","310000",0,7000]]],
+   ["③ 대금청구 (VF01, RV)",[["01","127000",10000,0],["50","800000",0,10000]]],
+   ["④ 입금 (F-28, DZ)",[["40","113100",10000,0],["15","127000",0,10000]]]]},
+  q:[
+   ["매출원가가 인식되는 시점은?",["판매오더","출고(PGI)","대금청구","입금"],1,"PGI 시 재고 감소와 함께 매출원가가 기록됨."],
+   ["SD 매출계정을 결정하는 설정은?",["OBYC","VKOA","OB41","FBZP"],1,"VKOA = 수익계정결정."],
+   ["고객 입금 라인(채권 감소)의 전기키는?",["01","15","31","40"],1,"15 = 고객 대변(입금). 11은 대변메모."]
+  ]},
+{ t:"고정자산 회계 (AA)", g:"자산의 취득·감가상각·처분 흐름과 감가상각영역을 이해함",
+  html:`
+  <div class="flow">
+   <div class="st"><b>자산마스터</b><span>AS01 · 클래스·내용연수</span></div><div class="ar">→</div>
+   <div class="st"><b>취득</b><span>F-90 · ABZON</span></div><div class="ar">→</div>
+   <div class="st"><b>감가상각</b><span>AFAB · 매월</span></div><div class="ar">→</div>
+   <div class="st"><b>처분</b><span>F-92 · ABAVN</span></div>
+  </div>
+  <p class="lead" style="margin-top:12px">예시: 조립 기계 60,000 USD · 내용연수 10년 정액 → 월 500 USD</p>
+  <div id="je-aa"></div>
+  <div class="grid g2" style="margin-top:8px">
+   <div class="concept"><b>자산클래스 (OAOA)</b><p>건물·기계·차량 등 분류. 계정결정과 기본 상각조건을 정함.</p></div>
+   <div class="concept"><b>감가상각영역</b><p>같은 자산을 장부(01)·세무·IFRS 기준으로 병행 관리함. S/4에서는 원장과 연결됨.</p></div>
+   <div class="concept"><b>건설중인자산 (AuC)</b><p>공사 중 비용을 모았다가 완공 시 AIBU로 본자산에 정산함.</p></div>
+   <div class="concept"><b>연도 마감</b><p>AJRW로 새 연도 열기, AJAB로 전년도 마감. 자산변동명세서 S_ALR_87011990.</p></div>
+  </div>`,
+  je:{id:"je-aa",list:[
+   ["취득 (F-90, 공급업체 송장 연동)",[["70","211000",60000,0],["31","115000",0,60000]]],
+   ["월 감가상각 (AFAB, AF)",[["40","481000",500,0],["50","211099",0,500]]]]},
+  q:[
+   ["감가상각 배치를 실행하는 T-code는?",["AS01","AFAB","AJAB","ABUMN"],1,"AFAB = Depreciation Run."],
+   ["자산 취득 라인의 전기키는?",["40","70","75","89"],1,"70 = 자산 차변."],
+   ["하나의 자산을 장부·세무 기준으로 따로 관리하게 하는 것은?",["자산클래스","감가상각영역","감가상각키","자산 서브번호"],1,"영역별로 가치와 상각을 병행 계산함."]
+  ]},
+{ t:"은행과 자금", g:"거래은행 구조와 은행명세 처리, 은행 대사 방식을 이해함",
+  html:`
+  <div class="org">
+   <div class="n k">House Bank <b>BANK1</b><small>FI12 · 거래은행</small></div><div class="v">↓</div>
+   <div class="h"><div class="n">Account ID <b>CHK01</b><small>당좌</small></div><div class="n">Account ID <b>SAV01</b><small>보통</small></div></div><div class="v">↓</div>
+   <div class="n">G/L 113100 은행 + 중간계정<small>입금 113109 · 출금 113101 (예시)</small></div>
+  </div>
+  <div class="flow" style="margin-top:14px">
+   <div class="st"><b>은행 파일 수신</b><span>MT940 · CAMT.053</span></div><div class="ar">→</div>
+   <div class="st"><b>업로드</b><span>FF_5 · 수기 FF67</span></div><div class="ar">→</div>
+   <div class="st"><b>전기규칙</b><span>OT83 · 자동 반제</span></div><div class="ar">→</div>
+   <div class="st"><b>후처리</b><span>FEBAN · 미반제 정리</span></div>
+  </div>
+  <div class="note"><b>중간계정을 쓰는 이유</b> — 지급·입금을 먼저 중간계정에 기록하고, 은행명세가 들어오면 본계정으로 옮김. 중간계정 잔액이 곧 "은행에 아직 반영되지 않은 거래"가 됨.</div>
+  <div class="grid g2">
+   <div class="concept"><b>현금출납장 FBCJ</b><p>소액 현금 입출금을 기록하고 G/L로 전기함.</p></div>
+   <div class="concept"><b>자금 포지션 FF7A</b><p>당일 은행 잔액과 예정 입출금을 보여줌. 유동성 예측은 FF7B.</p></div>
+  </div>`,
+  q:[
+   ["거래은행(House Bank)을 정의하는 T-code는?",["FI12","FF_5","FBZP","OB52"],0,"S/4에서는 FI12_HBANK도 사용함."],
+   ["전자은행명세를 업로드하는 T-code는?",["FF67","FF_5","FBCJ","F110"],1,"FF67은 수기 입력."],
+   ["은행 중간계정 잔액이 의미하는 것은?",["확정된 현금","은행에 아직 반영되지 않은 거래","외화평가 손익","미지급 비용"],1,"명세 반영 전 거래가 남아 있는 상태."]
+  ]},
+{ t:"월마감과 연말결산", g:"마감 체크리스트 순서와 주요 결산 프로그램을 설명할 수 있음",
+  html:`
+  <div class="tw"><table><tr><th>#</th><th>마감 작업</th><th>T-code</th></tr>
+   <tr><td>1</td><td>다음 기간 열기</td><td><span class="chip">OB52</span></td></tr>
+   <tr><td>2</td><td>반복 전표 · 발생 전표</td><td><span class="chip">F.14</span><span class="chip">FBS1</span></td></tr>
+   <tr><td>3</td><td>감가상각 실행</td><td><span class="chip">AFAB</span></td></tr>
+   <tr><td>4</td><td>GR/IR 정리 · 재분류</td><td><span class="chip">MR11</span><span class="chip">F.19</span></td></tr>
+   <tr><td>5</td><td>외화평가</td><td><span class="chip">FAGL_FCV</span></td></tr>
+   <tr><td>6</td><td>채권·채무 재분류</td><td><span class="chip">FAGLF101</span></td></tr>
+   <tr><td>7</td><td>CO 배부 · 정산</td><td><span class="chip">KSU5</span><span class="chip">KO88</span></td></tr>
+   <tr><td>8</td><td>시산표 · 재무제표 확인</td><td><span class="chip">S_ALR_87012277</span><span class="chip">F.01</span></td></tr>
+   <tr><td>9</td><td>이전 기간 닫기</td><td><span class="chip">OB52</span></td></tr></table></div>
+  <h3 style="margin-top:16px">연말에 추가되는 작업</h3>
+  <div class="flow">
+   <div class="st"><b>특별기간 13~16</b><span>감사 조정 전기</span></div><div class="ar">→</div>
+   <div class="st"><b>G/L 잔액이월</b><span>FAGLGVTR</span></div><div class="ar">→</div>
+   <div class="st"><b>AR·AP 이월</b><span>F.07</span></div><div class="ar">→</div>
+   <div class="st"><b>자산 연도마감</b><span>AJRW · AJAB</span></div>
+  </div>
+  <div class="note"><b>이월 규칙</b> — 재무상태표 계정은 잔액 그대로 다음 연도로, 손익 계정은 0으로 닫히고 이익잉여금(OB53)으로 모임.</div>`,
+  q:[
+   ["S/4HANA에서 외화평가 T-code는?",["F.05","FAGL_FCV","OB08","F.19"],1,"FAGL_FCV가 미결항목·잔액 평가를 모두 처리함."],
+   ["손익계정 잔액이 연말에 모이는 곳은?",["매출채권","이익잉여금","현금","GR/IR"],1,"OB53에서 지정한 이익잉여금 계정."],
+   ["G/L 잔액이월 T-code는?",["FAGLGVTR","F.07","AJRW","OB52"],0,"F.07은 고객·공급업체 이월."]
+  ]},
+{ t:"S/4HANA Finance", g:"Universal Journal로 바뀐 구조와 ECC 대비 차이를 설명할 수 있음",
+  html:`
+  <div class="grid g2">
+   <div class="card"><h3>ECC</h3><p style="margin:0;font-size:14px">BKPF/BSEG 전표 + BSIS·BSAS·BSID·BSIK 인덱스 + GLT0·FAGLFLEXT 합계 + COEP(CO) + ANEP(AA) → 모듈별로 따로 저장하고 대사가 필요함.</p></div>
+   <div class="card" style="border-color:var(--brand)"><h3>S/4HANA</h3><p style="margin:0;font-size:14px"><b>ACDOCA</b> 한 테이블에 FI·CO·AA·ML 라인이 함께 기록됨. 합계·인덱스는 필요할 때 계산하는 호환뷰로 남음.</p></div>
+  </div>
+  <div class="tw"><table><tr><th>변화</th><th>내용</th></tr>
+   <tr><td>원가요소 = G/L 계정</td><td>KA01 대신 FS00에서 계정유형 P(1차)·S(2차)로 생성</td></tr>
+   <tr><td>Business Partner 필수</td><td>XD01·XK01 대신 BP</td></tr>
+   <tr><td>자산 실시간 상각</td><td>AFAB는 G/L 전기만 담당</td></tr>
+   <tr><td>Material Ledger 필수</td><td>재고를 다중 통화로 평가</td></tr>
+   <tr><td>Fiori 앱</td><td>Manage Journal Entries · Display Line Items · Trial Balance</td></tr></table></div>
+  <div class="note"><b>ACDOCA 주요 필드</b> — RLDNR 원장 · RBUKRS 회사코드 · GJAHR 연도 · BELNR 전표 · RACCT 계정 · HSL 회사통화 금액 · PRCTR 손익센터 · KUNNR/LIFNR 거래처</div>`,
+  q:[
+   ["S/4HANA Universal Journal 테이블은?",["BSEG","ACDOCA","FAGLFLEXA","COEP"],1,"FI·CO·AA·ML이 ACDOCA 하나로 통합됨."],
+   ["S/4HANA에서 원가요소의 관리 방식은?",["KA01 별도 마스터","G/L 계정(FS00)","코스트센터","자산클래스"],1,"계정유형 P/S로 G/L 계정에 통합됨."],
+   ["ACDOCA에서 회사코드 통화 금액 필드는?",["WSL","HSL","KSL","DMBTR"],1,"HSL=회사코드 통화, WSL=거래통화, KSL=그룹통화."]
+  ]}
+];
+
+/* ───────── 실습 시나리오 ───────── */
+const LAB = [
+ {s:"본사 사무실 월 임차료 3,000 USD를 은행에서 이체했다.",tc:"FB50",dt:"SA",
+  a:[[["40"],"470000",3000],[["50"],"113100",-3000]],h:"비용(임차료)이 늘고 은행이 줄어든다. G/L끼리이므로 40/50."},
+ {s:"PO 없이 사무용품 1,200 USD 송장을 Mid-West Supply로부터 받았다.",tc:"FB60",dt:"KR",
+  a:[[["40"],"476100",1200],[["31"],"115000",-1200]],h:"공급업체 송장은 공급업체 대변(31). 상대는 소모품비 차변."},
+ {s:"위 사무용품 대금 1,200 USD를 지급했다.",tc:"F-53",dt:"KZ",
+  a:[[["25","21"],"115000",1200],[["50"],"113100",-1200]],h:"채무를 없애므로 공급업체 차변(지급은 25). 은행은 대변."},
+ {s:"Philly Bikes에 수리 서비스 5,000 USD를 청구했다 (FI 직접 송장).",tc:"FB70",dt:"DR",
+  a:[[["01"],"127000",5000],[["50"],"800000",-5000]],h:"고객 송장은 01, 매출은 G/L 대변 50."},
+ {s:"Philly Bikes로부터 5,000 USD가 입금되었다.",tc:"F-28",dt:"DZ",
+  a:[[["40"],"113100",5000],[["15","11"],"127000",-5000]],h:"은행 차변 40, 고객 채권 감소는 15(입금)."},
+ {s:"구매오더 상품 5 EA(7,000 USD)가 입고되었다. 자동 생성되는 전표를 재현하라.",tc:"MIGO",dt:"WE",
+  a:[[["89"],"310000",7000],[["96"],"191100",-7000]],h:"재고 차변은 89, GR/IR 대변은 96. MM 자동 전기키."},
+ {s:"위 입고 건의 송장 7,000 USD를 MIRO로 검증했다.",tc:"MIRO",dt:"RE",
+  a:[[["86"],"191100",7000],[["31"],"115000",-7000]],h:"GR/IR을 차변(86)으로 비우고 공급업체 채무 대변(31)."},
+ {s:"DXTR1000 5 EA를 출고(PGI)했다. 표준원가 1,400 USD.",tc:"VL02N",dt:"WL",
+  a:[[["81"],"893015",7000],[["99"],"310000",-7000]],h:"매출원가 차변 81, 재고 대변 99. 금액 = 5 × 1,400."},
+ {s:"조립 기계 60,000 USD를 Mid-West Supply로부터 외상 취득했다.",tc:"F-90",dt:"KA",
+  a:[[["70"],"211000",60000],[["31"],"115000",-60000]],h:"자산 차변 70 (자산번호에 연결되어 211000으로 집계), 공급업체 대변 31."},
+ {s:"기계장치의 이번 달 감가상각비 500 USD를 전기한다.",tc:"AFAB",dt:"AF",
+  a:[[["40"],"481000",500],[["50"],"211099",-500]],h:"감가상각비 차변, 감가상각누계액 대변."}
+];
+
+/* ───────── T-code ───────── */
+const TC = [
+ ["조직·설정",[["OX02","회사코드 정의"],["OB13","계정과목표 정의"],["OB29","회계연도변형"],["OB52","전기기간 열기·닫기"],["OBA7","전표유형"],["OB41","전기키"],["FBN1","전표 번호범위"]]],
+ ["기준정보",[["FS00","G/L 계정 중앙 관리"],["BP","Business Partner"],["AS01","자산마스터 생성"],["FI12","거래은행"]]],
+ ["GL",[["FB50","G/L 전표 입력"],["FB03","전표 조회"],["FB08","역분개"],["FV50","G/L 보류전표"],["FBL3N","G/L 개별항목 조회"],["F-03","G/L 반제"]]],
+ ["AP",[["FB60","공급업체 송장"],["MIRO","송장검증"],["F-53","수동 지급"],["F110","자동지급"],["FBL1N","공급업체 개별항목"],["F-48","선급금 지급"]]],
+ ["AR",[["FB70","고객 송장"],["F-28","입금"],["FBL5N","고객 개별항목"],["F150","독촉"],["VFX3","회계 이관 차단 청구"]]],
+ ["AA·은행·결산",[["AFAB","감가상각 실행"],["F-90","자산 취득(공급업체)"],["F-92","자산 매각(고객)"],["FF_5","전자은행명세 업로드"],["FAGL_FCV","외화평가"],["FAGLGVTR","G/L 잔액이월"],["MR11","GR/IR 계정 정리"],["F.01","재무제표"]]]
+];
+const TCALL = TC.flatMap(g=>g[1]);
+
+/* ───────── 상태 ───────── */
+let S={done:[],lab:[]};
+try{ S=Object.assign(S,JSON.parse(localStorage.getItem("fiapp")||"{}")); }catch(e){}
+const save=()=>{ try{ localStorage.setItem("fiapp",JSON.stringify(S)); }catch(e){} };
+const $=s=>document.querySelector(s);
+const app=$("#app");
+
+function jeTable(rows){
+  let d=0,c=0;
+  const tr=rows.map(r=>{d+=r[2];c+=r[3];return `<tr><td class="pk">${r[0]}</td><td>${r[1]} ${ACCT[r[1]]}</td><td class="n">${r[2]?fmt(r[2]):""}</td><td class="n">${r[3]?fmt(r[3]):""}</td></tr>`;}).join("");
+  return `<div class="tw"><table><tr><th>PK</th><th>계정</th><th class="n">차변</th><th class="n">대변</th></tr>${tr}</table></div>`;
+}
+function quizBlock(qs,key){
+  return qs.map((q,i)=>`<div class="card" data-q="${key}-${i}"><b>Q${i+1}. ${q[0]}</b>
+   ${q[1].map((o,j)=>`<button class="opt" data-a="${j}" data-c="${q[2]}">${o}</button>`).join("")}
+   <div class="ex">${q[3]}</div></div>`).join("");
+}
+function bindQuiz(root,onAnswer){
+  root.querySelectorAll("[data-q]").forEach(card=>{
+    card.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+      const c=+b.dataset.c, a=+b.dataset.a;
+      card.querySelectorAll(".opt").forEach(x=>{x.disabled=true; if(+x.dataset.a===c) x.classList.add("ok");});
+      if(a!==c) b.classList.add("ng");
+      card.querySelector(".ex").classList.add("on");
+      onAnswer&&onAnswer(a===c);
+    });
+  });
+}
+
+/* ───────── 화면 ───────── */
+function vHome(){
+  const pct=Math.round(S.done.length/L.length*100), lp=Math.round(S.lab.length/LAB.length*100);
+  app.innerHTML=`
+  <div class="hero">
+    <h2>SAP FI, 한 바퀴</h2>
+    <p class="lead" style="margin:0">조직구조 → 기준정보 → 전표 → P2P → O2C → 자산 → 은행 → 결산 → S/4HANA. Global Bike US00 회사코드, USD 거래로 배움.</p>
+    <div class="grid g2" style="margin-top:12px">
+      <div><b>레슨 진도</b> ${S.done.length}/${L.length}<div class="bar"><i style="width:${pct}%"></i></div></div>
+      <div><b>전표 실습</b> ${S.lab.length}/${LAB.length}<div class="bar"><i style="width:${lp}%"></i></div></div>
+    </div>
+  </div>
+  <h3 style="margin:20px 0 10px">학습 순서</h3>
+  <div class="grid g2">${L.map((l,i)=>`<button class="lcard ${S.done.includes(i)?"done":""}" data-l="${i}"><div class="lno">${S.done.includes(i)?"✓":i+1}</div><div><b>${l.t}</b><span>${l.g}</span></div></button>`).join("")}</div>
+  <div class="grid g3" style="margin-top:16px">
+    <div class="card"><h3>전표 실습</h3><p style="margin:0 0 10px;font-size:14px">SAP 화면처럼 전기키·계정·금액을 직접 입력하고 채점받음.</p><a class="btn sm" href="#lab" style="text-decoration:none">시작</a></div>
+    <div class="card"><h3>종합 퀴즈</h3><p style="margin:0 0 10px;font-size:14px">전 레슨에서 10문제를 무작위 출제함.</p><a class="btn sm" href="#quiz" style="text-decoration:none">풀기</a></div>
+    <div class="card"><h3>T-code</h3><p style="margin:0 0 10px;font-size:14px">업무별 T-code 맵과 4지선다 드릴.</p><a class="btn sm" href="#tcode" style="text-decoration:none">보기</a></div>
+  </div>`;
+  app.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>openLesson(+b.dataset.l));
+}
+function vLessons(){
+  app.innerHTML=`<h2>레슨</h2><p class="lead">각 레슨은 개념 → 흐름 → 전표 → 이해도 체크로 구성됨.</p>
+  <div class="grid">${L.map((l,i)=>`<button class="lcard ${S.done.includes(i)?"done":""}" data-l="${i}"><div class="lno">${S.done.includes(i)?"✓":i+1}</div><div><b>${l.t}</b><span>${l.g}</span></div></button>`).join("")}</div>`;
+  app.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>openLesson(+b.dataset.l));
+}
+function openLesson(i){
+  const l=L[i]; let right=0, answered=0;
+  app.innerHTML=`<button class="back" id="bk">← 레슨 목록</button>
+   <div class="row"><span class="pill ${S.done.includes(i)?"done":""}">LESSON ${i+1}${S.done.includes(i)?" · 완료":""}</span></div>
+   <h2>${l.t}</h2><p class="lead"><b>학습 목표</b> — ${l.g}</p>
+   <div class="card">${l.html}</div>
+   <h3>이해도 체크</h3>${quizBlock(l.q,"l"+i)}
+   <div class="row" style="margin-top:8px">
+    ${i>0?`<button class="btn ghost" id="prev">← 이전</button>`:""}
+    <button class="btn" id="fin">${S.done.includes(i)?"완료됨 · 다음 레슨":"레슨 완료"}</button>
+   </div><div id="qr" class="fb"></div>`;
+  if(l.je){ const box=$("#"+l.je.id); box.innerHTML=l.je.list.map(([h,rows])=>`<div class="je-h">${h}</div>${jeTable(rows)}`).join(""); }
+  bindQuiz(app,ok=>{answered++; if(ok) right++; if(answered===l.q.length){const f=$("#qr"); f.className="fb "+(right===l.q.length?"ok":"ng"); f.innerHTML=`<div class="t">${right} / ${l.q.length} 정답</div>${right===l.q.length?"모두 맞혔음. 레슨 완료를 누르세요.":"해설을 읽고 개념을 다시 확인하세요."}`;}});
+  $("#bk").onclick=()=>{location.hash="lessons";route();};
+  if($("#prev")) $("#prev").onclick=()=>openLesson(i-1);
+  $("#fin").onclick=()=>{ if(!S.done.includes(i)){S.done.push(i);save();} i<L.length-1?openLesson(i+1):(location.hash="home",route()); };
+  window.scrollTo(0,0);
+}
+
+/* lab */
+let li=0;
+function vLab(){
+  const x=LAB[li];
+  const pkOpt=v=>`<option value="">PK</option>`+Object.keys(PK).map(k=>`<option value="${k}" ${k===v?"selected":""}>${k}</option>`).join("");
+  const acOpt=v=>`<option value="">계정 선택</option>`+Object.entries(ACCT).map(([k,n])=>`<option value="${k}" ${k===v?"selected":""}>${k} ${n}</option>`).join("");
+  app.innerHTML=`<h2>전표 실습</h2><p class="lead">상황을 읽고 SAP 전표를 입력함. 금액은 양수로 넣고 차·대변은 전기키가 결정함.</p>
+  <div class="dots">${LAB.map((_,k)=>`<button class="${S.lab.includes(k)?"done":""} ${k===li?"cur":""}" data-k="${k}">${k+1}</button>`).join("")}</div>
+  <div class="scene">${li+1}. ${x.s}</div>
+  <div class="gui">
+   <div class="tb"><span class="tc">${x.tc}</span> 전표 입력 — Global Bike Inc.</div>
+   <div class="hd"><div><label>회사코드</label><b>US00</b></div><div><label>전표유형</label><b>${x.dt}</b></div><div><label>전기일</label><b>2026-11-30</b></div><div><label>통화</label><b>USD</b></div></div>
+   <div class="lines"><div class="lnh"><span>전기키</span><span>계정</span><span style="text-align:right">금액</span><span></span></div><div id="rows"></div>
+    <button class="btn ghost sm" id="add">+ 라인 추가</button></div>
+   <div class="sum"><span id="sd">차변 0</span><span id="sc">대변 0</span><span id="sb" class="bal z">잔액 0</span></div>
+  </div>
+  <div class="row" style="margin-top:12px"><button class="btn" id="chk">전기 (채점)</button><button class="btn ghost" id="hint">힌트</button><button class="btn ghost" id="ans">정답 보기</button>
+   <span style="margin-left:auto"></span>${li>0?`<button class="btn ghost sm" id="pv">이전</button>`:""}${li<LAB.length-1?`<button class="btn ghost sm" id="nx">다음</button>`:""}</div>
+  <div id="fb" class="fb"></div>
+  <details class="card" style="margin-top:16px"><summary style="cursor:pointer;font-weight:700">전기키 참고표</summary>
+   <div class="tw" style="margin-top:8px"><table class="pkref"><tr><th>PK</th><th>의미</th></tr>${Object.entries(PK).map(([k,v])=>`<tr><td class="pk">${k}</td><td>${v.slice(3)}</td></tr>`).join("")}</table></div></details>`;
+  let rows=[["","",""],["","",""]];
+  const draw=()=>{
+    $("#rows").innerHTML=rows.map((r,k)=>`<div class="ln" data-r="${k}"><select data-f="0">${pkOpt(r[0])}</select><select data-f="1">${acOpt(r[1])}</select><input data-f="2" inputmode="decimal" placeholder="0" value="${r[2]}"><button class="x" data-del="${k}" aria-label="삭제">✕</button></div>`).join("");
+    calc();
+  };
+  const calc=()=>{
+    let d=0,c=0; rows.forEach(r=>{const a=+String(r[2]).replace(/,/g,"")||0; if(!r[0])return; DR.has(r[0])?d+=a:c+=a;});
+    $("#sd").textContent="차변 "+fmt(d); $("#sc").textContent="대변 "+fmt(c);
+    const b=$("#sb"); b.textContent="잔액 "+fmt(d-c); b.className="bal "+(d===c?"z":"nz");
+  };
+  $("#rows").addEventListener("input",e=>{const r=e.target.closest("[data-r]"); if(!r) return; rows[+r.dataset.r][+e.target.dataset.f]=e.target.value; calc();});
+  $("#rows").addEventListener("change",e=>{const r=e.target.closest("[data-r]"); if(!r) return; rows[+r.dataset.r][+e.target.dataset.f]=e.target.value; calc();});
+  $("#rows").addEventListener("click",e=>{const d=e.target.dataset.del; if(d===undefined) return; rows.splice(+d,1); if(!rows.length) rows.push(["","",""]); draw();});
+  $("#add").onclick=()=>{rows.push(["","",""]);draw();};
+  const fb=(ok,t,m)=>{const f=$("#fb"); f.className="fb "+(ok?"ok":"ng"); f.innerHTML=`<div class="t">${t}</div>${m}`;};
+  $("#hint").onclick=()=>fb(false,"힌트",x.h);
+  $("#ans").onclick=()=>{ rows=x.a.map(a=>[a[0][0],a[1],String(Math.abs(a[2]))]); draw(); fb(true,"정답",x.h); };
+  $("#chk").onclick=()=>{
+    const used=rows.filter(r=>r[0]||r[1]||r[2]);
+    if(used.some(r=>!r[0]||!r[1]||!(+String(r[2]).replace(/,/g,"")))) return fb(false,"입력 누락","모든 라인에 전기키·계정·금액을 넣어야 함.");
+    let d=0,c=0; used.forEach(r=>{const a=+String(r[2]).replace(/,/g,""); DR.has(r[0])?d+=a:c+=a;});
+    if(d!==c) return fb(false,"전기 불가 — 잔액 ≠ 0","SAP는 차변과 대변 합계가 같아야 전표를 저장함. 차이 "+fmt(d-c)+" USD.");
+    const pool=x.a.map(a=>({pk:a[0],ac:a[1],amt:a[2]})); const miss=[];
+    const ok = used.length===pool.length && used.every(r=>{
+      const amt=(DR.has(r[0])?1:-1)*+String(r[2]).replace(/,/g,"");
+      const k=pool.findIndex(p=>p.ac===r[1]&&p.pk.includes(r[0])&&p.amt===amt);
+      if(k<0){miss.push(r); return false;} pool.splice(k,1); return true;});
+    if(ok){ if(!S.lab.includes(li)){S.lab.push(li);save();} fb(true,"전기 완료 ✓","전표 "+(1900000000+li*7+11)+" 이(가) 회사코드 US00에 전기됨 (실습). "+x.h);
+      document.querySelector(`.dots [data-k="${li}"]`).classList.add("done"); }
+    else fb(false,"잔액은 맞지만 분개가 다름", "계정 또는 전기키를 다시 확인하세요. 확인할 라인: "+miss.map(r=>`<span class="pk">${r[0]}</span> ${r[1]}`).join(", "));
+  };
+  app.querySelectorAll(".dots [data-k]").forEach(b=>b.onclick=()=>{li=+b.dataset.k;vLab();});
+  if($("#pv")) $("#pv").onclick=()=>{li--;vLab();};
+  if($("#nx")) $("#nx").onclick=()=>{li++;vLab();};
+  draw();
+}
+
+/* quiz */
+function vQuiz(){
+  const pool=L.flatMap((l,i)=>l.q.map(q=>[...q,l.t])).sort(()=>Math.random()-.5).slice(0,10);
+  let right=0,n=0;
+  app.innerHTML=`<h2>종합 퀴즈</h2><p class="lead">9개 레슨에서 무작위 10문제.</p>
+   ${pool.map((q,i)=>`<div class="card" data-q="g-${i}"><span class="pill">${q[4]}</span><div style="margin-top:6px"><b>Q${i+1}. ${q[0]}</b></div>
+    ${q[1].map((o,j)=>`<button class="opt" data-a="${j}" data-c="${q[2]}">${o}</button>`).join("")}<div class="ex">${q[3]}</div></div>`).join("")}
+   <div class="card" id="res" style="display:none;text-align:center"></div>`;
+  bindQuiz(app,ok=>{n++; if(ok) right++; if(n===pool.length){const r=$("#res"); r.style.display="block"; r.innerHTML=`<div class="score">${right} / 10</div><p>${right>=8?"FI 흐름을 잘 이해하고 있음.":"틀린 문제의 레슨을 다시 보세요."}</p><button class="btn" id="again">다시 풀기</button>`; $("#again").onclick=vQuiz; r.scrollIntoView({behavior:"smooth"});}});
+}
+
+/* tcode */
+function vTcode(){
+  app.innerHTML=`<h2>T-code</h2><p class="lead">업무 흐름별로 자주 쓰는 T-code. 아래 드릴로 외움.</p>
+   <div class="card" id="drill"></div>
+   <div class="tcg">${TC.map(([g,list])=>`<div class="card"><h3>${g}</h3><table>${list.map(([c,d])=>`<tr><td>${c}</td><td>${d}</td></tr>`).join("")}</table></div>`).join("")}</div>`;
+  let sc=0,cnt=0;
+  const next=()=>{
+    const ans=TCALL[Math.floor(Math.random()*TCALL.length)];
+    const opts=[ans,...TCALL.filter(t=>t!==ans).sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);
+    const d=$("#drill");
+    d.innerHTML=`<div class="row"><b>T-code 드릴</b><span style="margin-left:auto;font-size:13px;color:var(--sub)">${sc} / ${cnt}</span></div>
+     <p style="text-align:center;margin:10px 0 0;color:var(--sub)">이 업무의 T-code는?</p><div style="text-align:center;font-size:22px;font-weight:900;margin:2px 0 8px">${ans[1]}</div>
+     <div class="grid g2">${opts.map(o=>`<button class="opt" style="font-family:var(--mono);font-weight:700;text-align:center" data-v="${o[0]}">${o[0]}</button>`).join("")}</div>`;
+    d.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+      cnt++; const ok=b.dataset.v===ans[0]; if(ok) sc++;
+      d.querySelectorAll(".opt").forEach(x=>{x.disabled=true; if(x.dataset.v===ans[0]) x.classList.add("ok");});
+      if(!ok) b.classList.add("ng");
+      setTimeout(next, ok?600:1300);
+    });
+  };
+  next();
+}
+
+/* router */
+const V={home:vHome,lessons:vLessons,lab:vLab,quiz:vQuiz,tcode:vTcode};
+function route(){
+  const h=(location.hash||"#home").slice(1); const v=V[h]?h:"home";
+  document.querySelectorAll("#nav a").forEach(a=>a.classList.toggle("on",a.dataset.v===v));
+  V[v](); window.scrollTo(0,0);
+}
+window.addEventListener("hashchange",route);
+route();
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#354A5F;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+</body>
+</html>

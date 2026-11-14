@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAP MM 실습 앱 — 구매에서 송장까지</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --shell:#354A5F; --brand:#0A6ED1; --brand2:#0854A0; --sel:#EBF5FE;
+  --ink:#1D2D3E; --sub:#556B82; --line:#D9DEE3; --soft:#F5F6F7;
+  --ok:#107E3E; --okbg:#F1FDF6; --ng:#BB0000; --ngbg:#FFEBEB; --warn:#E9730C;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;color:var(--ink);font-family:"Noto Sans KR","Malgun Gothic",system-ui,sans-serif;font-size:15px;line-height:1.6}
+button,select,input{font:inherit;color:inherit}
+.shell{background:var(--shell);color:#fff}
+.shell .in{max-width:1100px;margin:0 auto;padding:16px 18px 14px}
+.shell .eyebrow{font-size:12px;letter-spacing:.08em;color:#BCD4EA;font-weight:700}
+.shell h1{margin:2px 0 0;font-size:22px;font-weight:900;letter-spacing:-.02em}
+.shell p{margin:2px 0 0;color:#D5E1EC;font-size:13px}
+nav{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 1px 3px rgba(0,0,0,.04)}
+nav .in{max-width:1100px;margin:0 auto;display:flex;gap:2px;overflow-x:auto;padding:0 10px;scrollbar-width:none}
+nav .in::-webkit-scrollbar{display:none}
+nav a{flex:none;padding:12px 12px;text-decoration:none;color:var(--sub);font-weight:500;border-bottom:3px solid transparent;white-space:nowrap;font-size:14px}
+nav a.on{color:var(--brand);border-color:var(--brand);font-weight:700}
+main{max-width:1100px;margin:0 auto;padding:22px 18px 60px}
+section{display:none}
+section.on{display:block}
+h2{font-size:21px;margin:0 0 4px;font-weight:900;color:var(--shell)}
+h3{font-size:16px;margin:22px 0 8px;color:var(--shell)}
+.lead{color:var(--sub);margin:0 0 18px}
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.card{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:#fff}
+.card h4{margin:0 0 6px;font-size:15px;color:var(--shell)}
+.card p{margin:0;color:var(--sub);font-size:14px}
+.card.sel{background:var(--sel);border-color:#B0D4F7}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border-radius:20px;background:var(--sel);color:var(--brand2);margin:0 4px 4px 0;font-family:ui-monospace,Menlo,Consolas,monospace}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{background:var(--shell);color:#fff;font-weight:700;text-align:left;padding:8px 10px;white-space:nowrap}
+td{border-bottom:1px solid var(--line);padding:8px 10px;vertical-align:top}
+tr:hover td{background:#FAFBFC}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+.btn{border:1px solid var(--brand);background:#fff;color:var(--brand);border-radius:8px;padding:7px 14px;cursor:pointer;font-weight:700;font-size:14px}
+.btn:hover{background:var(--sel)}
+.btn.pri{background:var(--brand);color:#fff}
+.btn.pri:hover{background:var(--brand2)}
+.btn:disabled{opacity:.4;cursor:default}
+input[type=number],input[type=text],select{border:1px solid #B8C3CE;border-radius:6px;padding:6px 8px;width:100%;background:#fff}
+input:focus,select:focus{outline:2px solid var(--brand);outline-offset:-1px}
+label.f{display:block;font-size:13px;color:var(--sub);font-weight:500}
+/* flow */
+.flow{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch}
+.step{flex:1 1 150px;border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;background:#fff;position:relative;text-align:left}
+.step .n{font-size:12px;color:var(--brand);font-weight:700}
+.step .t{font-weight:900;font-size:16px;color:var(--shell)}
+.step .c{font-size:13px;color:var(--sub)}
+.step.on{background:var(--sel);border-color:var(--brand);box-shadow:inset 0 0 0 1px var(--brand)}
+.detail{margin-top:12px;border:1px solid #B0D4F7;background:var(--sel);border-radius:10px;padding:16px}
+.detail h4{margin:0 0 6px;color:var(--shell)}
+.detail dl{display:grid;grid-template-columns:110px 1fr;gap:4px 12px;margin:10px 0 0;font-size:14px}
+.detail dt{color:var(--sub);font-weight:700}
+.detail dd{margin:0}
+/* org tree */
+.tree{font-size:14px}
+.node{display:inline-block;border:1px solid var(--line);border-radius:8px;padding:6px 12px;background:#fff;margin:4px 0;cursor:pointer}
+.node b{color:var(--shell)}
+.node.on{border-color:var(--brand);background:var(--sel)}
+.tree ul{list-style:none;margin:0;padding-left:26px;border-left:2px solid var(--line)}
+.tree li{position:relative;padding-left:10px}
+.tree li::before{content:"";position:absolute;left:-2px;top:20px;width:10px;border-top:2px solid var(--line)}
+/* sim */
+.sim{display:grid;grid-template-columns:300px 1fr;gap:16px}
+@media(max-width:820px){.sim{grid-template-columns:1fr}}
+.panel{border:1px solid var(--line);border-radius:10px;padding:14px}
+.panel h4{margin:0 0 10px;font-size:15px;color:var(--shell)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.seg{display:flex;border:1px solid var(--brand);border-radius:8px;overflow:hidden;margin-bottom:10px}
+.seg button{flex:1;border:0;background:#fff;color:var(--brand);padding:6px;cursor:pointer;font-weight:700;font-size:13px}
+.seg button.on{background:var(--brand);color:#fff}
+.stock{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stock div{background:var(--soft);border-radius:8px;padding:8px 10px}
+.stock small{display:block;color:var(--sub);font-size:12px}
+.stock b{font-size:18px;color:var(--shell)}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.je{margin-bottom:10px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.je .h{background:var(--soft);padding:6px 10px;font-size:13px;font-weight:700;color:var(--shell);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.je table td,.je table th{padding:5px 10px;font-size:13px}
+.je table th{background:#fff;color:var(--sub);border-bottom:1px solid var(--line)}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.note{font-size:13px;color:var(--sub);margin-top:6px}
+.empty{color:var(--sub);font-size:14px;padding:20px;text-align:center;border:1px dashed var(--line);border-radius:8px}
+.taccts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:6px}
+.tacc{border:1px solid var(--line);border-radius:8px;padding:8px}
+.tacc .nm{font-weight:700;font-size:13px;color:var(--shell);text-align:center;border-bottom:2px solid var(--shell);padding-bottom:4px}
+.tacc .sides{display:grid;grid-template-columns:1fr 1fr;font-size:13px}
+.tacc .sides div{padding:4px 6px}
+.tacc .sides div:first-child{border-right:2px solid var(--shell)}
+.tacc .bal{font-size:12px;color:var(--sub);text-align:center;margin-top:4px}
+/* search */
+.search{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.search input{flex:1 1 240px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#fff;border-radius:20px;padding:4px 12px;cursor:pointer;font-size:13px;color:var(--sub)}
+.chip.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:700}
+/* special */
+.sp-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.lane{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:10px 0}
+.box{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:#fff;font-size:13px;min-width:110px}
+.box b{display:block;color:var(--shell);font-size:14px}
+.arr{color:var(--brand);font-weight:900}
+/* quiz */
+.q{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+.q .qt{font-weight:700;margin-bottom:8px}
+.opt{display:block;width:100%;text-align:left;border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:5px 0;background:#fff;cursor:pointer}
+.opt:hover{border-color:var(--brand)}
+.opt.ok{background:var(--okbg);border-color:var(--ok);color:var(--ok);font-weight:700}
+.opt.ng{background:var(--ngbg);border-color:var(--ng);color:var(--ng)}
+.exp{font-size:13px;color:var(--sub);margin-top:6px;display:none}
+.exp.on{display:block}
+.score{position:sticky;top:52px;background:#fff;padding:8px 0;font-weight:700;color:var(--shell);z-index:5}
+footer{max-width:1100px;margin:0 auto;padding:0 18px 30px;color:var(--sub);font-size:12px}
+</style>
+</head>
+<body>
+<div class="shell"><div class="in">
+  <div class="eyebrow">SAP MM · GLOBAL BIKE · USD</div>
+  <h1>SAP MM 실습 앱 — 구매에서 송장까지</h1>
+  <p>Procure-to-Pay 흐름, 이동유형, 계정결정, 특수조달을 눌러 보며 익힘</p>
+</div></div>
+<nav><div class="in" id="nav"></div></nav>
+<main id="main"></main>
+<footer>곰선비의 ERP 실무노트 · 학습용 예시 데이터(Global Bike 기준 가정, 금액은 가상)</footer>
+
+<script>
+const TABS=[
+ ["p2p","P2P 흐름"],["org","조직구조"],["master","기준정보"],["sim","입고·송장 시뮬레이터"],
+ ["mvt","이동유형"],["iv","송장검증"],["obyc","계정결정"],["special","특수조달"],["dict","T-code·테이블"],["quiz","퀴즈"]
+];
+const $=s=>document.querySelector(s);
+const fmt=n=>(Math.round(n*100)/100).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------------- P2P ---------------- */
+const P2P=[
+ {t:"구매요청",tc:"ME51N",c:"필요한 자재를 요청",d:"현업 또는 MRP가 '무엇이 언제 얼마나 필요한지'를 남기는 내부 문서. 회계 영향 없음.",tab:"EBAN",doc:"구매요청 번호 (10…)",acc:"없음",tip:"MRP(MD01/MD02)가 자동 생성하거나 ME51N으로 수동 생성. ME54N으로 승인."},
+ {t:"구매오더",tc:"ME21N",c:"공급업체에 주문",d:"공급업체·단가·납기·플랜트를 확정한 대외 계약 문서. 이후 입고·송장의 기준이 됨.",tab:"EKKO / EKPO / EKET",doc:"구매오더 번호 (45…)",acc:"없음 (약정만)",tip:"PR 참조로 생성하면 수량·자재가 그대로 넘어옴. 정보레코드에서 단가 제안."},
+ {t:"입고",tc:"MIGO · 101",c:"물건을 받고 재고 증가",d:"PO를 참조해 수량을 입고. 재고 수량과 금액이 동시에 늘고 회계전표가 자동 생성됨.",tab:"MATDOC (구 MKPF/MSEG)",doc:"자재문서 (50…) + 회계전표",acc:"차) 재고 BSX / 대) GR/IR WRX",tip:"품질검사 재고·보류 재고로 받을 수도 있음. 취소는 102 또는 MBST."},
+ {t:"송장검증",tc:"MIRO",c:"청구서 확인",d:"공급업체 송장을 PO·입고와 3-Way Match. GR/IR을 정리하고 공급업체 채무를 확정.",tab:"RBKP / RSEG",doc:"송장문서 (51…) + 회계전표",acc:"차) GR/IR WRX / 대) 공급업체",tip:"단가 차이는 재고(BSX) 또는 가격차이(PRD)로. 허용범위 초과 시 지급 보류."},
+ {t:"대금지급",tc:"F110 · F-53",c:"채무를 지급",d:"FI-AP에서 만기 도래 채무를 지급. MM 흐름의 마지막 단계.",tab:"BSAK / ACDOCA",doc:"지급전표",acc:"차) 공급업체 / 대) 은행",tip:"F110 자동지급 또는 F-53 수동지급. MM 담당 범위 밖이지만 흐름 이해에 필수."}
+];
+function renderP2P(){
+ return `<h2>Procure-to-Pay 5단계</h2><p class="lead">단계를 누르면 T-code, 테이블, 생성 문서, 회계 처리가 보임</p>
+ <div class="flow">${P2P.map((s,i)=>`<button class="step${i==0?' on':''}" data-i="${i}"><div class="n">STEP ${i+1} · <span class="mono">${s.tc}</span></div><div class="t">${s.t}</div><div class="c">${s.c}</div></button>`).join("")}</div>
+ <div class="detail" id="p2pd"></div>
+ <h3>세 문서가 동시에 생김 — 입고 한 번의 결과</h3>
+ <div class="grid g3">
+  <div class="card"><h4>자재문서</h4><p>수량 기록. 이동유형 101, 플랜트·저장위치, 수량 100 EA</p></div>
+  <div class="card"><h4>회계전표</h4><p>금액 기록. BSX 차변 1,000 / WRX 대변 1,000 USD</p></div>
+  <div class="card"><h4>PO 이력</h4><p>ME23N 'PO 이력' 탭에 입고 수량·금액이 쌓임 → 송장 대상 결정</p></div>
+ </div>`;
+}
+function p2pDetail(i){const s=P2P[i];$("#p2pd").innerHTML=`<h4>${i+1}. ${s.t} <span class="tag">${s.tc}</span></h4><div>${s.d}</div>
+ <dl><dt>테이블</dt><dd class="mono">${s.tab}</dd><dt>생성 문서</dt><dd>${s.doc}</dd><dt>회계 처리</dt><dd>${s.acc}</dd><dt>실무 포인트</dt><dd>${s.tip}</dd></dl>`;}
+
+/* ---------------- ORG ---------------- */
+const ORG={
+ cl:["Client","클라이언트","SAP 시스템 안의 독립된 회사 묶음. 모든 데이터의 최상위 단위.","T000"],
+ cc:["Company Code US00","회사코드","재무제표를 내는 법인 단위. Global Bike Inc.(미국).","T001"],
+ po:["Purch. Org US00","구매조직","공급업체와 가격·조건을 협상하는 조직. 회사코드 또는 플랜트에 할당.","T024E"],
+ pg:["Purch. Group N00","구매그룹","구매 담당자(바이어) 또는 팀. 조직 할당 없이 독립적으로 사용.","T024"],
+ dl:["Plant DL00 Dallas","플랜트","생산·보관 거점. 재고 평가는 보통 플랜트 단위(평가영역).","T001W"],
+ mi:["Plant MI00 Miami","플랜트","물류센터(DC). 완제품·상품을 보관하고 판매.","T001W"],
+ sl1:["SLoc RM00","저장위치","원자재 창고. 재고 수량을 관리하는 가장 작은 단위.","T001L"],
+ sl2:["SLoc FG00","저장위치","완제품 창고. 같은 플랜트 안 저장위치 간 이동은 311.","T001L"]
+};
+function renderOrg(){
+ const n=k=>`<span class="node" data-k="${k}"><b>${ORG[k][0]}</b> · ${ORG[k][1]}</span>`;
+ return `<h2>MM 조직구조</h2><p class="lead">Global Bike 미국 법인 기준 예시. 상자를 누르면 설명과 테이블이 보임</p>
+ <div class="grid g2"><div class="card tree">
+ ${n("cl")}<ul><li>${n("cc")}<ul>
+  <li>${n("po")}</li>
+  <li>${n("dl")}<ul><li>${n("sl1")}</li></ul></li>
+  <li>${n("mi")}<ul><li>${n("sl2")}</li></ul></li>
+ </ul></li></ul>
+ <div style="margin-top:10px">${n("pg")} <span class="note">— 조직 계층에 묶이지 않음</span></div>
+ </div><div class="detail" id="orgd" style="margin-top:0"></div></div>
+ <h3>할당 규칙 3가지</h3>
+ <div class="grid g3">
+  <div class="card"><h4>플랜트 → 회사코드</h4><p>플랜트는 반드시 하나의 회사코드에 속함 (OX18)</p></div>
+  <div class="card"><h4>구매조직 → 플랜트</h4><p>구매조직이 어느 플랜트를 위해 구매할지 지정 (OX17)</p></div>
+  <div class="card"><h4>평가영역 = 플랜트</h4><p>재고 금액과 단가가 플랜트별로 따로 관리됨</p></div>
+ </div>`;
+}
+function orgDetail(k){const o=ORG[k];document.querySelectorAll(".node").forEach(e=>e.classList.toggle("on",e.dataset.k==k));$("#orgd").innerHTML=`<h4>${o[0]}</h4><div><b>${o[1]}</b> — ${o[2]}</div><dl><dt>테이블</dt><dd class="mono">${o[3]}</dd></dl>`;}
+
+/* ---------------- MASTER ---------------- */
+function renderMaster(){
+ const views=[["기본 데이터 1","자재 내역·기본단위·자재그룹","MARA"],["구매","구매그룹·주문단위·GR 처리시간","MARC"],["MRP 1~4","MRP 유형·로트크기·조달유형 F/E","MARC"],["플랜트 데이터/저장","저장 조건·유효기간","MARC / MARD"],["회계 1","평가클래스·가격관리 S/V·단가","MBEW"],["원가 1·2","원가계산 관련 값","MBEW"]];
+ return `<h2>MM 기준정보 4가지</h2><p class="lead">구매오더를 만들 때 자동으로 끌려오는 값들의 출처</p>
+ <div class="grid g2">
+  <div class="card sel"><h4>자재마스터 <span class="tag">MM01</span></h4><p>무엇을 사는가. 뷰(View)별로 조직 단위가 다름</p></div>
+  <div class="card"><h4>공급업체(BP) <span class="tag">BP</span></h4><p>누구에게서 사는가. 역할 FLVN00(일반)·FLVN01(회사코드) — 구매조직 데이터에 통화·지급조건</p></div>
+  <div class="card"><h4>구매정보레코드 <span class="tag">ME11</span></h4><p>얼마에 사는가. 자재 × 공급업체 × 구매조직별 단가·납기 (EINA/EINE)</p></div>
+  <div class="card"><h4>소스리스트 <span class="tag">ME01</span></h4><p>어디서 사도 되는가. 기간별 허용 공급업체·고정 공급업체 (EORD)</p></div>
+ </div>
+ <h3>자재마스터 주요 뷰</h3>
+ <div class="tbl"><table><tr><th>뷰</th><th>핵심 필드</th><th>테이블</th></tr>
+ ${views.map(v=>`<tr><td><b>${v[0]}</b></td><td>${v[1]}</td><td class="mono">${v[2]}</td></tr>`).join("")}</table></div>
+ <h3>가격관리 S vs V — 송장 단가 차이가 어디로 가는지 결정</h3>
+ <div class="grid g2">
+  <div class="card"><h4>S 표준가</h4><p>단가가 고정. 입고·송장 차이는 모두 가격차이(PRD)로. 제조업 완제품·반제품에 주로 사용</p></div>
+  <div class="card"><h4>V 이동평균가</h4><p>입고·송장 때마다 단가가 다시 계산됨. 차이는 재고(BSX)로, 재고 부족분만 PRD로. 원자재·상품에 주로 사용</p></div>
+ </div>`;
+}
+
+/* ---------------- SIM ---------------- */
+let S={};
+function simReset(){
+ S={mode:"V",q0:Number($("#s_q0").value)||0,p0:Number($("#s_p0").value)||0,qty:Number($("#s_qty").value)||0,po:Number($("#s_po").value)||0,
+    gi:Number($("#s_gi").value)||0,ivp:Number($("#s_iv").value)||0,std:Number($("#s_std").value)||0,step:0,docs:[],acc:{}};
+ S.mode=$("#seg .on").dataset.m;
+ S.stQ=S.q0; S.stV=S.mode=="S"?S.q0*S.std:S.q0*S.p0; S.grQ=0;
+ drawSim();
+}
+function post(title,lines){
+ S.docs.push({title,lines});
+ lines.forEach(l=>{const a=S.acc[l[0]]||(S.acc[l[0]]={d:0,c:0});if(l[1]>0)a.d+=l[1];else a.c+=-l[1];});
+}
+function simGR(){
+ const q=S.qty, poAmt=q*S.po;
+ if(S.mode=="V"){post("① 입고 MIGO 101",[["BSX 재고",poAmt,`${q} EA × ${fmt(S.po)}`],["WRX GR/IR",-poAmt,"PO 단가 기준"]]);S.stV+=poAmt;}
+ else{const sv=q*S.std,d=poAmt-sv;const L=[["BSX 재고",sv,`${q} EA × 표준가 ${fmt(S.std)}`],["WRX GR/IR",-poAmt,"PO 단가 기준"]];if(d)L.splice(1,0,["PRD 가격차이",d,"PO가 − 표준가"]);post("① 입고 MIGO 101 (표준가)",L);S.stV+=sv;}
+ S.stQ+=q; S.grQ=q; S.step=1; drawSim();
+}
+function simGI(){
+ const k=Math.min(S.gi,S.stQ); if(k<=0){S.step=2;drawSim();return;}
+ const map=S.stQ?S.stV/S.stQ:0, v=k*map;
+ post("② 출고 MIGO 201 (코스트센터)",[["GBB 소비 (VBR)",v,`${k} EA × ${fmt(map)}`],["BSX 재고",-v,"현재 단가로 출고"]]);
+ S.stQ-=k; S.stV-=v; S.step=2; drawSim();
+}
+function simIV(){
+ const q=S.grQ, ivAmt=q*S.ivp, grir=q*S.po, d=ivAmt-grir;
+ const L=[["WRX GR/IR",grir,"입고 금액 정리"]];
+ if(d){
+  if(S.mode=="V"){const cov=Math.min(S.stQ,q)/q, toStock=d*cov, toPRD=d-toStock;
+   if(toStock){L.push(["BSX 재고",toStock,`차이 × 재고 비율 ${Math.round(cov*100)}%`]);S.stV+=toStock;}
+   if(toPRD)L.push(["PRD 가격차이",toPRD,"출고된 수량 몫"]);}
+  else L.push(["PRD 가격차이",d,"표준가는 바뀌지 않음"]);
+ }
+ L.push(["공급업체",-ivAmt,`${q} EA × ${fmt(S.ivp)}`]);
+ post("③ 송장 MIRO",L); S.step=3; drawSim();
+}
+function drawSim(){
+ const map=S.stQ?S.stV/S.stQ:0;
+ $("#stk").innerHTML=`<div><small>재고 수량</small><b>${S.stQ.toLocaleString()} EA</b></div><div><small>재고 금액 USD</small><b>${fmt(S.stV)}</b></div><div><small>${S.mode=="V"?"이동평균가":"표준가"}</small><b>${fmt(S.mode=="V"?map:S.std)}</b></div>`;
+ $("#b_gr").disabled=S.step!=0;$("#b_gi").disabled=S.step!=1;$("#b_iv").disabled=S.step!=2;
+ $("#jes").innerHTML=S.docs.length?S.docs.map(j=>`<div class="je"><div class="h"><span>${j.title}</span></div><table><tr><th>계정</th><th class="num">차변</th><th class="num">대변</th><th>근거</th></tr>${j.lines.map(l=>`<tr><td>${l[0]}</td><td class="num">${l[1]>0?fmt(l[1]):""}</td><td class="num">${l[1]<0?fmt(-l[1]):""}</td><td style="color:var(--sub)">${l[2]}</td></tr>`).join("")}</table></div>`).join(""):`<div class="empty">왼쪽 값을 정하고 ① 입고부터 누름</div>`;
+ const keys=Object.keys(S.acc);
+ $("#tacc").innerHTML=keys.map(k=>{const a=S.acc[k],b=a.d-a.c;return `<div class="tacc"><div class="nm">${k}</div><div class="sides"><div class="num">${a.d?fmt(a.d):""}</div><div class="num">${a.c?fmt(a.c):""}</div></div><div class="bal">잔액 ${b>=0?"차":"대"} ${fmt(Math.abs(b))}</div></div>`}).join("");
+ const msg={0:"입고 전",1:"입고 완료 — GR/IR 대변 잔액이 생김",2:"출고 완료 — 이제 송장을 받음",3:"송장 완료 — GR/IR 잔액 0, 단가 차이 처리 확인"};
+ $("#simmsg").textContent=msg[S.step];
+}
+function renderSim(){
+ return `<h2>입고·송장 시뮬레이터</h2><p class="lead">값을 바꿔 가며 PO 단가와 송장 단가가 다를 때 재고·가격차이가 어떻게 나뉘는지 확인</p>
+ <div class="sim"><div class="panel"><h4>조건 입력</h4>
+  <div class="seg" id="seg"><button class="on" data-m="V">V 이동평균가</button><button data-m="S">S 표준가</button></div>
+  <div class="row"><label class="f">기초 재고 EA<input type="number" id="s_q0" value="0" min="0"></label><label class="f">기초 단가<input type="number" id="s_p0" value="10" step="0.01"></label></div>
+  <div class="row"><label class="f">PO 수량 EA<input type="number" id="s_qty" value="100" min="1"></label><label class="f">PO 단가<input type="number" id="s_po" value="10" step="0.01"></label></div>
+  <div class="row"><label class="f">송장 전 출고 EA<input type="number" id="s_gi" value="40" min="0"></label><label class="f">송장 단가<input type="number" id="s_iv" value="11" step="0.01"></label></div>
+  <div class="row" id="stdrow"><label class="f">표준가 (S일 때)<input type="number" id="s_std" value="9.5" step="0.01"></label><div></div></div>
+  <button class="btn" id="b_reset" style="width:100%">조건 적용 · 처음부터</button>
+  <p class="note">자재 예: 원자재(가상) · 플랜트 DL00 · 통화 USD</p>
+ </div><div>
+  <div class="stock" id="stk"></div>
+  <div class="acts"><button class="btn pri" id="b_gr">① 입고 101</button><button class="btn pri" id="b_gi">② 출고 201</button><button class="btn pri" id="b_iv">③ 송장 MIRO</button></div>
+  <div class="note" id="simmsg" style="margin:-4px 0 10px;font-weight:700;color:var(--brand2)"></div>
+  <div id="jes"></div>
+  <h3 style="margin-top:14px">T계정 누계</h3><div class="taccts" id="tacc"></div>
+ </div></div>`;
+}
+
+/* ---------------- MVT ---------------- */
+const MVT=[
+ ["101","입고","PO 입고","차) 재고 / 대) GR/IR"],["102","입고","101 취소",""],["103","입고","입고 보류재고로 입고 (평가 안 됨)",""],["105","입고","보류재고 → 가용재고 해제","차) 재고 / 대) GR/IR"],
+ ["122","입고","공급업체 반품","101의 역분개"],["161","입고","반품 PO 입고 (반품 품목)",""],
+ ["201","출고","코스트센터 출고","차) 소비 / 대) 재고"],["221","출고","프로젝트(WBS) 출고","차) 소비 / 대) 재고"],["261","출고","생산오더 출고","차) 소비 / 대) 재고"],
+ ["301","이전","플랜트 간 이전 (1단계)","플랜트별 단가 차이 시 BSX"],["303","이전","플랜트 간 이전 2단계 — 출고",""],["305","이전","플랜트 간 이전 2단계 — 입고",""],
+ ["311","이전","저장위치 간 이전 (1단계)","회계 영향 없음"],["313","이전","저장위치 간 이전 2단계 — 출고",""],["315","이전","저장위치 간 이전 2단계 — 입고",""],
+ ["321","재고상태","품질검사 → 가용","회계 영향 없음"],["343","재고상태","보류 → 가용",""],["344","재고상태","가용 → 보류",""],["349","재고상태","보류 → 품질검사",""],
+ ["411 K","특수재고","위탁재고 → 자사재고 (VMI 소비 이전)","차) 재고 / 대) 위탁채무 KON"],["541","특수재고","임가공 공급업체에 부품 제공","회계 영향 없음 (소유권 유지)"],["543","특수재고","임가공 부품 소비 (입고 시 자동)","차) 소비 / 대) 재고"],
+ ["561","초기","초기 재고 등록","차) 재고 / 대) 초기 대사계정"],["501","입고","PO 없이 입고",""],
+ ["551","출고","폐기 (Scrapping)","차) 폐기손실 / 대) 재고"],["601","출고","SD 출고 (PGI)","차) 매출원가 / 대) 재고"],
+ ["641","이전","STO 출고 — 운송중 재고","플랜트 간 재고이전 오더"],["643","이전","회사 간 STO 출고 (SD 청구 동반)",""],
+ ["701","실사","재고실사 차이 — 증가","차) 재고 / 대) 실사차이"],["702","실사","재고실사 차이 — 감소","차) 실사차이 / 대) 재고"]
+];
+let mvtF="전체";
+function renderMvt(){
+ const cats=["전체",...new Set(MVT.map(m=>m[1]))];
+ return `<h2>이동유형 사전</h2><p class="lead">3자리 코드가 '무엇이 어디로 움직였는지'와 회계 처리를 결정. 역분개는 보통 +1 (101↔102)</p>
+ <div class="search"><input type="text" id="mvtq" placeholder="코드 또는 내용 검색 (예: 541, 위탁, 실사)"></div>
+ <div class="chips" id="mvtc" style="margin-bottom:12px">${cats.map(c=>`<button class="chip${c==mvtF?' on':''}" data-c="${c}">${c}</button>`).join("")}</div>
+ <div class="tbl"><table><thead><tr><th>코드</th><th>구분</th><th>내용</th><th>회계 처리</th></tr></thead><tbody id="mvtb"></tbody></table></div>`;
+}
+function drawMvt(){
+ const q=($("#mvtq").value||"").trim().toLowerCase();
+ const r=MVT.filter(m=>(mvtF=="전체"||m[1]==mvtF)&&(!q||m.join(" ").toLowerCase().includes(q)));
+ $("#mvtb").innerHTML=r.length?r.map(m=>`<tr><td><span class="tag">${m[0]}</span></td><td>${m[1]}</td><td>${m[2]}</td><td style="color:var(--sub)">${m[3]}</td></tr>`).join(""):`<tr><td colspan="4" class="empty">결과 없음</td></tr>`;
+}
+
+/* ---------------- IV ---------------- */
+function renderIV(){
+ return `<h2>송장검증 (MIRO)</h2><p class="lead">PO · 입고 · 송장 세 개를 맞춰 보는 3-Way Match가 핵심</p>
+ <div class="lane"><div class="box"><b>구매오더</b>100 EA × 10.00</div><span class="arr">+</span><div class="box"><b>입고</b>100 EA</div><span class="arr">+</span><div class="box"><b>송장</b>100 EA × 11.00</div><span class="arr">→</span><div class="box" style="border-color:var(--warn)"><b>단가 차이 +10%</b>허용범위 초과 시 지급 보류</div></div>
+ <h3>MIRO 거래 4가지</h3>
+ <div class="tbl"><table><tr><th>거래</th><th>방향</th><th>수량 영향</th><th>GR/IR 정리</th><th>대표 상황</th></tr>
+  <tr><td><b>송장</b></td><td>차변</td><td>있음</td><td>함</td><td>입고분 정상 청구</td></tr>
+  <tr><td><b>대변메모</b></td><td>대변</td><td>있음</td><td>함</td><td>반품·과다 청구</td></tr>
+  <tr style="background:var(--sel)"><td><b>차후차변</b></td><td>차변</td><td>없음</td><td>안 함</td><td>단가 소급 인상·추가 운임</td></tr>
+  <tr><td><b>차후대변</b></td><td>대변</td><td>없음</td><td>안 함</td><td>단가 소급 인하·리베이트</td></tr></table></div>
+ <h3>허용범위와 보류</h3>
+ <div class="grid g3">
+  <div class="card"><h4>허용범위 키 <span class="tag">OMR6</span></h4><p>PP(단가 차이), DQ(수량 초과), BD(소액 자동 처리) 등으로 한도를 정함</p></div>
+  <div class="card"><h4>지급 보류 해제 <span class="tag">MRBR</span></h4><p>한도를 넘으면 송장은 전기되지만 지급이 막힘. 확인 후 MRBR로 해제</p></div>
+  <div class="card"><h4>GR/IR 정리 <span class="tag">MR11</span></h4><p>더 이상 송장·입고가 오지 않을 PO의 GR/IR 잔액을 정리</p></div>
+ </div>
+ <h3>BAPI로 송장 만들기</h3>
+ <div class="card"><p><span class="tag">BAPI_INCOMINGINVOICE_CREATE</span> 헤더 <span class="mono">INVOICE_IND</span>와 품목 <span class="mono">DE_CRE_IND</span> 두 필드로 4가지 거래를 구분. 송장 = X/공백, 대변메모 = 공백/공백, 차후차변 = X/X, 차후대변 = 공백/X</p></div>`;
+}
+
+/* ---------------- OBYC ---------------- */
+const OBYC=[
+ ["BSX","재고 계정","입고·출고·송장 차이(V)","재고 금액이 바뀌는 모든 순간"],
+ ["WRX","GR/IR 정리","입고 대변 · 송장 차변","입고와 송장 사이의 중간 계정"],
+ ["GBB","재고 상대계정","출고·폐기·실사·초기재고","계정 수정자로 세분: VBR 소비, VAX/VAY 판매, VNG 폐기, INV 실사, BSA 초기"],
+ ["PRD","가격차이","S 자재 입고·송장, V 재고 부족분","표준가와 실제가의 차이"],
+ ["KON","위탁·파이프라인 채무","411 K · 201K · MRKO","위탁재고를 소비할 때 생기는 채무"],
+ ["FRL","외주가공비","임가공 입고","공급업체 가공비"],
+ ["BSV","재고 변동","임가공 입고","제공 부품 소비분의 상대계정"],
+ ["UMB","재평가","MR21 단가 변경 · 전기 기간 송장","이전 기간 재고의 재평가 손익"],
+ ["FR1","운임 계상","운임 조건이 있는 PO 입고","미지급 운임"],
+ ["AUM","이전 차이","플랜트 간 이전(301)","두 플랜트 단가가 다를 때"]
+];
+function renderObyc(){
+ return `<h2>자동 계정결정 (OBYC)</h2><p class="lead">이동유형 → 거래키 → 평가클래스 → G/L 계정. 사용자는 계정을 고르지 않고 시스템이 찾음</p>
+ <div class="lane"><div class="box"><b>이동유형</b>101</div><span class="arr">→</span><div class="box"><b>평가클래스</b>자재마스터 회계1 뷰 (예: 3000 원자재)</div><span class="arr">→</span><div class="box"><b>거래키</b>BSX · WRX</div><span class="arr">→</span><div class="box sel" style="background:var(--sel)"><b>G/L 계정</b>OBYC에 지정된 계정</div></div>
+ <div class="tbl" style="margin-top:12px"><table><tr><th>거래키</th><th>의미</th><th>쓰이는 거래</th><th>설명</th></tr>
+ ${OBYC.map(o=>`<tr><td><span class="tag">${o[0]}</span></td><td><b>${o[1]}</b></td><td>${o[2]}</td><td style="color:var(--sub)">${o[3]}</td></tr>`).join("")}</table></div>
+ <p class="note">평가클래스를 직접 세분하는 단위는 평가영역 그룹(OMWD)과 계정범주참조(OMSK)</p>`;
+}
+
+/* ---------------- SPECIAL ---------------- */
+const SP={
+ sub:{n:"임가공 (Subcontracting)",k:"품목범주 L",flow:[["PO 생성","ME21N 품목범주 L · BOM으로 부품 계산"],["부품 제공","541 → 공급업체 보관 특별재고 O"],["완제품 입고","101 + 543 자동 (부품 소비)"],["송장","가공비만 청구 MIRO"]],acc:"입고: 차) 재고 BSX / 대) 재고변동 BSV · GR/IR(가공비) WRX",tip:"부품 소유권은 우리 회사 — 541 때는 회계 영향 없음. ME2ON으로 공급업체 재고 모니터링"},
+ con:{n:"위탁 (Consignment · VMI)",k:"품목범주 K",flow:[["정보레코드","ME11 위탁 정보레코드에 단가"],["입고","101 K — 수량만, 금액 없음"],["소비·이전","201 K 또는 411 K — 이때 채무 발생"],["정산","MRKO로 소비분 대금 정산"]],acc:"소비 시: 차) 소비 또는 재고 / 대) 위탁채무 KON",tip:"실무에서는 VMI라고 부르는 경우가 많음. 단가는 소비 시점 정보레코드 기준"},
+ sto:{n:"재고이전오더 (STO)",k:"품목범주 U",flow:[["STO 생성","ME21N 문서유형 UB · 공급 플랜트 DL00"],["출고","VL10B → 641 운송중 재고"],["입고","101 (수령 플랜트 MI00)"],["회사 간이면","643 + SD 청구 + MIRO"]],acc:"같은 회사: 플랜트 간 금액만 이동 / 회사 간: 판매·구매 거래로 처리",tip:"운송중 재고는 수령 플랜트 재고로 보이지만 아직 사용 불가"},
+ pipe:{n:"파이프라인",k:"품목범주 P",flow:[["정보레코드","ME11 파이프라인 단가"],["입고 없음","수도·가스·전기처럼 늘 연결된 자재"],["소비","201P · 261P 바로 소비"],["정산","MRKO로 소비분 정산"]],acc:"소비 시: 차) 소비 / 대) 파이프라인 채무 KON",tip:"재고 수량 관리 없이 소비 기록만 남김"},
+ third:{n:"3자 거래 (Third-party)",k:"품목범주 S",flow:[["판매오더","SD 품목범주 TAS → PR 자동"],["PO","공급업체가 고객에게 직송"],["입고 선택","통계상 입고(재고 영향 없음) 또는 생략"],["송장·청구","MIRO 후 고객에게 SD 청구"]],acc:"송장: 차) 매출원가 / 대) 공급업체 — 재고 계정 거치지 않음",tip:"재고를 보유하지 않는 판매. SD·MM 연계 실습에 적합"}
+};
+let spK="sub";
+function renderSpecial(){
+ return `<h2>특수조달 5가지</h2><p class="lead">PO 품목범주 하나로 흐름과 회계가 완전히 달라짐</p>
+ <div class="sp-tabs">${Object.keys(SP).map(k=>`<button class="chip${k==spK?' on':''}" data-k="${k}">${SP[k].n.split(" (")[0]}</button>`).join("")}</div>
+ <div id="spd"></div>`;
+}
+function drawSp(){const s=SP[spK];
+ document.querySelectorAll(".sp-tabs .chip").forEach(e=>e.classList.toggle("on",e.dataset.k==spK));
+ $("#spd").innerHTML=`<div class="card"><h4>${s.n} <span class="tag">${s.k}</span></h4>
+ <div class="lane">${s.flow.map((f,i)=>`<div class="box"><b>${i+1}. ${f[0]}</b>${f[1]}</div>${i<s.flow.length-1?'<span class="arr">→</span>':""}`).join("")}</div>
+ <div class="detail"><dl style="margin:0"><dt>회계 처리</dt><dd>${s.acc}</dd><dt>실무 포인트</dt><dd>${s.tip}</dd></dl></div></div>`;
+}
+
+/* ---------------- DICT ---------------- */
+const DICT=[
+ ["T-code","ME51N","구매요청 생성"],["T-code","ME54N","구매요청 승인"],["T-code","ME5A","구매요청 목록"],["T-code","ME21N","구매오더 생성"],["T-code","ME22N","구매오더 변경"],["T-code","ME23N","구매오더 조회 (PO 이력)"],
+ ["T-code","ME2N","PO 목록 (번호별)"],["T-code","ME2M","PO 목록 (자재별)"],["T-code","ME11","구매정보레코드 생성"],["T-code","ME01","소스리스트"],["T-code","ME2ON","임가공 공급업체 재고 모니터"],
+ ["T-code","MIGO","입고·출고·이전 통합"],["T-code","MB51","자재문서 목록"],["T-code","MMBE","재고 개요"],["T-code","MB52","창고별 재고"],["T-code","MB5B","기간별 재고 (기초·기말)"],["T-code","MB04","임가공 소비 사후 조정"],
+ ["T-code","MI01","실사문서 생성"],["T-code","MI04","실사 수량 입력"],["T-code","MI07","실사 차이 전기"],
+ ["T-code","MIRO","송장 입력"],["T-code","MIR4","송장 조회"],["T-code","MRBR","지급 보류 해제"],["T-code","MRKO","위탁·파이프라인 정산"],["T-code","MR11","GR/IR 정리"],["T-code","MR21","단가 변경"],["T-code","MR22","자재 차변·대변 (금액)"],
+ ["T-code","MM01","자재마스터 생성"],["T-code","MM03","자재마스터 조회"],["T-code","BP","공급업체 생성 (S/4HANA)"],["T-code","MD04","재고/소요량 목록"],["T-code","MD01N","MRP 실행 (S/4HANA)"],["T-code","OBYC","자동 계정결정"],["T-code","OMR6","송장 허용범위"],
+ ["테이블","EBAN","구매요청"],["테이블","EKKO","PO 헤더"],["테이블","EKPO","PO 품목"],["테이블","EKET","PO 납품일정"],["테이블","EKBE","PO 이력"],["테이블","EINA / EINE","구매정보레코드 (일반 / 구매조직)"],["테이블","EORD","소스리스트"],
+ ["테이블","MARA","자재 일반"],["테이블","MARC","자재 플랜트"],["테이블","MARD","자재 저장위치 재고"],["테이블","MBEW","자재 평가 (단가)"],["테이블","MATDOC","자재문서 (S/4HANA)"],["테이블","MKPF / MSEG","자재문서 헤더 / 품목 (ECC)"],
+ ["테이블","RBKP","송장 헤더"],["테이블","RSEG","송장 품목 (TBTKZ = 차후 차변·대변)"],["테이블","LFA1","공급업체 일반 (BUT000과 연결)"],["테이블","T156","이동유형"],["테이블","T030","자동 계정결정"]
+];
+let dictF="전체";
+function renderDict(){
+ return `<h2>T-code · 테이블 사전</h2><p class="lead">MM 실습에서 가장 자주 쓰는 T-code와 테이블</p>
+ <div class="search"><input type="text" id="dq" placeholder="검색 (예: 송장, EKBE, ME2)"></div>
+ <div class="chips" id="dc" style="margin-bottom:12px">${["전체","T-code","테이블"].map(c=>`<button class="chip${c==dictF?' on':''}" data-c="${c}">${c}</button>`).join("")}</div>
+ <div class="grid g4" id="db"></div>`;
+}
+function drawDict(){
+ const q=($("#dq").value||"").trim().toLowerCase();
+ const r=DICT.filter(d=>(dictF=="전체"||d[0]==dictF)&&(!q||d.join(" ").toLowerCase().includes(q)));
+ $("#db").innerHTML=r.length?r.map(d=>`<div class="card"><span class="tag">${d[1]}</span><p style="margin-top:4px">${d[2]}</p></div>`).join(""):`<div class="empty">결과 없음</div>`;
+}
+
+/* ---------------- QUIZ ---------------- */
+const QZ=[
+ ["PO 입고(101) 시 대변에 오는 계정은?",["재고 BSX","GR/IR WRX","공급업체","가격차이 PRD"],1,"입고는 차) 재고 / 대) GR/IR. 송장이 오면 GR/IR이 정리됨"],
+ ["저장위치 간 재고이전(311)의 회계 영향은?",["재고 금액 증가","가격차이 발생","회계 영향 없음","GR/IR 발생"],2,"같은 플랜트(평가영역) 안이라 금액이 바뀌지 않음"],
+ ["표준가(S) 자재의 송장 단가가 PO보다 높을 때 차이는?",["재고 BSX","가격차이 PRD","GR/IR WRX","재평가 UMB"],1,"표준가는 고정이라 차이 전액이 PRD로"],
+ ["임가공 부품을 공급업체에 보낼 때 이동유형은?",["301","541","543","641"],1,"541은 소유권을 유지한 채 공급업체 보관 특별재고 O로 이동. 543은 입고 때 소비"],
+ ["위탁재고에서 채무가 생기는 시점은?",["101 K 입고","정보레코드 생성","411 K·201 K 소비","PO 생성"],2,"위탁 입고는 수량만. 소비·이전 때 KON 채무 발생, MRKO로 정산"],
+ ["PO 이력이 저장되는 테이블은?",["EKKO","EKBE","EBAN","RBKP"],1,"EKBE에 입고·송장 이력이 쌓임"],
+ ["수량 영향 없이 금액만 추가 청구받는 MIRO 거래는?",["송장","대변메모","차후차변","차후대변"],2,"차후차변은 수량을 바꾸지 않고 GR/IR도 건드리지 않음"],
+ ["송장 단가 차이가 허용범위를 넘었을 때 지급 보류를 해제하는 T-code는?",["MRBR","MR11","MRKO","MR21"],0,"MRBR로 보류 해제. MR11은 GR/IR 정리"],
+ ["구매조직에 할당되는 조직 단위는?",["클라이언트","플랜트","저장위치","구매그룹"],1,"구매조직은 플랜트(또는 회사코드)에 할당. 구매그룹은 할당 없음"],
+ ["S/4HANA에서 자재문서를 담는 테이블은?",["MKPF","MSEG","MATDOC","MBEW"],2,"S/4HANA는 MATDOC 한 테이블로 통합. MKPF/MSEG는 호환 뷰"]
+];
+let qs={};
+function renderQuiz(){
+ qs={};
+ return `<h2>MM 퀴즈 10문항</h2><p class="lead">답을 누르면 정답과 해설이 바로 보임</p>
+ <div class="score" id="qsc"></div>
+ ${QZ.map((q,i)=>`<div class="q"><div class="qt">${i+1}. ${q[0]}</div>${q[1].map((o,j)=>`<button class="opt" data-q="${i}" data-o="${j}">${String.fromCharCode(65+j)}. ${o}</button>`).join("")}<div class="exp" id="e${i}">${q[3]}</div></div>`).join("")}
+ <button class="btn" id="qreset">다시 풀기</button>`;
+}
+function drawScore(){const n=Object.keys(qs).length,c=Object.values(qs).filter(Boolean).length;$("#qsc").textContent=`점수 ${c} / ${QZ.length}  ·  푼 문제 ${n}`;}
+
+/* ---------------- ROUTER ---------------- */
+const R={p2p:[renderP2P,()=>{p2pDetail(0)}],org:[renderOrg,()=>orgDetail("cc")],master:[renderMaster],sim:[renderSim,()=>simReset()],mvt:[renderMvt,drawMvt],iv:[renderIV],obyc:[renderObyc],special:[renderSpecial,drawSp],dict:[renderDict,drawDict],quiz:[renderQuiz,drawScore]};
+$("#nav").innerHTML=TABS.map(t=>`<a href="#${t[0]}" data-t="${t[0]}">${t[1]}</a>`).join("");
+function go(){
+ let t=location.hash.slice(1); if(!R[t]) t="p2p";
+ document.querySelectorAll("nav a").forEach(a=>a.classList.toggle("on",a.dataset.t==t));
+ $("#main").innerHTML=`<section class="on">${R[t][0]()}</section>`;
+ if(R[t][1]) R[t][1]();
+ const a=document.querySelector(`nav a[data-t="${t}"]`); if(a) a.scrollIntoView({inline:"center",block:"nearest"});
+}
+window.addEventListener("hashchange",()=>{go();window.scrollTo(0,0)});
+document.addEventListener("click",e=>{
+ const el=e.target.closest("button,.node"); if(!el) return;
+ if(el.classList.contains("step")){document.querySelectorAll(".step").forEach(s=>s.classList.remove("on"));el.classList.add("on");p2pDetail(+el.dataset.i);}
+ else if(el.classList.contains("node")) orgDetail(el.dataset.k);
+ else if(el.closest("#seg")){document.querySelectorAll("#seg button").forEach(b=>b.classList.remove("on"));el.classList.add("on");simReset();}
+ else if(el.id=="b_reset") simReset();
+ else if(el.id=="b_gr") simGR(); else if(el.id=="b_gi") simGI(); else if(el.id=="b_iv") simIV();
+ else if(el.closest("#mvtc")){mvtF=el.dataset.c;document.querySelectorAll("#mvtc .chip").forEach(c=>c.classList.toggle("on",c===el));drawMvt();}
+ else if(el.closest(".sp-tabs")){spK=el.dataset.k;drawSp();}
+ else if(el.closest("#dc")){dictF=el.dataset.c;document.querySelectorAll("#dc .chip").forEach(c=>c.classList.toggle("on",c===el));drawDict();}
+ else if(el.classList.contains("opt")){const qi=+el.dataset.q,oi=+el.dataset.o;if(qi in qs)return;const ok=oi==QZ[qi][2];qs[qi]=ok;
+  document.querySelectorAll(`.opt[data-q="${qi}"]`).forEach(b=>{if(+b.dataset.o==QZ[qi][2])b.classList.add("ok");else if(b===el)b.classList.add("ng");});
+  $("#e"+qi).classList.add("on");drawScore();}
+ else if(el.id=="qreset") go();
+});
+document.addEventListener("input",e=>{if(e.target.id=="mvtq")drawMvt();if(e.target.id=="dq")drawDict();});
+go();
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#354A5F;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+</body>
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SAP CO 용어집</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff;--card:#ffffff;--ink:#1b1d22;--sub:#5f6470;--line:#e3e5ea;
+  --accent:#0A6ED1;--accent-soft:#EBF5FE;--star:#0A6ED1;--chip:#F7F7F7;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:'Noto Sans KR',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;z-index:10;background:var(--bg);padding:calc(12px + env(safe-area-inset-top)) 16px 8px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+.brand h1{font-size:19px;font-weight:700;letter-spacing:-.3px}
+.brand h1 span{color:var(--accent)}
+.brand small{color:var(--sub);font-size:12px}
+header{background:#354A5F;border-bottom:0}
+.brand h1{color:#fff}.brand h1 span{color:#91C8F6}.brand small{color:#D1E8FF}
+.search{position:relative}
+.search input{width:100%;font:inherit;font-size:15px;padding:11px 36px 11px 38px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);outline:none}
+.search input:focus{border-color:var(--accent)}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.5}
+.search button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--sub);font-size:18px;padding:6px 8px;display:none;cursor:pointer}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:0;font:inherit;font-size:13px;padding:6px 12px;border-radius:999px;background:var(--chip);color:var(--sub);cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--accent);color:var(--card)}
+main{padding:12px 16px;max-width:760px;margin:0 auto}
+.count{font-size:12px;color:var(--sub);margin:2px 2px 10px}
+.list{display:grid;gap:8px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+.item:active{transform:scale(.99)}
+.item .body{flex:1;min-width:0}
+.item .en{font-weight:700;font-size:15px}
+.item .ko{color:var(--accent);font-size:14px;margin-left:6px;font-weight:500}
+.item .d{color:var(--sub);font-size:13px;margin-top:4px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.tag{font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:6px;background:var(--accent-soft);color:var(--accent)}
+.tag.tb{background:var(--chip);color:var(--sub)}
+.star{border:0;background:none;font-size:19px;color:var(--line);cursor:pointer;padding:0 2px;line-height:1}
+.star.on{color:var(--star)}
+.empty{text-align:center;color:var(--sub);padding:48px 12px;font-size:14px;line-height:1.7}
+mark{background:#dfe4f7;color:inherit;border-radius:2px}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:none;font:inherit;font-size:12px;color:var(--sub);padding:9px 0 10px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+nav button.on{color:var(--accent);font-weight:700}
+nav svg{width:22px;height:22px}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+.sheet-bg.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;background:var(--card);border-radius:20px 20px 0 0;max-height:86vh;overflow-y:auto;transform:translateY(100%);transition:transform .25s ease;padding:8px 20px calc(24px + env(safe-area-inset-bottom));max-width:760px;margin:0 auto}
+.sheet.open{transform:none}
+.grip{width:40px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 14px}
+.sheet .cat{font-size:12px;color:var(--sub)}
+.sheet h2{font-size:22px;margin:4px 0 2px;letter-spacing:-.3px}
+.sheet .kot{color:var(--accent);font-size:16px;font-weight:500}
+.sheet .abbr{font-family:var(--mono);font-size:12px;color:var(--sub);margin-left:6px}
+.sheet p{font-size:15px;line-height:1.75;margin:14px 0}
+.tip{background:var(--accent-soft);border-radius:12px;padding:11px 13px;font-size:14px;line-height:1.65;margin:12px 0}
+.tip b{color:var(--accent)}
+.sec{font-size:12px;color:var(--sub);margin:16px 0 6px;font-weight:700;letter-spacing:.3px}
+.codes{display:flex;flex-wrap:wrap;gap:6px}
+.code{font-family:var(--mono);font-size:13px;padding:6px 10px;border-radius:8px;background:var(--accent-soft);color:var(--accent);border:0;cursor:pointer}
+.code.tb{background:var(--chip);color:var(--ink)}
+.rel{display:flex;flex-wrap:wrap;gap:6px}
+.rel button{font:inherit;font-size:13px;border:1px solid var(--line);background:none;color:var(--ink);padding:5px 10px;border-radius:999px;cursor:pointer}
+.row{display:flex;gap:8px;margin-top:20px}
+.btn{flex:1;font:inherit;font-size:14px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--card);font-weight:700}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:13px;opacity:0;transition:.2s;z-index:50;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.fc-wrap{perspective:1200px;margin-top:6px}
+.fc{position:relative;height:340px;transform-style:preserve-3d;transition:transform .45s;cursor:pointer}
+.fc.flip{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;justify-content:center;text-align:center}
+.face.back{transform:rotateY(180deg);text-align:left;justify-content:flex-start;overflow-y:auto}
+.face .q{font-size:13px;color:var(--sub);margin-bottom:10px}
+.face .big{font-size:26px;font-weight:700;color:var(--accent);letter-spacing:-.3px}
+.face .hint{font-size:14px;color:var(--sub);line-height:1.6;margin-top:14px}
+.face .tap{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-size:12px;color:var(--sub)}
+.fc-meta{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--sub);margin:4px 2px 10px}
+.prog{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:12px}
+.prog i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.seg{display:flex;background:var(--chip);border-radius:10px;padding:3px;margin-bottom:12px}
+.seg button{flex:1;border:0;background:none;font:inherit;font-size:13px;padding:7px;border-radius:8px;color:var(--sub);cursor:pointer}
+.seg button.on{background:var(--card);color:var(--ink);font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.score{display:flex;gap:8px;font-size:13px}
+.score span{padding:3px 9px;border-radius:999px;background:var(--chip)}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><h1>SAP <span>CO</span> 용어집</h1><small id="total"></small></div>
+  <div class="search">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="q" type="search" placeholder="용어 · 한글 · T-code · 테이블 검색" autocomplete="off">
+    <button id="clr" aria-label="지우기">✕</button>
+  </div>
+  <div class="chips" id="chips"></div>
+</header>
+
+<main id="view"></main>
+
+<nav>
+  <button data-tab="list" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>용어</button>
+  <button data-tab="fav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>즐겨찾기</button>
+  <button data-tab="study"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h10M7 14h6"/></svg>학습카드</button>
+</nav>
+
+<div class="sheet-bg" id="bg"></div>
+<div class="sheet" id="sheet"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const CATS = {
+ GEN:"원가회계 기초", ORG:"조직·기본", CEL:"원가요소", CCA:"코스트센터", IO:"내부오더",
+ PCP:"제품원가계획", PCC:"원가대상관리", ML:"물질원장", PA:"수익성분석", PCA:"손익센터",
+ CLS:"기간마감", S4:"S/4HANA"
+};
+const D = [
+["직접원가","Direct Cost","","GEN","특정 원가대상(제품·오더)에 직접 추적 가능한 원가임. 직접재료비·직접노무비가 대표적임.","","",["간접원가","원가대상"]],
+["간접원가","Indirect Cost / Overhead","","GEN","여러 원가대상에 공통으로 발생해 직접 추적이 어려운 원가임. 코스트센터에 모은 뒤 배부기준으로 나눔.","","",["직접원가","오버헤드 계산","배부(Assessment)"]],
+["고정비","Fixed Cost","","GEN","조업도(생산량·작업시간)와 무관하게 일정하게 발생하는 원가임. 감가상각비·임차료 등.","","",["변동비","고정비/변동비 분할"]],
+["변동비","Variable Cost","","GEN","조업도에 비례해 증감하는 원가임. 원재료비·동력비 등.","","",["고정비","고정비/변동비 분할"]],
+["원가동인","Cost Driver","","GEN","원가 발생을 유발하는 요인임. SAP에서는 활동유형·통계주요지표가 원가동인 역할을 함.","","",["활동유형","통계 주요지표"]],
+["공헌이익","Contribution Margin","CM","GEN","매출액에서 변동비를 뺀 금액임. 고정비 회수와 이익 창출에 기여하는 몫으로 CO-PA 리포트의 핵심 지표임.","","",["수익성 분석","변동비"]],
+["표준원가계산","Standard Costing","","GEN","사전에 정한 표준(수량×단가)으로 원가를 계산하고 실제와의 차이를 분석하는 방식임. SAP 제조업 기본 방식임.","","",["표준원가","차이 계산"]],
+["원가대상","Cost Object","","GEN","원가를 집계하는 대상임. 코스트센터·내부오더·생산오더·WBS·수익성 세그먼트 등이 있음.","","",["실제 전기 vs 통계 전기"]],
+
+["관리회계 영역","Controlling Area","KOKRS","ORG","CO의 최상위 조직단위임. 하나 이상의 회사코드를 할당하며, 할당된 회사코드는 같은 계정과목표·회계연도 변형을 써야 함.","OKKP / OX19","TKA01 / TKA02",["회사코드","표준 계층"]],
+["운영관련 관심분야","Operating Concern","ERKRS","ORG","CO-PA의 최상위 조직단위임. 하나 이상의 관리회계 영역을 할당하며 특성·값필드 구조를 정의함.","KEA0 / KEKK","TKEB",["수익성 분석","특성"]],
+["회사코드","Company Code","BUKRS","ORG","법적 재무제표를 작성하는 FI 단위임. CO에서는 관리회계 영역에 할당되어 원가 흐름의 출발점이 됨.","OX02 / OX19","T001",["관리회계 영역"]],
+["계정과목표","Chart of Accounts","KTOPL","ORG","G/L 계정 목록임. 관리회계 영역과 회사코드가 같은 운영 계정과목표를 공유해야 함.","OB13","T004",["원가요소"]],
+["회계연도 변형","Fiscal Year Variant","PERIV","ORG","회계연도의 기간 수와 기간 구분을 정의함. K4 = 역년 12기간 + 특별기간 4개.","OB29","T009",["관리회계 영역"]],
+["표준 계층","Standard Hierarchy","","ORG","관리회계 영역의 모든 코스트센터를 담는 필수 트리 구조임. 코스트센터 생성 시 반드시 노드에 할당함.","OKEON","SETHEADER / SETNODE",["코스트센터","코스트센터 그룹"]],
+["버전","Version","VERSN","ORG","계획·실적 데이터를 구분하는 키임. 버전 0은 실적과 기본 계획을 담는 필수 버전임.","OKEQ","TKA09",["원가 계획"]],
+["가치유형","Value Type","WRTTP","ORG","CO 라인아이템의 성격을 구분함. 04 실적, 01 계획, 11 통계 실적, 21/22 약정 등.","","",["실제 전기 vs 통계 전기"]],
+["실제 전기 vs 통계 전기","Real vs Statistical Posting","","ORG","한 줄의 비용은 실제(real) 원가대상 하나에만 귀속되고, 나머지 대상에는 통계용으로만 기록됨. 통계 금액은 배부·정산 대상이 아님.","","",["통계 오더","원가대상"]],
+["오브젝트 번호","Object Number","OBJNR","ORG","CO 원가대상을 시스템 내부에서 식별하는 키임. KS+관리회계영역+코스트센터, OR+오더번호 형식.","","ONR00",["원가대상"]],
+["기능영역","Functional Area","FKBER","ORG","매출원가법 손익계산서(생산·판매·관리·연구)용 분류임. 코스트센터 범주나 G/L에서 파생됨.","OKBD","TFKB",["코스트센터 범주"]],
+["세그먼트","Segment","SEGMENT","ORG","IFRS 8 / US GAAP 세그먼트 보고 단위임. 손익센터에 할당되어 파생됨.","","FAGL_SEGM",["손익센터"]],
+
+["원가요소","Cost Element","KSTAR","CEL","CO에서 원가·수익을 분류하는 단위임. S/4HANA에서는 별도 마스터가 아니라 G/L 계정의 한 유형으로 통합됨.","FS00 (S/4) / KA01·KA06 (ECC)","SKA1 / CSKB (ECC)",["1차 원가요소","2차 원가요소","원가요소 범주"]],
+["1차 원가요소","Primary Cost Element","","CEL","FI에서 외부 거래로 발생한 비용·수익을 CO로 넘기는 원가요소임. 대응 G/L 계정이 손익계정으로 존재함.","FS00","",["원가요소","2차 원가요소"]],
+["2차 원가요소","Secondary Cost Element","","CEL","CO 내부 배분(배부·활동배부·정산·오버헤드)에만 쓰는 원가요소임. FI 손익에 영향을 주지 않음.","FS00","",["배부(Assessment)","직접 활동배부"]],
+["원가요소 범주","Cost Element Category","KATYP","CEL","원가요소 용도를 지정함. 1 일반 1차, 11 수익, 12 매출차감, 22 외부정산, 21 내부정산, 41 오버헤드, 42 배부, 43 내부 활동배부.","FS00","",["1차 원가요소","2차 원가요소"]],
+["원가요소 그룹","Cost Element Group","","CEL","원가요소를 묶은 집합임. 계획·배부 사이클·리포트 범위 지정에 사용함.","KAH1 / KAH2","SETHEADER",["원가요소"]],
+
+["코스트센터","Cost Center","KOSTL","CCA","책임·발생 장소별로 간접원가를 집계하는 단위임. 부서·라인·지원조직 단위로 만듦.","KS01 / KS02 / KS03","CSKS / CSKT",["코스트센터 범주","표준 계층"]],
+["코스트센터 범주","Cost Center Category","KOSAR","CCA","코스트센터의 성격(생산·관리·판매·지원 등)을 구분하고 활동유형·기능영역 기본값을 지정함.","OKA2","TKA05",["코스트센터","기능영역"]],
+["코스트센터 그룹","Cost Center Group","","CCA","코스트센터를 묶은 대안 계층임. 리포트와 배부 사이클의 송신·수신 범위로 사용함.","KSH1 / KSH2","SETHEADER",["표준 계층"]],
+["활동유형","Activity Type","LSTAR","CCA","코스트센터가 제공하는 산출물 단위임(기계시간·인건시간 등). 활동량×활동단가로 원가를 배부함.","KL01 / KL02 / KL03","CSLA",["활동단가","직접 활동배부","작업장"]],
+["활동단가","Activity Price","","CCA","활동유형 1단위당 원가임. 계획 단가를 KP26으로 입력하거나 KSPI로 계산함.","KP26 / KSPI","COST",["활동유형","실적 단가 계산"]],
+["통계 주요지표","Statistical Key Figure","STAGR","CCA","인원수·면적·전력량처럼 배부기준으로 쓰는 비금액 수치임. 고정값/합계값 유형이 있음.","KK01 / KB31N","TKA03",["배부(Assessment)","분배(Distribution)"]],
+["원가 계획","Cost Planning","","CCA","코스트센터의 원가요소별·활동유형별 계획을 입력함. 버전·기간 단위로 관리함.","KP06 / KP26 / KP46","COSP / COSS",["버전","활동단가"]],
+["배부(Assessment)","Assessment","","CCA","송신 코스트센터 원가를 2차 원가요소(범주 42) 하나로 묶어 수신처에 배분함. 원래 1차 원가요소 정보가 사라짐.","KSU1 / KSU5","",["분배(Distribution)","사이클/세그먼트"]],
+["분배(Distribution)","Distribution","","CCA","1차 원가만 원래 1차 원가요소를 유지한 채 수신처로 배분함. 수신처에서 비용 성격 분석이 가능함.","KSV1 / KSV5","",["배부(Assessment)"]],
+["주기적 재전기","Periodic Reposting","","CCA","잘못 모인 1차 원가를 기간말에 일괄 재전기함. 송신처 이력을 남기지 않아 데이터가 가벼움.","KSW1 / KSW5","",["수동 재전기"]],
+["사이클/세그먼트","Cycle / Segment","","CCA","배부·분배를 실행하는 규칙 묶음임. 사이클 안에 세그먼트별로 송신처·수신처·배부기준을 정의함.","KSU1 / KSV1","T811C / T811S",["배부(Assessment)","분배(Distribution)"]],
+["수동 재전기","Manual Reposting","","CCA","이미 전기된 원가를 다른 원가대상으로 수작업 이전함. 원가요소는 유지됨.","KB11N","",["주기적 재전기"]],
+["직접 활동배부","Direct Activity Allocation","","CCA","송신 코스트센터의 활동량을 수신처에 직접 입력해 활동량×단가로 배부함. 2차 원가요소 범주 43 사용.","KB21N","",["활동유형","간접 활동배부"]],
+["간접 활동배부","Indirect Activity Allocation","","CCA","활동량을 직접 입력하지 않고 통계지표·고정비율 등 기준으로 활동량을 산정해 배부함.","KSC1 / KSC5","",["직접 활동배부"]],
+["실적 단가 계산","Actual Price Calculation","","CCA","기간 실제원가÷실제 활동량으로 실적 활동단가를 계산하고 필요 시 수신처를 재평가함.","KSII","",["활동단가","차이 계산"]],
+["고정비/변동비 분할","Splitting","","CCA","코스트센터 원가를 활동유형별로 나누는 작업임. 실적 단가 계산 전에 수행함.","KSS1","",["고정비","변동비"]],
+["코스트센터 차이","Cost Center Variances","","CCA","목표원가와 실제원가 차이를 투입가격·수량·조업도 차이 등으로 분석함.","KSS2","",["목표원가","차이 범주"]],
+["코스트센터 실적 리포트","Cost Centers: Actual/Plan/Variance","","CCA","코스트센터별 계획 대비 실적을 조회하는 표준 리포트임. 라인아이템은 KSB1.","S_ALR_87013611 / KSB1","",["원가 계획"]],
+
+["내부오더","Internal Order","AUFNR","IO","행사·수리·프로젝트 등 한시적 업무의 원가를 모니터링하는 원가대상임.","KO01 / KO02 / KO03","AUFK",["오더유형","정산","통계 오더"]],
+["오더유형","Order Type","AUART","IO","오더의 번호범위·정산 프로파일·예산 프로파일·상태관리 등 통제값을 묶은 키임.","KOT2_OPA","T003O",["내부오더","정산 프로파일"]],
+["통계 오더","Statistical Order","","IO","원가를 통계용으로만 집계하는 오더임. 실제 원가는 코스트센터 등 다른 대상에 남고, 정산하지 않음.","KO01","",["실제 전기 vs 통계 전기"]],
+["정산","Settlement","","IO","오더에 모인 원가를 정산 규칙에 따라 코스트센터·자산·G/L·CO-PA·재고 등으로 넘겨 오더 잔액을 0으로 만듦.","KO88 / KO8G / CO88","",["정산 규칙","정산 프로파일"]],
+["정산 규칙","Settlement Rule","","IO","오더 원가를 어떤 수신처에 몇 %·얼마씩 넘길지 정의한 분배 규칙임. 오더 마스터에서 지정함.","KO02","COBRB",["정산"]],
+["정산 프로파일","Settlement Profile","","IO","허용 수신처 유형, 정산원가요소 결정 방식(배부구조), 기본 수신처 등을 정의함.","OKO7","TKB1A",["배부구조","오더유형"]],
+["배부구조","Allocation Structure","","IO","원천 원가요소를 정산 원가요소로 매핑하는 구조임. 1차 원가요소 그대로 정산하거나 2차(범주 21)로 묶을 수 있음.","OKO6","",["정산 프로파일"]],
+["오더 예산","Budget","","IO","오더에 승인된 지출 한도임. 계획과 달리 구속력이 있으며 가용성 통제와 연결됨.","KO22","BPGE / BPJA",["가용성 통제"]],
+["가용성 통제","Availability Control","AVC","IO","예산 대비 실적+약정이 허용치를 넘으면 경고·오류 메시지를 내는 기능임.","OKOB / KO22","",["오더 예산"]],
+["오더 상태","Order Status","","IO","CRTD 생성 → REL 릴리즈 → TECO 기술적 완료 → CLSD 마감. REL 이후에 실적 전기가 가능함.","KO02","JEST",["내부오더"]],
+
+["표준원가","Standard Price","STPRS","PCP","가격통제 S 자재의 재고 평가 단가임. 원가추정을 마킹·릴리즈해 확정하며 기간 중 고정됨.","CK24","MBEW",["가격통제","원가추정","이동평균가"]],
+["이동평균가","Moving Average Price","VERPR","PCP","가격통제 V 자재의 단가임. 입고 시마다 재고금액÷재고수량으로 자동 재계산됨. 주로 원자재·상품에 사용함.","MM03","MBEW",["표준원가","가격통제"]],
+["가격통제","Price Control","VPRSV","PCP","자재 평가 방식 지시자임. S = 표준가, V = 이동평균가. 자재마스터 회계 1 뷰에서 지정함.","MM02","MBEW",["표준원가","이동평균가"]],
+["원가추정","Cost Estimate","","PCP","자재의 계획원가를 계산함. 수량구조(BOM·라우팅) 기반으로 재료비·활동비·오버헤드를 쌓아 올림.","CK11N / CK13N","KEKO / KEPH / CKIS",["수량구조","원가산정 변형","원가 롤업 실행"]],
+["원가 롤업 실행","Costing Run","","PCP","다수 자재의 원가추정을 일괄 실행·마킹·릴리즈하는 기능임.","CK40N","CKMLMV",["원가추정","마킹/릴리즈"]],
+["마킹/릴리즈","Mark / Release","","PCP","마킹은 원가추정을 다음 기간 표준가로 예약, 릴리즈는 자재마스터 표준가로 확정함. 재고 재평가 전표가 발생함.","CK24","",["표준원가"]],
+["원가산정 변형","Costing Variant","","PCP","원가추정 방식을 통제하는 키임. 원가산정 유형 + 평가 변형 등으로 구성됨. 표준원가용은 PPC1.","OKKN","TCK03",["원가산정 유형","평가 변형"]],
+["원가산정 유형","Costing Type","","PCP","원가추정 결과를 어디에(표준가·계획가 필드 등) 갱신할지 정의함.","OKKI","TCK02",["원가산정 변형"]],
+["평가 변형","Valuation Variant","","PCP","재료·활동·외주 단가를 어떤 전략 순서(계획가1·이동평균·구매정보레코드 등)로 가져올지 정의함.","OKK4","TCK05",["원가산정 변형"]],
+["원가 구성요소 구조","Cost Component Structure","","PCP","원가추정 결과를 재료비·노무비·경비·오버헤드 등 구성요소로 묶어 보여주는 구조임.","OKTZ","TCKH1 / TCKH2",["원가추정"]],
+["원가산정 시트","Costing Sheet","","PCP","오버헤드율과 적용 기준(기준 원가요소, 비율, 크레딧 대상)을 정의함.","KZS2","",["오버헤드 계산"]],
+["수량구조","Quantity Structure","","PCP","원가추정에 쓰는 BOM과 라우팅의 조합임. 재료 소요량과 작업장 활동량을 제공함.","CS01 / CA01","STPO / PLPO",["BOM","라우팅"]],
+["BOM","Bill of Material","STLNR","PCP","완제품을 구성하는 부품·원재료와 소요량 목록임. 재료비 계산의 근거가 됨.","CS01 / CS03","STKO / STPO",["수량구조"]],
+["라우팅","Routing","PLNNR","PCP","생산 공정 순서와 작업장·표준값(작업시간)을 정의함. 활동비 계산의 근거가 됨.","CA01 / CA03","PLKO / PLPO",["작업장","수량구조"]],
+["작업장","Work Center","ARBPL","PCP","공정을 수행하는 장소임. 코스트센터와 활동유형을 연결해 표준값×활동단가로 원가를 계산함.","CR01 / CR03","CRHD / CRCO",["활동유형","라우팅"]],
+["단위원가 계산","Unit Costing","","PCP","수량구조 없이 원가 항목을 수기로 입력해 원가를 추정함. 신제품 견적·기본계획 오브젝트에 사용함.","CKUC / KKE1","",["원가추정"]],
+
+["생산오더","Production Order","AUFNR","PCC","생산 실행 단위이자 원가대상임. 계획원가·실제원가를 집계하고 기간말 정산함.","CO01 / CO03","AUFK / AFKO",["오더별 제품원가관리","정산"]],
+["오더별 제품원가관리","Product Cost by Order","","PCC","생산오더 단위로 원가를 집계·분석하는 방식임. 개별·로트 생산에 적합함.","","",["생산오더","기간별 제품원가관리"]],
+["기간별 제품원가관리","Product Cost by Period","","PCC","제품원가 콜렉터에 기간 단위로 원가를 집계하는 방식임. 반복·연속 생산에 적합함.","","",["제품원가 콜렉터"]],
+["제품원가 콜렉터","Product Cost Collector","PCC","PCC","기간별 원가관리에서 자재·생산버전 단위로 원가를 모으는 오브젝트임.","KKF6N","",["기간별 제품원가관리"]],
+["판매오더 원가관리","Sales Order Controlling","","PCC","판매오더(MTO) 단위로 원가와 매출을 집계해 수주 수익성을 분석함.","VA03 / KKAK","",["결과 분석"]],
+["오버헤드 계산","Overhead Calculation","","PCC","원가산정 시트 비율로 오버헤드를 오더에 부과하고 코스트센터를 크레딧함. 범주 41 원가요소 사용.","KGI2 / CO43","",["원가산정 시트"]],
+["재공품","Work in Process","WIP","PCC","기간말 미완성 오더의 원가임. 계산 후 정산 시 재무제표 재고로 이전됨.","KKAX / KKAO","",["결과 분석","차이 계산"]],
+["결과 분석","Results Analysis","RA","PCC","판매오더·프로젝트의 매출 인식, WIP, 충당금을 계산하는 기능임.","KKA2 / KKAK","",["재공품","판매오더 원가관리"]],
+["목표원가","Target Cost","","PCC","실제 산출량 기준으로 다시 계산한 계획원가임. 차이 분석의 기준이 됨.","","",["차이 계산"]],
+["차이 계산","Variance Calculation","","PCC","완료·납품된 오더의 실제원가와 목표원가 차이를 계산하고 범주별로 분류함.","KKS2 / KKS1","",["차이 범주","목표원가"]],
+["차이 범주","Variance Categories","","PCC","투입측: 투입가격·수량·자원사용·잔여투입 차이. 산출측: 혼합가격·산출가격·로트크기 차이. 정산 시 CO-PA로 전달 가능함.","OKV1","",["차이 계산"]],
+["활동 확인","Confirmation","","PCC","생산 실적(작업시간·수량)을 입력함. 확인 시 작업장 활동량만큼 직접 활동배부가 발생함.","CO11N","AFRU",["직접 활동배부"]],
+
+["물질원장","Material Ledger","ML","ML","자재 재고를 다중 통화·다중 평가로 관리하고 실제원가를 계산하는 기능임. S/4HANA에서는 필수임.","CKM3","CKMLHD / MLDOC",["실제원가 계산","기간 단위 가격"]],
+["실제원가 계산","Actual Costing","","ML","기간말에 표준가와 실제 차이를 다단계로 롤업해 실제 기간 단가로 재고와 매출원가를 재평가함.","CKMLCP","",["물질원장","다단계 정산"]],
+["기간 단위 가격","Periodic Unit Price","PUP","ML","실제원가 계산 결과로 산출된 기간 실제 단가임. 가격통제 S 자재도 기간말 실제가로 평가 가능함.","CKM3","",["실제원가 계산"]],
+["다단계 정산","Multilevel Settlement","","ML","하위 반제품·원재료의 가격차이를 상위 제품으로 단계적으로 굴려 올리는 정산임.","CKMLCP","",["실제원가 계산"]],
+["구매가격차이","Purchase Price Variance","PPV","ML","표준가 자재 입고 시 구매단가와 표준가의 차이임. ML 미사용 시 G/L 차이계정(PRD)에 바로 비용 처리됨.","MIGO / CKM3","",["표준원가"]],
+["자재가격 분석","Material Price Analysis","","ML","자재의 기간별 입출고·가격차이·실제 단가를 조회하는 화면임.","CKM3N","",["물질원장"]],
+["자재가격 변경","Price Change","","ML","자재 표준가·이동평균가를 수작업 변경함. 재고 재평가 전표가 생성됨.","MR21 / MR22","",["표준원가"]],
+
+["수익성 분석","Profitability Analysis","CO-PA","PA","고객·제품·지역·영업조직 등 시장 세그먼트별 손익을 분석하는 컴포넌트임.","KE30 / KE24","",["계정 기반 CO-PA","원가 기반 CO-PA","특성"]],
+["원가 기반 CO-PA","Costing-based CO-PA","","PA","값필드 단위로 매출·원가를 저장하는 방식임. 청구 시점에 표준원가로 평가된 예상 원가를 기록함.","KE24","CE1xxxx~CE4xxxx",["값필드","계정 기반 CO-PA"]],
+["계정 기반 CO-PA","Account-based CO-PA / Margin Analysis","","PA","G/L 계정 단위로 손익을 저장해 FI와 항상 일치함. S/4HANA에서는 ACDOCA에 저장되는 기본 방식(마진 분석)임.","KE30","ACDOCA",["Universal Journal","매출원가 분할"]],
+["특성","Characteristic","","PA","손익을 쪼개 보는 분석 기준(고객·자재·지역·제품그룹 등)임.","KEA5","",["수익성 세그먼트","특성 파생"]],
+["값필드","Value Field","","PA","원가 기반 CO-PA에서 금액·수량을 담는 필드임(매출액·할인·재료비 등).","KEA6","",["원가 기반 CO-PA"]],
+["수익성 세그먼트","Profitability Segment","PAOBJNR","PA","특성 값 조합으로 정의되는 CO-PA 원가대상임.","","CE4xxxx",["특성"]],
+["특성 파생","Characteristic Derivation","","PA","전표에 없는 특성 값을 규칙·테이블 조회로 자동 결정함.","KEDR","",["특성"]],
+["SD 조건 → 값필드","Value Field Assignment","","PA","SD 청구 조건유형(PR00 등)을 CO-PA 값필드에 매핑함. 청구문서 릴리즈 시 CO-PA로 전달됨.","KE4I","",["값필드"]],
+["상위배부","Top-down Distribution","","PA","상위 수준(예: 영업조직)에 집계된 금액을 참조 데이터 비율로 하위 세그먼트(고객·제품)에 배분함.","KE28","",["수익성 세그먼트"]],
+["CO-PA 배부","PA Assessment","","PA","코스트센터 원가를 수익성 세그먼트로 배부함. 판매관리비를 세그먼트 손익에 반영할 때 사용함.","KEU1 / KEU5","",["배부(Assessment)"]],
+["매출원가 분할","COGS Split","","PA","S/4HANA에서 매출원가를 원가 구성요소(재료·노무·오버헤드)별 G/L 계정으로 나눠 마진 분석에 반영함.","","",["원가 구성요소 구조","계정 기반 CO-PA"]],
+
+["손익센터","Profit Center","PRCTR","PCA","내부 책임 단위별 손익을 관리하는 조직 오브젝트임. 코스트센터·자재·오더에서 파생됨. S/4HANA에서는 일반원장에 통합됨.","KE51 / KE52 / KE53","CEPC / CEPCT",["세그먼트","더미 손익센터"]],
+["손익센터 표준 계층","Profit Center Standard Hierarchy","","PCA","관리회계 영역의 모든 손익센터를 담는 필수 계층임.","KCH1 / KCH5N","SETHEADER",["손익센터"]],
+["더미 손익센터","Dummy Profit Center","","PCA","손익센터를 결정하지 못한 전표가 기본으로 들어가는 손익센터임.","KE59","",["손익센터"]],
+["이전가격","Transfer Price","","PCA","손익센터 또는 법인 간 거래에 적용하는 내부 가격임. 법적·그룹·손익센터 평가 관점으로 관리 가능함.","","",["손익센터","물질원장"]],
+
+["기간마감 순서","Period-end Closing Sequence","","CLS","일반적 순서: 오버헤드 계산 → 배부·분배 → 활동단가 계산 → 재공품 → 차이 계산 → 정산 → ML 실제원가 → CO-PA 리포트.","","",["오버헤드 계산","정산","실제원가 계산"]],
+["기간 잠금","Period Lock","","CLS","CO 거래(활동배부·배부·정산 등)를 기간·버전별로 잠가 추가 전기를 막음.","OKP1","",["버전"]],
+["테스트 런","Test Run","","CLS","배부·정산·차이 계산을 실제 전기 없이 시뮬레이션함. 마감 전 결과 검증에 필수임.","KSU5 / KO88","",["정산"]],
+["재무 마감 관리","Financial Closing Cockpit","","CLS","마감 작업을 일정·순서·담당자 기준으로 관리함. S/4HANA에서는 Advanced Financial Closing으로 확장됨.","CLOCO","",["기간마감 순서"]],
+["조정원장","Reconciliation Ledger","","CLS","ECC에서 CO 내부 배분으로 생긴 회사코드·기능영역 간 차이를 FI로 조정하던 기능임. S/4HANA에서는 실시간 통합으로 불필요함.","KALC (ECC)","",["Universal Journal"]],
+
+["Universal Journal","Universal Journal","ACDOCA","S4","FI·CO·AA·ML 라인아이템을 한 테이블에 저장하는 S/4HANA 단일 원장임. CO 전표도 여기에 기록됨.","FB03 / KSB1","ACDOCA",["원가요소","계정 기반 CO-PA"]],
+["CO 전표","CO Document","BELNR","S4","CO 거래 시 생성되는 전표임. ECC는 COEP·COBK, S/4HANA는 ACDOCA에 저장되며 COEP는 호환 뷰로 제공됨.","KSB5","ACDOCA / COEP",["Universal Journal"]],
+["원가요소-G/L 통합","Cost Element as G/L Account","","S4","S/4HANA에서 원가요소 마스터(KA01 등)가 없어지고 FS00의 G/L 계정 유형(1차/2차 원가)으로 관리됨.","FS00","SKA1",["원가요소"]],
+["마진 분석","Margin Analysis","","S4","S/4HANA의 계정 기반 수익성 분석 명칭임. 매출원가 분할·실시간 차이 분해를 지원함.","","ACDOCA",["계정 기반 CO-PA"]],
+["Fiori 관리회계 앱","Fiori Apps for Controlling","","S4","Manage Cost Centers, Cost Centers - Actuals, Product Costs by Period 등 S/4HANA 웹 앱임.","/UI2/FLP","",["코스트센터"]]
+];
+
+// 실무 포인트 (용어 한글명 기준)
+const TIPS = {
+ "관리회계 영역":"회사코드 여러 개를 한 관리회계 영역에 묶으면 회사 간 배부가 가능해짐. 단, 계정과목표·회계연도 변형이 같아야 하므로 구축 초기에 결정해야 함.",
+ "운영관련 관심분야":"특성·값필드 구조를 생성(KEA0)하면 CE1~CE4 테이블이 만들어짐. 구조 변경은 운영 중 부담이 크므로 설계 단계에서 확정함.",
+ "표준 계층":"표준 계층에 없는 코스트센터는 만들 수 없음. 조직개편 시 대안 계층(코스트센터 그룹)으로 리포트 구조를 따로 가져가는 방식이 안전함.",
+ "실제 전기 vs 통계 전기":"비용 전표에 코스트센터와 실제 내부오더를 같이 넣으면 오더가 실제, 코스트센터는 통계로 바뀜. 배부 결과가 이상할 때 가장 먼저 확인할 지점임.",
+ "원가요소":"S/4HANA에서 KA01·KA06은 FS00으로 리다이렉트됨. FS00 계정유형 P=1차 원가/수익, S=2차 원가.",
+ "원가요소 범주":"배부(42)와 활동배부(43)는 2차 원가요소 범주가 다름. 사이클 생성 시 원가요소 범주 오류가 자주 남.",
+ "코스트센터":"코스트센터 마스터의 손익센터 필드가 비용 전표의 손익센터를 결정함. 비워두면 더미 손익센터로 감.",
+ "활동유형":"활동유형 범주 1은 수동 입력·수동 배부, 3은 사후 산정(간접 활동배부), 2는 간접 산정. 생산 활동은 대부분 범주 1을 씀.",
+ "배부(Assessment)":"사이클 실행 순서가 중요함. 지원부서 → 제조부서 순으로 세그먼트를 배열하고, 반복 배부가 필요하면 Iterative 옵션을 켬.",
+ "분배(Distribution)":"1차 원가만 분배 가능함. 이미 배부로 받은 2차 원가는 다시 분배할 수 없음.",
+ "직접 활동배부":"생산오더 확인(CO11N)은 내부적으로 직접 활동배부를 만들어 냄. 활동단가가 없으면 확인은 되지만 금액이 0으로 들어감.",
+ "정산":"정산은 테스트 런으로 먼저 확인함. 정산 규칙이 없으면 오류가 나고, 기간 잠금(OKP1)이 걸려 있어도 실행되지 않음.",
+ "정산 규칙":"내부오더를 TECO로 바꾸기 전에 정산 규칙을 넣어야 함. 생산오더는 릴리즈 시 자재로 자동 생성됨.",
+ "통계 오더":"통계 오더는 정산 대상이 아님. 예산 모니터링만 필요하면 통계 오더 + 코스트센터 조합이 가장 가벼움.",
+ "오더 예산":"계획(KPF6)은 참고값, 예산(KO22)은 통제값임. 가용성 통제는 예산 프로파일(OKOB)이 오더유형에 연결돼 있어야 동작함.",
+ "표준원가":"표준가 자재는 입고 시 단가가 고정되고 구매가격 차이가 PRD 계정으로 감. 월 중 표준가 변경은 재고 재평가가 일어나므로 보통 연 1회·월초에 릴리즈함.",
+ "원가추정":"CK11N 결과의 원가 구성요소 탭이 재료비·노무비·경비 분해를 보여줌. 단가가 0이면 평가 변형의 단가 전략 순서부터 확인함.",
+ "마킹/릴리즈":"마킹 허용(CK24 → Marking Allowance)을 먼저 열어야 마킹이 됨. 릴리즈는 기간당 한 번만 가능함.",
+ "원가산정 시트":"오버헤드율은 원가산정 시트 하나로 원가추정과 실제 오버헤드 계산 양쪽에 동시에 쓰임. 계획과 실적 비율을 따로 가져갈 수 있음.",
+ "작업장":"작업장 원가산정 뷰에서 코스트센터와 활동유형을 표준값 키 순서대로 연결함. 연결이 빠지면 원가추정에 활동비가 안 들어감.",
+ "재공품":"재공품은 정산 전에 계산해야 함. 순서: 오버헤드 → WIP(KKAO) → 차이(KKS1) → 정산(CO88).",
+ "차이 계산":"생산오더 상태가 DLV(납품완료) 또는 TECO여야 차이가 계산됨. 그 전에는 WIP로 잡힘.",
+ "차이 범주":"차이 키(OKV1)에서 범주별 계산 여부를 켬. 정산 시 CO-PA로 넘기려면 PA 이전 구조(KEI1)에 범주를 값필드로 매핑함.",
+ "물질원장":"S/4HANA에서 ML은 끌 수 없음. 다만 실제원가 계산(CKMLCP)은 선택이며, 쓰지 않으면 다중 통화 평가 용도로만 동작함.",
+ "실제원가 계산":"CKMLCP 단계: 선택 → 순서 결정 → 단일 레벨 → 다단계 → 재평가 소비 → 기간 마감 후 이월. 오류 자재는 CKM3로 추적함.",
+ "원가 기반 CO-PA":"원가 기반은 매출원가를 청구 시점 표준원가로 추정하므로 FI와 금액이 다를 수 있음. 대사 시 이 차이를 먼저 설명해야 함.",
+ "계정 기반 CO-PA":"S/4HANA 신규 구축은 계정 기반(마진 분석)이 기본임. 원가 기반은 병행 활성화 가능하지만 신규 기능 투자는 계정 기반에 집중됨.",
+ "SD 조건 → 값필드":"PR00(가격)·K004(할인)처럼 SD 조건유형을 값필드에 매핑하지 않으면 청구서가 CO-PA에 금액 없이 넘어감.",
+ "손익센터":"자재 마스터 플랜트 뷰의 손익센터가 재고·매출 전표의 손익센터를 결정함. 자재 생성 시 빠지기 쉬운 필드임.",
+ "기간마감 순서":"선행 단계 결과가 다음 단계 입력이 되므로 순서를 바꾸면 재실행이 필요함. 마감 일정표에 담당자와 함께 고정해 두는 것이 안전함.",
+ "Universal Journal":"CO 내부 배분(배부·정산)도 ACDOCA에 기록되며 회사코드·손익센터·기능영역이 함께 남음. 그래서 ECC 조정원장(KALC)이 필요 없어짐.",
+ "CO 전표":"S/4HANA에서도 KSB5로 CO 전표 조회 가능함. 분석용 SQL은 COEP 호환 뷰보다 ACDOCA를 직접 읽는 편이 빠름."
+};
+
+const CATK = Object.keys(CATS);
+const DATA = D.map((r,i)=>({id:"t"+i,ko:r[0],en:r[1],ab:r[2],cat:r[3],desc:r[4],
+  tc:r[5]?r[5].split(" / "):[],tb:r[6]?r[6].split(" / "):[],tip:TIPS[r[0]]||null,relKo:r[7]}));
+const idByKo = Object.fromEntries(DATA.map(d=>[d.ko,d.id]));
+DATA.forEach(d=>d.rel=d.relKo.map(k=>idByKo[k]).filter(Boolean));
+const byId = Object.fromEntries(DATA.map(d=>[d.id,d]));
+
+let tab="list", cat="all", query="";
+let favs = new Set();
+try{ favs = new Set(JSON.parse(localStorage.getItem("co-favs")||"[]")); }catch(e){}
+const saveFavs=()=>{ try{ localStorage.setItem("co-favs",JSON.stringify([...favs])); }catch(e){} };
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const hl=(s)=>{ s=esc(s); if(!query) return s; const q=esc(query).replace(/[.*+?^${}()|[\]\\]/g,"\\$&"); return s.replace(new RegExp(q,"gi"),m=>`<mark>${m}</mark>`); };
+
+$("#total").textContent = `${DATA.length}개 용어`;
+
+function renderChips(){
+  const all=[["all","전체"],...Object.entries(CATS)];
+  $("#chips").innerHTML = all.map(([k,v])=>`<button class="chip ${cat===k?"on":""}" data-c="${k}">${v}</button>`).join("");
+}
+$("#chips").addEventListener("click",e=>{
+  const b=e.target.closest(".chip"); if(!b) return;
+  cat=b.dataset.c; renderChips(); render();
+});
+
+function match(d){
+  if(cat!=="all" && d.cat!==cat) return false;
+  if(!query) return true;
+  const q=query.toLowerCase();
+  return [d.en,d.ko,d.ab,d.desc,...d.tc,...d.tb].some(x=>x.toLowerCase().includes(q));
+}
+
+function card(d){
+  const tags=[...d.tc.slice(0,3).map(t=>`<span class="tag">${hl(t)}</span>`),...d.tb.slice(0,2).map(t=>`<span class="tag tb">${hl(t)}</span>`)].join("");
+  return `<div class="item" data-id="${d.id}">
+    <div class="body">
+      <div><span class="en">${hl(d.en)}</span><span class="ko">${hl(d.ko)}</span></div>
+      <div class="d">${hl(d.desc)}</div>
+      ${tags?`<div class="tags">${tags}</div>`:""}
+    </div>
+    <button class="star ${favs.has(d.id)?"on":""}" data-star="${d.id}" aria-label="즐겨찾기">★</button>
+  </div>`;
+}
+
+function render(){
+  const v=$("#view");
+  $("header").style.display = tab==="study" ? "none" : "";
+  if(tab==="study") return renderStudy();
+  let list = DATA.filter(match);
+  if(tab==="fav") list = list.filter(d=>favs.has(d.id));
+  if(!list.length){
+    v.innerHTML = `<div class="empty">${tab==="fav"&&!favs.size?"아직 즐겨찾기한 용어가 없습니다.<br>용어 옆 ★을 눌러 추가하세요.":"검색 결과가 없습니다."}</div>`;
+    return;
+  }
+  v.innerHTML = `<div class="count">${list.length}개</div><div class="list">${list.map(card).join("")}</div>`;
+}
+
+$("#view").addEventListener("click",e=>{
+  const s=e.target.closest("[data-star]");
+  if(s){ e.stopPropagation(); toggleFav(s.dataset.star); render(); return; }
+  const it=e.target.closest(".item"); if(it) openSheet(it.dataset.id);
+});
+
+function toggleFav(id){ favs.has(id)?favs.delete(id):favs.add(id); saveFavs(); }
+
+function openSheet(id){
+  const d=byId[id];
+  const sh=$("#sheet");
+  const codeBtns=(arr,cls)=>arr.map(c=>`<button class="code ${cls}" data-copy="${esc(c)}">${esc(c)}</button>`).join("");
+  sh.innerHTML = `<div class="grip"></div>
+    <div class="cat">${CATS[d.cat]}</div>
+    <h2>${esc(d.en)}${d.ab?`<span class="abbr">${esc(d.ab)}</span>`:""}</h2>
+    <div class="kot">${esc(d.ko)}</div>
+    <p>${esc(d.desc)}</p>
+    ${d.tip?`<div class="tip"><b>실무 포인트</b><br>${esc(d.tip)}</div>`:""}
+    ${d.tc.length?`<div class="sec">T-CODE · 탭하여 복사</div><div class="codes">${codeBtns(d.tc,"")}</div>`:""}
+    ${d.tb.length?`<div class="sec">테이블</div><div class="codes">${codeBtns(d.tb,"tb")}</div>`:""}
+    ${d.rel.length?`<div class="sec">관련 용어</div><div class="rel">${d.rel.map(r=>`<button data-go="${r}">${esc(byId[r].ko)}</button>`).join("")}</div>`:""}
+    <div class="row">
+      <button class="btn" data-fav="${d.id}">${favs.has(d.id)?"★ 즐겨찾기 해제":"☆ 즐겨찾기"}</button>
+      <button class="btn pri" data-close>닫기</button>
+    </div>`;
+  sh.scrollTop=0;
+  sh.classList.add("open"); $("#bg").classList.add("open");
+}
+function closeSheet(){ $("#sheet").classList.remove("open"); $("#bg").classList.remove("open"); }
+$("#bg").addEventListener("click",closeSheet);
+$("#sheet").addEventListener("click",async e=>{
+  const t=e.target.closest("button"); if(!t) return;
+  if(t.dataset.close!==undefined) return closeSheet();
+  if(t.dataset.go) return openSheet(t.dataset.go);
+  if(t.dataset.fav){ toggleFav(t.dataset.fav); openSheet(t.dataset.fav); render(); return; }
+  if(t.dataset.copy){
+    try{ await navigator.clipboard.writeText(t.dataset.copy); toast(`${t.dataset.copy} 복사됨`); }
+    catch(err){ toast("복사할 수 없습니다"); }
+  }
+});
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeSheet(); });
+
+let tt;
+function toast(m){ const el=$("#toast"); el.textContent=m; el.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove("show"),1400); }
+
+const qi=$("#q");
+qi.addEventListener("input",()=>{ query=qi.value.trim(); $("#clr").style.display=query?"block":"none"; render(); });
+$("#clr").addEventListener("click",()=>{ qi.value=""; query=""; $("#clr").style.display="none"; render(); qi.focus(); });
+
+document.querySelector("nav").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  tab=b.dataset.tab;
+  document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
+  if(tab==="study") initStudy();
+  render(); window.scrollTo(0,0);
+});
+
+let deck=[], idx=0, mode="ko", src="all", known=0, unknown=0;
+function initStudy(){
+  let pool = src==="fav" ? DATA.filter(d=>favs.has(d.id)) : src==="all" ? DATA : DATA.filter(d=>d.cat===src);
+  deck = pool.slice().sort(()=>Math.random()-.5);
+  idx=0; known=0; unknown=0;
+}
+function renderStudy(){
+  const v=$("#view");
+  const opts=[["all","전체"],["fav","즐겨찾기"],...Object.entries(CATS)].map(([k,n])=>`<option value="${k}" ${src===k?"selected":""}>${n}</option>`).join("");
+  const top = `<div style="padding-top:calc(4px + env(safe-area-inset-top))">
+    <div class="brand" style="margin:6px 0 12px"><h1>학습 <span>카드</span></h1>
+      <select id="src" style="font:inherit;font-size:13px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)">${opts}</select></div>
+    <div class="seg"><button data-m="ko" class="${mode==="ko"?"on":""}">한글 → 영문</button><button data-m="en" class="${mode==="en"?"on":""}">영문 → 한글</button><button data-m="desc" class="${mode==="desc"?"on":""}">설명 → 용어</button></div>`;
+  if(!deck.length){ v.innerHTML = top+`<div class="empty">카드가 없습니다.<br>즐겨찾기를 추가하거나 다른 범위를 선택하세요.</div></div>`; bindStudy(); return; }
+  if(idx>=deck.length){
+    v.innerHTML = top+`<div class="empty" style="padding-top:40px"><div style="font-size:40px">🎯</div><b style="font-size:18px;color:var(--ink)">한 바퀴 완료</b><br>알았음 ${known} · 다시 볼 것 ${unknown}<div class="row" style="max-width:320px;margin:20px auto 0"><button class="btn pri" id="again">다시 섞기</button></div></div></div>`;
+    bindStudy(); $("#again").onclick=()=>{initStudy();render();}; return;
+  }
+  const d=deck[idx];
+  const front = mode==="ko" ? `<div class="q">영문 용어는?</div><div class="big">${esc(d.ko)}</div><div class="hint">${CATS[d.cat]}</div>`
+              : mode==="en" ? `<div class="q">한글 용어는?</div><div class="big">${esc(d.en)}</div><div class="hint">${CATS[d.cat]}</div>`
+              : `<div class="q">이 설명에 해당하는 용어는?</div><div class="hint" style="font-size:15px;color:var(--ink);margin:0">${esc(d.desc)}</div>`;
+  const back = `<div class="cat" style="font-size:12px;color:var(--sub)">${CATS[d.cat]}</div>
+    <div style="font-size:21px;font-weight:700;margin-top:4px">${esc(d.en)}</div>
+    <div style="color:var(--accent);font-weight:500;margin-bottom:10px">${esc(d.ko)}</div>
+    <div style="font-size:14px;line-height:1.7;color:var(--sub)">${esc(d.desc)}</div>
+    ${d.tc.length?`<div class="tags" style="margin-top:12px">${d.tc.map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div>`:""}`;
+  v.innerHTML = top+`
+    <div class="prog"><i style="width:${idx/deck.length*100}%"></i></div>
+    <div class="fc-meta"><span>${idx+1} / ${deck.length}</span><div class="score"><span>✓ ${known}</span><span>↻ ${unknown}</span></div></div>
+    <div class="fc-wrap"><div class="fc" id="fc"><div class="face">${front}<div class="tap">탭하여 뒤집기</div></div><div class="face back">${back}</div></div></div>
+    <div class="row"><button class="btn" id="no">↻ 다시 볼래요</button><button class="btn pri" id="yes">✓ 알아요</button></div>
+    <div class="row" style="margin-top:8px"><button class="btn" id="star">${favs.has(d.id)?"★ 즐겨찾기됨":"☆ 즐겨찾기 추가"}</button></div>
+  </div>`;
+  bindStudy();
+  $("#fc").onclick=()=>$("#fc").classList.toggle("flip");
+  $("#yes").onclick=()=>{known++;idx++;render();};
+  $("#no").onclick=()=>{unknown++;deck.push(d);idx++;render();};
+  $("#star").onclick=()=>{toggleFav(d.id);render();};
+}
+function bindStudy(){
+  const s=$("#src"); if(s) s.onchange=()=>{src=s.value;initStudy();render();};
+  document.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>{mode=b.dataset.m;render();});
+}
+
+renderChips(); render();
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#354A5F;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+</body>
+</html>

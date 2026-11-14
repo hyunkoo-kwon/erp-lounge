@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>관세환급 용어집</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff;--card:#fff;--ink:#1b1d22;--sub:#5f6470;--line:#e6e8ec;
+  --accent:#0A6ED1;--accent-soft:#EBF5FE;--gold:#E9730C;--chip:#F7F7F7;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:'Noto Sans KR',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;z-index:10;background:var(--bg);padding:calc(12px + env(safe-area-inset-top)) 16px 8px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+.brand h1{font-size:19px;font-weight:700;letter-spacing:-.3px}
+.brand h1 span{color:var(--accent)}
+.brand small{color:var(--sub);font-size:12px}
+header{background:#354A5F;border-bottom:0}
+.brand h1{color:#fff}.brand h1 span{color:#91C8F6}.brand small{color:#D1E8FF}
+.search{position:relative}
+.search input{width:100%;font:inherit;font-size:15px;padding:11px 36px 11px 38px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);outline:none}
+.search input:focus{border-color:var(--accent)}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.5}
+.search button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--sub);font-size:18px;padding:6px 8px;display:none;cursor:pointer}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:0;font:inherit;font-size:13px;padding:6px 12px;border-radius:999px;background:var(--chip);color:var(--sub);cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--accent);color:#fff}
+main{padding:12px 16px;max-width:760px;margin:0 auto}
+.count{font-size:12px;color:var(--sub);margin:2px 2px 10px}
+.list{display:grid;gap:8px}
+.item{background:var(--card);box-shadow:0 1px 2px rgba(16,24,40,.04);border:1px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+.item:active{transform:scale(.99)}
+.item .body{flex:1;min-width:0}
+.item .en{font-weight:700;font-size:15px}
+.item .ko{color:var(--accent);font-size:14px;margin-left:6px;font-weight:500}
+.item .d{color:var(--sub);font-size:13px;margin-top:4px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.tag{font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:6px;background:var(--accent-soft);color:var(--accent)}
+.tag.tb{background:var(--chip);color:var(--sub)}
+.star{border:0;background:none;font-size:19px;color:var(--line);cursor:pointer;padding:0 2px;line-height:1}
+.star.on{color:var(--gold)}
+.empty{text-align:center;color:var(--sub);padding:48px 12px;font-size:14px;line-height:1.7}
+mark{background:#ffe58a;color:inherit;border-radius:2px}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:none;font:inherit;font-size:12px;color:var(--sub);padding:9px 0 10px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+nav button.on{color:var(--accent);font-weight:700}
+nav svg{width:22px;height:22px}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+.sheet-bg.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;background:var(--card);border-radius:20px 20px 0 0;max-height:86vh;overflow-y:auto;transform:translateY(100%);transition:transform .25s ease;padding:8px 20px calc(24px + env(safe-area-inset-bottom));max-width:760px;margin:0 auto}
+.sheet.open{transform:none}
+.grip{width:40px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 14px}
+.sheet .cat{font-size:12px;color:var(--sub)}
+.sheet h2{font-size:22px;margin:4px 0 2px;letter-spacing:-.3px}
+.sheet .kot{color:var(--accent);font-size:16px;font-weight:500}
+.sheet .abbr{font-family:var(--mono);font-size:12px;color:var(--sub);margin-left:6px}
+.sheet p{font-size:15px;line-height:1.75;margin:14px 0}
+.tip{background:var(--accent-soft);border-radius:12px;padding:11px 13px;font-size:14px;line-height:1.65;margin:12px 0}
+.tip b{color:var(--accent)}
+.sec{font-size:12px;color:var(--sub);margin:16px 0 6px;font-weight:700;letter-spacing:.3px}
+.codes{display:flex;flex-wrap:wrap;gap:6px}
+.code{font-family:var(--mono);font-size:13px;padding:6px 10px;border-radius:8px;background:var(--accent-soft);color:var(--accent);border:0;cursor:pointer}
+.code.tb{background:var(--chip);color:var(--ink)}
+.rel{display:flex;flex-wrap:wrap;gap:6px}
+.rel button{font:inherit;font-size:13px;border:1px solid var(--line);background:none;color:var(--ink);padding:5px 10px;border-radius:999px;cursor:pointer}
+.row{display:flex;gap:8px;margin-top:20px}
+.btn{flex:1;font:inherit;font-size:14px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:13px;opacity:0;transition:.2s;z-index:50;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%)}
+/* flashcards */
+.fc-wrap{perspective:1200px;margin-top:6px}
+.fc{position:relative;height:340px;transform-style:preserve-3d;transition:transform .45s;cursor:pointer}
+.fc.flip{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;justify-content:center;text-align:center}
+.face.back{transform:rotateY(180deg);text-align:left;justify-content:flex-start;overflow-y:auto}
+.face .q{font-size:13px;color:var(--sub);margin-bottom:10px}
+.face .big{font-size:26px;font-weight:700;color:var(--accent);letter-spacing:-.3px}
+.face .hint{font-size:14px;color:var(--sub);line-height:1.6;margin-top:14px}
+.face .tap{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-size:12px;color:var(--sub)}
+.fc-meta{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--sub);margin:4px 2px 10px}
+.prog{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:12px}
+.prog i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.seg{display:flex;background:var(--chip);border-radius:10px;padding:3px;margin-bottom:12px}
+.seg button{flex:1;border:0;background:none;font:inherit;font-size:13px;padding:7px;border-radius:8px;color:var(--sub);cursor:pointer}
+.seg button.on{background:var(--card);color:var(--ink);font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.score{display:flex;gap:8px;font-size:13px}
+.score span{padding:3px 9px;border-radius:999px;background:var(--chip)}
+.src{margin:22px 2px 8px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;color:var(--sub);line-height:1.7}
+.src b{color:var(--ink)}
+.src ul{padding-left:16px;margin:4px 0 8px}
+.src a{color:var(--accent);text-decoration:none;word-break:break-all}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><h1><span>관세환급</span> 용어집</h1><small id="total"></small></div>
+  <div class="search">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="q" type="search" placeholder="용어 · 한글 · 조문 · 서류 · T-code 검색" autocomplete="off">
+    <button id="clr" aria-label="지우기">✕</button>
+  </div>
+  <div class="chips" id="chips"></div>
+</header>
+
+<main id="view"></main>
+
+<nav>
+  <button data-tab="list" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>용어</button>
+  <button data-tab="fav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>즐겨찾기</button>
+  <button data-tab="study"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h10M7 14h6"/></svg>학습카드</button>
+</nav>
+
+<div class="sheet-bg" id="bg"></div>
+<div class="sheet" id="sheet"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const CATS = {"law": "제도·법령", "meth": "환급 방법", "req": "요건·기한", "doc": "서류", "qty": "소요량", "calc": "계산·매칭", "dom": "국내거래(기납증·분증)", "cus": "관세·통관 일반", "erp": "ERP 연계"};
+// id, en, ko, cat, desc, codes(조문·T-code), docs(서류·테이블), tip, rel
+const T = [
+["drawback", "Customs Duty Drawback", "관세환급", "law", "수출물품 생산에 쓴 수입 원재료에 대해 수입할 때 납부한 관세 등을, 물품이 수출등에 제공된 뒤 돌려주는 제도. 세관장은 기준일부터 소급해 2년 이내에 수입된 수출용원재료의 관세 등을 환급한다.", ["법 제9조①"], ["수입신고필증", "수출신고필증"], "환급의 원천은 '수입 시 실제로 납부한 세액'. FTA 협정세율 0% 등으로 납부세액이 없던 원재료는 개별환급에서 돌려받을 세액도 없다.", ["act", "dutyetc", "rawmat", "indiv"]],
+["act", "Drawback Special Act", "환급특례법", "law", "「수출용 원재료에 대한 관세 등 환급에 관한 특례법」의 약칭. 법률(시행 2026.01.02), 시행령(시행 2026.07.01), 시행규칙(시행 2026.03.20)과 관세청 고시(소요량 고시, 간이정액환급률표 등)로 구성된다.", ["법률 제21065호", "대통령령 제36141호", "재정경제부령 제13호"], ["소요량 고시", "간이정액환급률표"], "숫자(기한·한도)는 개정이 잦다. 실무 적용 전 국가법령정보센터의 현행 원문과 관세청 고시를 확인할 것.", ["drawback", "ganyitable", "postaudit"]],
+["dutyetc", "Customs Duties, etc.", "관세 등", "law", "환급 대상 세목. 관세·임시수입부가세·개별소비세·주세·교통·에너지·환경세·농어촌특별세·교육세의 일곱 가지. 일반 부가가치세는 목록에 없다.", ["법 제2조"], [], "수입 부가가치세는 매입세액공제 영역이므로 환급 금액 집계에서 섞지 않도록 세목별로 분리해 관리한다.", ["drawback", "taxpaid"]],
+["rawmat", "Raw Materials for Export", "수출용 원재료", "law", "환급 대상 원재료: ① 수출물품에 물리적·화학적으로 결합되는 물품, ② 생산공정에 투입되어 소모되는 물품(기계·기구 작동·유지용 등 간접 투입 물품은 제외), ③ 수출물품의 포장용품. 수입한 상태 그대로 수출하면 그 물품 자체가 대상.", ["법 제3조"], [], "소요량을 객관적으로 계산할 수 있어야 한다는 점이 핵심. 설비 소모품·공구류는 대상이 아니다.", ["exportgoods", "qty", "drawback"]],
+["exportgoods", "Export Goods", "수출물품", "law", "수출등의 용도에 제공되는 물품(법 제2조 정의). 환급은 수출물품 단위로 원재료 소요량을 계산해 이루어진다.", ["법 제2조"], [], null, ["rawmat", "exportetc"]],
+["exportetc", "Exports, etc. Eligible for Drawback", "수출등의 범위", "law", "환급대상 수출등: 1. 관세법상 수출신고가 수리된 수출(무상 수출은 부령으로 정한 것만), 2. 국내에서 외화를 획득하는 판매·공사 중 부령으로 정한 것, 3. 부령으로 정한 보세구역 또는 자유무역지역 입주기업체에 대한 공급, 4. 그 밖에 수출로 인정되어 부령으로 정한 것(선용품·기용품 공급 등).", ["법 제4조", "시행규칙 제2조"], [], "내국신용장·구매확인서에 의한 국내 공급은 법 제4조·시행규칙 제2조 열거 항목에서 확인되지 않았다. 국내 공급분은 공급자가 기납증·분증으로 세액을 넘기고, 최종 수출자(생산자)가 환급받는 구조로 이해한다. (법 제5조③의 일괄납부 특례는 별도)", ["bonded", "ldcetc", "kn", "bulkpay"]],
+["limit", "Drawback Restriction", "환급 제한", "law", "국산 원재료 사용 촉진을 위해 필요하다고 인정되는 경우 환급을 제한할 수 있다. 제한 물품과 제한 비율은 시행규칙 별표로 정한다.", ["법 제17조", "시행규칙 제14조"], ["시행규칙 별표"], "제한 대상 원재료가 BOM에 있으면 환급금 산출 시 제한 비율을 반영해야 한다. 대상 품목은 별표 원문으로 확인.", ["refundamt", "act"]],
+["penalty", "Penalty for Fraudulent Drawback", "부정환급 벌칙", "law", "거짓이나 그 밖의 부정한 방법으로 관세 등을 환급받은 자는 3년 이하의 징역 또는 환급받은 세액의 5배 이하에 상응하는 벌금에 처한다.", ["법 제23조"], [], "고의가 아니어도 과다환급은 추징 대상(법 제21조). 소요량·매칭 근거를 남겨 두는 것이 방어 수단.", ["excess", "postaudit"]],
+["indiv", "Individual Drawback", "개별환급", "meth", "수출물품 생산에 쓴 원재료별 소요량과 실제 납부세액(수입신고필증·기납증·분증 기준)으로 환급금을 계산하는 방식. 모든 수출기업·품목에 적용할 수 있다.", ["법 제9조", "법 제10조"], ["소요량계산서", "수입신고필증", "기초원재료납세증명서"], "고세율 원재료 비중이 크면 유리하지만 소요량 산정·lot 매칭·증빙 관리 부담이 크다. ERP 데이터 연계가 사실상 필수.", ["ganyi", "qtysheet", "fifo", "refundamt"]],
+["ganyi", "Simplified Fixed-amount Drawback", "간이정액환급", "meth", "간이정액환급률표에 정한 '수출금액 1만원당 환급액'을 수출금액에 곱해 환급하는 방식. 「중소기업기본법」상 중소기업으로서 환급실적 요건(8억원 이하)을 충족하고 표에 있는 품목만 적용된다.", ["법 제13조", "시행령 제16조", "시행규칙 제12조"], ["간이정액환급률표", "수출신고필증"], "실제 납부세액과 무관하게 계산되므로 실제보다 많거나 적을 수 있다. 수출자와 생산자가 다르면 생산자가 직접 신청하는 경우에 한한다.", ["ganyitable", "ganyilimit", "per10k", "indiv"]],
+["ganyitable", "Simplified Fixed-amount Drawback Rate Table", "간이정액환급률표", "meth", "관세청장이 정하는 중소기업 수출물품용 정액환급률표. 품목번호(HS)별로 수출금액 1만원당 환급액을 정하며, 최근 6개월 이상 기간의 평균 환급액 또는 평균 납부세액 등을 기초로 한다.", ["시행령 제16조①"], ["간이정액환급률표"], "2026-01-01 시행 개정표 기준 대상 품목 4,574개 → 4,578개(4개 추가). 해당 연도 표를 품목번호로 조회해 적용.", ["ganyi", "hs", "fixedtable"]],
+["fixedtable", "Fixed-amount Drawback Rate Table", "정액환급률표", "meth", "법 제13조에 따른 표. 수출물품의 품목번호를 기준으로 정하며 필요하면 품명·규격별로 정할 수 있다. 간이정액환급률표는 그중 중소기업 수출물품에 적용하는 표이다.", ["법 제13조", "시행령 제14조"], [], "정액환급률표를 적용받는 물품은 환급 신청 시 소요량계산서와 납부세액 확인 서류 제출을 생략할 수 있다(시행령 제18조②).", ["ganyitable", "switch"]],
+["switch", "Switching Fixed-rate Application", "정액환급률표 적용·비적용 변경", "meth", "간이정액환급 적용업체도 승인을 받아 개별환급으로 전환할 수 있다. 2026년 시행령 개정으로 변경 제한기간이 완화되었다(비적용→적용 2년→1년, 적용→비적용 제한 삭제).", ["시행령 제16조"], [], "전환 시점 이후 수출분부터 산출 방식이 바뀌므로, ERP 환급 데이터에 '적용 방식'과 '적용 시작일'을 함께 관리한다.", ["ganyi", "indiv"]],
+["per10k", "Drawback Amount per KRW 10,000", "수출금액 1만원당 환급액", "meth", "간이정액환급률표의 단위 금액. 환급액 = 수출금액(FOB) ÷ 10,000 × 1만원당 환급액.", ["시행령 제16조"], ["간이정액환급률표"], "예: (주)누리전자(가상) 수출금액 50,000,000원, 1만원당 환급액 30원(가상) → 5,000 × 30 = 150,000원.", ["ganyi", "fob"]],
+["fob", "Export Amount (FOB)", "수출금액(FOB)", "meth", "간이정액환급 계산의 기초가 되는 수출금액. 수출신고필증상 금액을 기준으로 한다.", [], ["수출신고필증", "VBRK / VBRP"], "ERP 청구 금액과 수출신고 금액이 어긋나면 환급액 검증이 어렵다. 청구 문서에 수출신고번호를 연결해 금액 정합성을 점검.", ["per10k", "expship"]],
+["deadline", "Filing Deadline", "환급 신청 기한", "req", "물품이 수출등에 제공된 날(수출은 수출신고수리일)부터 5년 이내에 관세청장이 지정한 세관에 신청한다. 보정·수정·경정 등의 사유가 있으면 그 사유가 있은 날부터 5년 이내.", ["법 제14조①", "시행령 제18조⑤"], ["환급신청서"], "기산점은 기준일(말일)이 아니라 수출신고수리일 자체. 예: 2026-10-15 수리분은 2031-10-15까지.", ["expclear", "basedate", "app"]],
+["twoyear", "2-year Import Window", "2년 이내 수입 요건", "req", "수출이행기간 기준일부터 소급해 2년 이내에 수입된 원재료만 환급 대상. 장기간이 소요되는 물품 등 부득이한 사유(「대외무역법」상 플랜트 수출, 전쟁·천재지변 등 관세청장 인정)가 있으면 3년.", ["법 제9조①", "시행령 제9조의2"], [], "lot 매칭 시 수입신고수리일이 [기준일 − 2년, 기준일] 범위인지 먼저 필터링. 경계일 당일 포함 여부 등 세부 해석은 원문 확인.", ["basedate", "fifo", "ldcinterval"]],
+["basedate", "Base Date of Export Performance Period", "수출이행기간 기준일", "req", "2년 계산의 기준일. 수출(법 제4조제1호)은 수출신고를 수리한 날, 그 밖의 수출등은 수출·판매·공사·공급을 완료한 날이 속하는 달의 말일.", ["시행령 제9조①"], ["수출신고필증"], "10월 15일 수리 → 기준일 10월 31일. 같은 달 수리분은 모두 같은 기준일이므로 월 단위 매칭 배치에 유리하다.", ["twoyear", "expclear", "deadline"]],
+["postaudit", "Post-refund Audit", "사후심사", "req", "세관장은 필요 시 환급금의 정확 여부를 환급 후에 심사할 수 있으며, 환급신청일부터 5년 이내에 완료한다(관세청장이 따로 정하면 그 기간).", ["법 제14조②", "시행령 제20조"], [], "사후심사에서는 소요량 산정 근거와 lot 매칭 이력이 핵심 증빙. 매칭 이력 테이블을 삭제·덮어쓰기 없이 보존.", ["excess", "retention", "lotmatch"]],
+["ganyilimit", "SME Drawback Record Threshold", "간이정액 실적 한도(8억원)", "req", "간이정액환급 적용 요건: 중소기업으로서 ① 환급신청일이 속하는 연도의 직전 2년간 매년도 환급실적 8억원 이하, ② 해당 연도 1월 1일부터 환급신청일까지 환급실적 8억원 이하(기납증 발급 신청액 포함).", ["시행규칙 제12조"], [], "시행규칙(시행 2026.03.20) 기준. 연중 누적 실적을 모니터링해 한도 초과 시점을 미리 파악한다.", ["ganyi", "ganyitable"]],
+["applicant", "Drawback Applicant", "환급신청인", "req", "수출신고필증에 환급신청인으로 기재된 수출자(위탁 수출이면 위탁자) 또는 생산자 등이 신청한다. 합병 존속법인·상속인 등도 열거되어 있다.", ["시행령 제18조①"], ["수출신고필증"], "수출자와 생산자가 다르면 누가 신청할지 수출신고 단계에서 정해진다. 간이정액은 생산자 직접 신청인 경우에 한함.", ["expdec", "app", "ganyi"]],
+["retention", "Document Retention", "서류 보관", "req", "환급 관련 서류는 신청일부터 5년 범위에서 대통령령으로 정한 기간 보관. 소요량계산 서류는 환급신청일부터 5년(중소기업 원재료출납대장 등은 3년), 수출사실 증명서류는 신청일부터 3년, 납부세액 증명서류는 사용한 날부터 3년, 내국신용장 거래서류는 기납증 등 발급일부터 3년.", ["법 제20조", "시행령 제28조"], [], "사후심사 기간(신청일부터 5년)을 고려해 ERP 측 매칭 이력과 소요량 버전도 최소 5년 추적 가능하게 설계.", ["postaudit", "qtysheet"]],
+["expconfirm", "Confirmation of Exports, etc.", "수출등 사실 확인", "req", "수출신고 수리 외의 수출등(국내 외화획득 판매, 보세구역 공급 등)은 공급 시 또는 환급 신청 시 세관장으로부터 수출등의 사실을 확인받아야 한다.", ["시행규칙 제3조"], ["수출이행 확인 서류"], null, ["exportetc", "expproof"]],
+["impdec", "Import Declaration Certificate", "수입신고필증", "doc", "수입신고 수리 사실과 품명·규격·수량·납부세액을 담은 서류. 개별환급에서 납부세액 증명의 기본 서류.", [], ["수입신고필증"], "수입신고번호·란·규격·수량·세액을 lot 단위로 ERP에 보관해야 매칭이 가능하다.", ["taxpaid", "declno", "lot"]],
+["expdec", "Export Declaration Certificate", "수출신고필증", "doc", "수출신고 수리 사실 증명. 환급신청인(수출자 또는 생산자) 기재가 들어가며, 수리일이 기준일·신청기한 계산의 출발점.", ["시행령 제18조①"], ["수출신고필증"], "수출신고번호를 ERP 출하·청구 문서에 연결해 두지 않으면 환급 데이터 추출이 어렵다.", ["expclear", "applicant", "declno"]],
+["app", "Drawback Application", "환급신청서", "doc", "관세청장이 정한 서식. 수출사실 확인 서류·소요량계산서·납부세액 증명서류를 갖춰 관세청장이 지정한 세관에 제출(정액환급률표 적용 시 소요량계산서·납부세액 서류 생략 가능).", ["법 제14조", "시행령 제18조"], ["환급신청서"], null, ["deadline", "qtysheet", "payment"]],
+["qtysheet", "Required Quantity Statement", "소요량계산서", "doc", "수출물품 생산에 들어간 원재료별 소요량(손모량 포함)을 계산한 서류. 개별환급의 핵심 서류이며 간이정액환급 적용 시 생략 가능.", ["법 제10조", "시행령 제18조②"], ["소요량계산서"], "보관기간은 환급신청일부터 5년(시행령 제28조). 소요량 버전과 손모율 산정 근거를 함께 묶어 보관.", ["qty", "unitqty", "drawbom"]],
+["expproof", "Proof of Export Performance", "수출이행 확인 서류", "doc", "수출 등에 제공된 사실을 확인하는 서류. 일반 수출은 수출신고필증, 국내 공급 등은 해당 거래를 확인하는 서류.", ["시행규칙 제3조"], ["수출신고필증"], null, ["expconfirm", "expdec"]],
+["qty", "Required Quantity", "소요량", "qty", "수출물품 생산에 드는 원재료의 양. 생산과정에서 정상적으로 발생하는 손모량을 포함한다.", ["법 제2조"], ["소요량계산서"], "생산 BOM의 '실제 투입량'과 환급의 '소요량'은 기준이 다르다. 별도 환급 BOM으로 관리하는 이유.", ["unitreal", "loss", "unitqty", "drawbom"]],
+["unitreal", "Unit Net Quantity", "단위실량", "qty", "수출물품 1단위를 형성하고 있는 원재료의 종류별 양(소요량 고시 정의).", ["소요량 고시"], [], "예: FG-PCB01(가상) 1EA에 동박 RM-CU01 0.25kg이 남아 있으면 단위실량 0.25kg.", ["unitqty", "lossrate"]],
+["loss", "Loss Quantity", "손모량", "qty", "수출물품을 정상적으로 생산하는 과정에서 발생하는 원재료 손실량. 불량품 생산에 소요된 원재료의 양은 제외한다.", ["소요량 고시"], [], "불량 처리분을 손모량에 섞으면 과다환급 위험. MES·ERP의 스크랩 사유를 정상 손모와 불량으로 구분해 집계.", ["lossrate", "unitqty", "byprod"]],
+["lossrate", "Loss Rate", "손모율", "qty", "손모율 = 일정기간 손모량 ÷ 같은 기간 생산된 수출물품을 원재료로 환산한 양 × 100 (소요량 고시). 분모가 투입량이 아니라 제품에 들어간 원재료량(단위실량 기준)이다.", ["소요량 고시"], [], "고시 정의대로면 단위소요량 = 단위실량 × (1 + 손모율). 투입량 대비 손실률로 보고 ÷(1 − 율)을 쓰면 값이 달라진다(0.25kg·4% → 0.260 vs 0.2604).", ["unitqty", "loss", "unitreal"]],
+["unitqty", "Unit Required Quantity", "단위소요량", "qty", "수출물품 1단위 생산에 드는 원재료량. 단위소요량 = 단위실량 + 손모량 = 단위실량 × (1 + 손모율).", ["소요량 고시"], [], "총소요량 = 단위소요량 × 수출수량. 소수점 처리(반올림·절사)는 현행 고시 원문을 확인할 것.", ["lossrate", "qty", "refundamt"]],
+["byprod", "By-product", "부산물", "qty", "생산공정 중 수출물품 이외에 부수적으로 발생하는, 경제적 가치가 있어 판매되거나 자가사용되는 물품(소요량 고시 정의).", ["소요량 고시"], [], "스크랩 판매 실적이 있으면 부산물 공제 대상인지 검토. 판매 내역을 ERP SD 매출과 연결해 두면 산정이 쉽다.", ["bpded", "loss"]],
+["bpded", "By-product Deduction", "부산물 공제", "qty", "부산물이 발생하면 환급금 단계에서 공제한다. 환급금 = 부산물 공제전 환급금 × (1 − 부산물 공제비율).", ["소요량 고시"], [], "공제는 소요량이 아니라 환급금에 적용된다는 점에 주의. 공제비율 산식은 현행 고시 원문으로 확인.", ["byprod", "refundamt"]],
+["drawbom", "Drawback BOM", "환급 BOM", "qty", "환급 소요량 산정용 BOM. 생산 BOM이 실제 투입·스크랩 기준이라면, 환급 BOM은 단위실량 × (1 + 손모율) 기준 소요량을 담는다.", ["CS01", "CS03"], ["MAST", "STKO", "STPO"], "BOM 용도(STLAN)를 분리하거나 별도 테이블로 관리. 손모율 산정 기간·실적을 버전별로 보관.", ["unitqty", "bomusage", "qtysheet"]],
+["jointprod", "Allocation for Multiple Products", "2 이상 제품 생산 시 안분", "qty", "동일 원재료로 두 가지 이상의 제품이 생산되는 경우 소요량은 제품 가격을 기준으로 안분해 계산한다.", ["법 제10조"], [], null, ["qty", "byprod"]],
+["taxpaid", "Duties Paid", "납부세액", "calc", "수입 시 실제로 납부한 관세 등. 개별환급의 환급금은 이 금액을 사용 비율만큼 돌려받는 것이다.", ["법 제9조"], ["수입신고필증", "기초원재료납세증명서", "수입세액분할증명서"], "lot별 kg당 세액 = 납부세액 ÷ 수입수량. FTA 0% lot은 kg당 세액 0.", ["impdec", "lot", "ftarate"]],
+["lot", "Import Lot / Remaining Balance", "수입 lot·잔량", "calc", "하나의 수입신고(란) 단위로 관리하는 원재료 묶음. 수입수량에서 이미 환급에 사용한 수량을 뺀 것이 잔량(가용량).", [], ["수입신고필증", "MCHA"], "같은 lot 세액을 두 번 쓰지 않도록 잔량을 차감 관리하는 것이 개별환급 정확성의 핵심.", ["fifo", "lotmatch", "taxpaid"]],
+["fifo", "FIFO Matching", "선입선출(FIFO) 매칭", "calc", "수출 소요량을 수입일이 빠른 lot부터 배분하는 방식. 법·시행령에서 선입선출 순서를 직접 정한 조문은 확인되지 않았으며, 실무에서 흔히 쓰는 관행적 규칙이다.", ["실무 관행"], [], "실제 사용 순서는 관세청 고시와 기업의 소요량 관리 기준을 확인. 매칭 전에 2년 창(기준일 소급 2년)으로 lot을 필터링.", ["lot", "twoyear", "refundamt", "lotmatch"]],
+["refundamt", "Drawback Amount Calculation", "환급금 산출", "calc", "개별환급: lot별 환급액 = 납부세액 × (사용수량 ÷ 수입수량)을 합산하고, 부산물이 있으면 × (1 − 공제비율). 간이정액: 수출금액 ÷ 10,000 × 1만원당 환급액.", ["법 제10조", "법 제13조"], [], "예(가상): 납부세액 1,920,000원·수입 400kg lot에서 300kg 사용 → 1,920,000 × 300 ÷ 400 = 1,440,000원.", ["fifo", "bpded", "per10k", "limit"]],
+["payment", "Drawback Payment", "환급금 지급", "calc", "세관장이 환급금을 결정하면 한국은행이 세관장 소관 세입금계정에서 신청인 계좌로 이체하며, 계좌에 입금된 때 지급된 것으로 본다.", ["법 제16조"], ["환급금 결정 통지"], "ERP에서는 미수금(환급금 채권)을 신청 시점에 인식하고 입금 시 정리하는 방식이 흔하다(회계정책에 따름).", ["offset", "app"]],
+["offset", "Offset of Drawback", "환급금 충당", "calc", "세관장은 결정한 환급금을 법에 정한 순서에 따른 금액(미납 관세 등)에 우선 충당할 수 있다. 일괄납부업체는 정산일까지 지급이 보류될 수 있다.", ["법 제16조"], [], null, ["payment", "bulkpay"]],
+["excess", "Recovery of Excess Drawback", "과다환급 추징", "calc", "환급받아야 할 금액보다 과다하게 환급받은 경우 세관장은 해당 금액을 징수하며, 환급한 날의 다음 날부터 징수결정일까지 대통령령으로 정한 이율로 계산한 금액을 가산한다.", ["법 제21조"], [], "과다환급의 흔한 원인: 불량분이 섞인 손모율, lot 이중 사용, 2년 창 밖 lot 매칭, 수출 정정 미반영.", ["postaudit", "penalty", "under"]],
+["under", "Under-refund", "과소환급", "calc", "과소하게 환급된 사실을 알았을 때 세관장은 지체 없이 과소환급금을 지급하여야 한다.", ["법 제22조"], [], null, ["excess"]],
+["ldc", "Local L/C", "내국신용장", "dom", "국내에서 수출용 원재료를 공급하는 거래의 근거가 되는 신용장. 법 제5조③의 '내국신용장등'의 대표 서류.", ["법 제5조③"], ["내국신용장"], "로컬 공급분은 기납증·분증으로 앞 단계 세액을 넘겨받는 구조이므로, 매입 시 공급처와 증명서 발급 일정을 맞춰 둔다.", ["ldcetc", "pc", "kn"]],
+["pc", "Purchase Confirmation", "구매확인서", "dom", "외국환은행의 장 또는 전자무역기반사업자가 내국신용장에 준하여 발급하는 확인서. 시행규칙상 '내국신용장과 유사한 서류'에 해당한다.", ["시행규칙 제5조"], ["구매확인서"], "시행규칙 제5조 제2호는 이 밖에 관세청장이 인정하는 매매계약서 등도 유사 서류로 인정한다.", ["ldcetc", "ldc"]],
+["ldcetc", "Local L/C, etc.", "내국신용장 등", "dom", "내국신용장이나 그 밖에 부령으로 정하는 이와 유사한 서류(구매확인서, 관세청장이 인정하는 매매계약서 등). 기납증·분증 발급과 거래 간격 계산의 전제가 된다.", ["법 제5조③", "시행규칙 제5조"], [], null, ["ldc", "pc", "ldcinterval"]],
+["ldcinterval", "Interval Between Domestic Transactions", "내국신용장 등 거래 간격(1년)", "dom", "원재료가 내국신용장 등으로 거래되고 그 거래가 직전 거래(없으면 수입)부터 1년 이내이면, 수입일부터 최후 거래일까지의 기간은 2년 계산에 산입하지 않는다. 부득이한 경우 6개월 범위에서 관할지세관장 승인으로 연장.", ["법 제9조②", "시행령 제10조"], [], "국내 여러 단계를 거친 원재료는 각 단계 거래일을 보관해야 2년 창 계산을 다시 할 수 있다.", ["twoyear", "ldcetc"]],
+["kn", "Basic Raw Material Tax Payment Certificate", "기초원재료납세증명서(기납증)", "dom", "수입 원재료를 제조·가공한 물품이 내국신용장 등으로 국내 공급된 경우, 기초가 된 수입 원재료의 납부세액을 증명하는 서류. 공급자가 신청하고 세관장이 발급한다(위임받은 관세사도 가능).", ["법 제12조", "시행령 제13조"], ["기초원재료납세증명서"], "공급받는 쪽에서는 기납증이 수입신고필증을 대신하는 납부세액 증명서류. 환급 제한 세액은 공제하고 발급된다.", ["bun", "ldcetc", "selfissue", "split"]],
+["bun", "Import Tax Split Certificate", "수입세액분할증명서(분증)", "dom", "수입된 원재료를 수입한 상태 그대로 내국신용장 등으로 국내 공급한 경우, 수입 시 납부세액을 양도 물량만큼 나눠 증명하는 서류.", ["법 제12조"], ["수입세액분할증명서"], "원재료 상사(수입 후 국내 판매)를 거쳐 들어오는 원재료가 대표 사례.", ["kn", "taxpaid"]],
+["selfissue", "Self-issuance of Certificates", "증명서 자율발급", "dom", "2026-07-01 신청분부터 지정받은 원재료 수입자·관세사 등이 전산처리설비로 기납증 등을 직접 발급하는 절차가 신설되었다. 지정 유효기간 3년.", ["시행령 제13조의2"], [], "자율발급 지정 여부를 공급처 마스터에 관리하면 증명서 수령 리드타임 예측에 도움이 된다.", ["kn", "broker"]],
+["split", "Split Supply Under One L/C", "분할 공급 시 발급", "dom", "하나의 내국신용장 등으로 여러 번 나눠 공급하면 최초 거래일에 전량 거래된 것으로 보아 기납증을 발급할 수 있다(공급자가 원하지 않으면 예외).", ["시행령 제13조③"], [], null, ["kn", "ldc"]],
+["avgcert", "Average Tax Certificate", "평균세액증명서", "dom", "지정받은 물품에 대해 관할지세관장이 발급하는 평균세액 증명. 환급신청이나 기납증 발급 자료로는 사용하지 못한다.", ["시행령 제12조", "시행령 제12조⑥"], ["평균세액증명서"], "기납증·분증과 이름이 비슷해 혼동하기 쉽다. 환급 매칭의 세액 근거로 쓰지 않도록 서류유형을 구분 관리.", ["kn", "bun"]],
+["direct", "Direct Export / Local Export", "직수출·로컬수출", "dom", "직수출은 수출자가 직접 수출신고를 하고 해외로 내보내는 거래, 로컬수출은 내국신용장·구매확인서로 국내 수출업체 등에 공급하는 거래를 가리키는 실무 용어.", ["실무 용어"], [], "직수출분은 본인이 환급 신청, 로컬 공급분은 기납증·분증으로 세액을 넘기는 쪽이 일반적인 구조. 법상 '수출등' 해당 여부는 법 제4조 기준으로 판단.", ["exportetc", "kn", "ldc"]],
+["expclear", "Export Clearance Date", "수출신고수리일", "cus", "세관이 수출신고를 수리한 날. 환급 신청 기한(5년)의 기산점이며, 이 날이 속하는 달의 말일이 수출이행기간 기준일이 된다.", ["시행령 제9조①", "시행령 제18조⑤"], ["수출신고필증"], "ERP에는 출하일·청구일과 별도로 수리일 필드를 두어야 한다. 셋은 서로 다를 수 있다.", ["basedate", "deadline", "expdec"]],
+["shipping", "Shipping (Loading)", "선적", "cus", "수출신고가 수리된 물품을 운송수단에 적재하는 것. 환급 기한·기준일 계산은 선적일이 아니라 수출신고수리일을 기준으로 한다.", ["시행령 제9조①"], ["B/L"], "적재 기한 등 관세법상 선적 관련 요건은 이 용어집에서 다루지 않음(관세법 원문 확인).", ["expclear"]],
+["ftarate", "Tariff Rate / FTA Preferential Rate", "관세율·FTA 협정세율", "cus", "수입 시 적용되는 관세율에 따라 납부세액이 정해진다. FTA 협정세율 등으로 0%가 적용된 원재료는 납부세액이 없으므로 개별환급 대상 세액도 없다.", [], ["수입신고필증"], "같은 원재료라도 lot마다 적용 세율이 다를 수 있다(예: 기본 8% lot과 FTA 0% lot). lot 원장에 세율 구분을 함께 저장.", ["taxpaid", "lot"]],
+["hs", "HS Code (Tariff Item Number)", "품목번호(HS)", "cus", "관세율표상 물품 분류 번호. 간이정액환급률표와 정액환급률표는 수출물품의 품목번호를 기준으로 환급액을 정한다.", ["시행령 제14조"], ["간이정액환급률표"], "자재마스터(수출 제품)에 HS 코드를 관리하면 간이정액 환급액 조회를 자동화할 수 있다.", ["ganyitable", "fixedtable"]],
+["unipass", "Korea Customs UNI-PASS", "관세청 UNI-PASS", "cus", "관세청의 전자통관 시스템. 수출입신고, 환급 신청 등 통관 업무와 관세법령정보포털을 제공한다.", [], [], "법령·고시 원문 확인은 관세법령정보포털(UNI-PASS)과 국가법령정보센터를 함께 참조.", ["broker", "app"]],
+["broker", "Licensed Customs Broker", "관세사", "cus", "통관·환급 업무를 대행하는 전문 자격사. 환급특례법상 공급자로부터 위임받은 관세사는 기납증·분증을 발급받을 수 있다.", ["법 제11조②", "법 제12조②"], [], "환급 신청 대리 범위는 이 용어집에서 별도로 확인하지 않았다. 계약 시 위임 범위를 명확히.", ["kn", "selfissue", "unipass"]],
+["bonded", "Bonded Area", "보세구역", "cus", "관세 부과가 유보되는 구역. 보세창고·보세공장·보세판매장·종합보세구역에 대한 공급은 환급대상 수출등에 해당한다(보세공장은 수출용원재료로 사용될 목적으로 공급되는 경우에 한함).", ["법 제4조제3호", "시행규칙 제2조③"], [], "보세구역 공급분은 세관장으로부터 수출등 사실을 확인받아야 한다(시행규칙 제3조).", ["exportetc", "expconfirm"]],
+["bulkpay", "Lump-sum Payment", "일괄납부", "cus", "수출용원재료 수입자가 신청하면 세관장이 일괄납부업체로 지정해 일정 기간(1·2·3개월, 예외적으로 6개월 범위) 관세 등을 모아서 납부하게 하는 제도. 납부기한은 일괄납부기간이 끝나는 날이 속하는 달의 다음 달 15일.", ["법 제6조", "시행령 제2조"], [], "일괄납부업체는 환급금이 정산일까지 지급 보류될 수 있다(법 제16조).", ["offset", "exportetc"]],
+["imppo", "Import PO & Goods Receipt", "수입 PO·입고", "erp", "수입 원재료는 구매오더(ME21N)로 발주하고 입고(MIGO 101) 시 자재문서를 생성한다. 관세 등은 계획 부대비용 조건으로 계상하는 방식이 흔하다.", ["ME21N", "MIGO", "ME23N"], ["EKKO", "EKPO", "EKBE", "MATDOC"], "입고 자재문서와 수입신고번호를 연결해 lot(배치) 단위로 추적해야 환급 매칭의 출발점이 생긴다.", ["declno", "batchlot", "lot"]],
+["expship", "Export Delivery & Billing", "수출 출하·청구", "erp", "수출 제품은 출하(VL01N) → 출고(601) → 청구(VF01) 순으로 처리한다. 수출신고번호·수리일·FOB 원화금액을 출하 또는 청구 문서에 연결한다.", ["VL01N", "VF01", "VF03"], ["LIKP", "LIPS", "VBRK", "VBRP"], "수출신고 1건에 출하 여러 건이 묶이거나 그 반대일 수 있으므로 N:M 연결을 고려한 보조 테이블이 안전하다.", ["declno", "fob", "expclear"]],
+["declno", "Import/Export Declaration Number Management", "수입·수출신고번호 관리", "erp", "표준 필드가 없으면 부가 필드나 보조 테이블로 수입신고번호·란·수리일·납부세액, 수출신고번호·수리일·기준일을 관리한다.", [], ["수입 lot 원장(보조)", "수출 원장(보조)"], "신고번호를 키로 잡고 정정·취소 이력을 별도 버전으로 남기면 사후심사 대응이 쉬워진다.", ["imppo", "expship", "lotmatch"]],
+["lotmatch", "Lot Matching Table (Concept)", "lot 매칭 테이블", "erp", "수입 lot 원장(원재료·수입신고번호·수리일·수량·납부세액·잔량), 수출 원장(수출신고번호·수리일·기준일·제품·수량), 매칭 이력(수출 × 원재료 × lot · 사용수량 · 환급액)으로 구성하는 개념 모델. 특정 회사 구현과 무관.", [], ["수입 lot 원장(보조)", "매칭 이력(보조)"], "여러 수출 건이 같은 lot을 동시에 쓰지 않도록 잠금·순차 처리. 기납증·분증도 증명서 번호를 lot으로 취급하면 같은 매칭 엔진을 쓸 수 있다.", ["fifo", "lot", "reversal", "postaudit"]],
+["batchlot", "Batch for Import Lot", "배치를 활용한 lot 추적", "erp", "수입 lot을 SAP 배치로 관리하면 입고·출고 이력을 배치 단위로 추적할 수 있다. 다만 환급 매칭은 실물 투입이 아니라 소요량 기준 배분이므로 배치 소비와 일치하지 않을 수 있다.", ["MSC3N", "MB56"], ["MCH1", "MCHA", "MCHB"], "배치는 추적 수단, 환급 잔량은 별도 원장으로 분리하는 설계가 일반적.", ["lot", "imppo"]],
+["bomusage", "BOM Usage (STLAN)", "BOM 용도(STLAN)", "erp", "SAP BOM 용도로 생산용과 환급용 BOM을 분리할 수 있다. 환급 BOM에는 소요량 기준(단위실량 × (1 + 손모율)) 수량을 담는다.", ["CS01", "CS02", "CS03"], ["MAST", "STKO", "STPO"], "BOM 유효일과 손모율 산정 기간을 맞춰 두어야 과거 수출분 재계산이 가능하다.", ["drawbom", "unitqty"]],
+["reversal", "Cancellation & Correction", "취소·정정 역분개", "erp", "수출 정정·취소나 환급 보정이 생기면 해당 매칭을 역분개하고 lot 잔량을 복원한 뒤 다시 매칭한다.", [], ["매칭 이력(보조)"], "매칭 이력은 삭제하지 말고 취소 레코드를 추가하는 방식으로 남겨야 감사 추적이 된다.", ["lotmatch", "excess"]],
+["uom", "Unit Conversion", "단위·환산", "erp", "구매 단위·재고 단위·소요량 단위가 다르면 환산계수를 고정 관리해야 한다(예: 롤 단위 구매, kg 단위 소요량).", ["MM03"], ["MARM"], "환산계수 변경 이력이 없으면 과거 수출분 재계산 결과가 달라진다.", ["unitqty", "lot"]]
+];
+
+const DATA = T.map(r=>({id:r[0],en:r[1],ko:r[2],cat:r[3],desc:r[4],tc:r[5],tb:r[6],tip:r[7],rel:r[8]}));
+const byId = Object.fromEntries(DATA.map(d=>[d.id,d]));
+
+const SOURCES = `<footer class="src"><b>출처</b> (확인일 2026-11-14)<ul>
+<li><a href="https://www.nepla.ai/law/%EC%88%98%EC%B6%9C%EC%9A%A9-%EC%9B%90%EC%9E%AC%EB%A3%8C%EC%97%90-%EB%8C%80%ED%95%9C-%EA%B4%80%EC%84%B8-%EB%93%B1-%ED%99%98%EA%B8%89%EC%97%90-%EA%B4%80%ED%95%9C-%ED%8A%B9%EB%A1%80%EB%B2%95" target="_blank" rel="noopener">수출용 원재료에 대한 관세 등 환급에 관한 특례법</a> (시행 2026.01.02, 법률 제21065호)</li>
+<li><a href="https://www.nepla.ai/law/%EC%88%98%EC%B6%9C%EC%9A%A9%EC%9B%90%EC%9E%AC%EB%A3%8C%EC%97%90%EB%8C%80%ED%95%9C%EA%B4%80%EC%84%B8%EB%93%B1%ED%99%98%EA%B8%89%EC%97%90%EA%B4%80%ED%95%9C%ED%8A%B9%EB%A1%80%EB%B2%95%EC%8B%9C%ED%96%89%EB%A0%B9" target="_blank" rel="noopener">같은 법 시행령</a> (시행 2026.07.01, 대통령령 제36141호)</li>
+<li><a href="https://www.nepla.ai/law/%EC%88%98%EC%B6%9C%EC%9A%A9-%EC%9B%90%EC%9E%AC%EB%A3%8C%EC%97%90-%EB%8C%80%ED%95%9C-%EA%B4%80%EC%84%B8-%EB%93%B1-%ED%99%98%EA%B8%89%EC%97%90-%EA%B4%80%ED%95%9C-%ED%8A%B9%EB%A1%80%EB%B2%95-%EC%8B%9C%ED%96%89%EA%B7%9C%EC%B9%99" target="_blank" rel="noopener">같은 법 시행규칙</a> (시행 2026.03.20, 재정경제부령 제13호)</li>
+<li><a href="https://www.ulex.co.kr/%EB%B2%95%EB%A5%A0/2000000000910-36905-%EC%86%8C%EC%9A%94%EB%9F%89%EC%9D%98%EC%82%B0" target="_blank" rel="noopener">관세청 「소요량의 산정 및 관리와 심사에 관한 고시」</a> (2007 제정본 문언)</li>
+<li><a href="https://www.heraldk.com/article/2025122818271061698" target="_blank" rel="noopener">간이정액환급률표 2026-01-01 시행 개정</a> — 헤럴드경제 2025-12-28</li>
+<li><a href="https://www.taxtimes.co.kr/mobile/article.html?no=273522" target="_blank" rel="noopener">2026 시행령 개정(증명서 자율발급, 정액환급률표 변경 제한)</a> — 세정일보</li>
+<li><a href="https://www.daeryunlaw-detective.com/field_new/8118" target="_blank" rel="noopener">개별환급·간이정액환급 개요</a> — 법무법인 대륜</li>
+</ul>원문 확인: <a href="https://www.law.go.kr" target="_blank" rel="noopener">국가법령정보센터</a> · <a href="https://www.customs.go.kr" target="_blank" rel="noopener">관세청</a> · <a href="https://unipass.customs.go.kr" target="_blank" rel="noopener">관세법령정보포털(UNI-PASS)</a><br>
+FIFO 매칭은 실무 관행(법령상 순서 규정 미확인). 예시 회사·자재·금액은 모두 가상((주)누리전자). 실제 신고·신청은 현행 원문과 관세사 확인 필요.</footer>`;
+// state
+let tab="list", cat="all", query="";
+let favs = new Set();
+try{ favs = new Set(JSON.parse(localStorage.getItem("drawback-favs")||"[]")); }catch(e){}
+const saveFavs=()=>{ try{ localStorage.setItem("drawback-favs",JSON.stringify([...favs])); }catch(e){} };
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const hl=(s)=>{ s=esc(s); if(!query) return s; const q=query.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"); return s.replace(new RegExp(q,"gi"),m=>`<mark>${m}</mark>`); };
+
+$("#total").textContent = `${DATA.length}개 용어`;
+
+function renderChips(){
+  const all=[["all","전체"],...Object.entries(CATS)];
+  $("#chips").innerHTML = all.map(([k,v])=>`<button class="chip ${cat===k?"on":""}" data-c="${k}">${v}</button>`).join("");
+}
+$("#chips").addEventListener("click",e=>{
+  const b=e.target.closest(".chip"); if(!b) return;
+  cat=b.dataset.c; renderChips(); render();
+});
+
+function match(d){
+  if(cat!=="all" && d.cat!==cat) return false;
+  if(!query) return true;
+  const q=query.toLowerCase();
+  return [d.en,d.ko,d.desc,...d.tc,...d.tb].some(x=>x.toLowerCase().includes(q));
+}
+
+function card(d){
+  const tags=[...d.tc.slice(0,3).map(t=>`<span class="tag">${hl(t)}</span>`),...d.tb.slice(0,2).map(t=>`<span class="tag tb">${hl(t)}</span>`)].join("");
+  return `<div class="item" data-id="${d.id}">
+    <div class="body">
+      <div><span class="en">${hl(d.en)}</span><span class="ko">${hl(d.ko)}</span></div>
+      <div class="d">${hl(d.desc)}</div>
+      ${tags?`<div class="tags">${tags}</div>`:""}
+    </div>
+    <button class="star ${favs.has(d.id)?"on":""}" data-star="${d.id}" aria-label="즐겨찾기">★</button>
+  </div>`;
+}
+
+function render(){
+  const v=$("#view");
+  $("header").style.display = tab==="study" ? "none" : "";
+  if(tab==="study") return renderStudy();
+  let list = DATA.filter(match);
+  if(tab==="fav") list = list.filter(d=>favs.has(d.id));
+  if(!list.length){
+    v.innerHTML = `<div class="empty">${tab==="fav"&&!favs.size?"아직 즐겨찾기한 용어가 없습니다.<br>용어 옆 ★을 눌러 추가하세요.":"검색 결과가 없습니다."}</div>`;
+    return;
+  }
+  v.innerHTML = `<div class="count">${list.length}개</div><div class="list">${list.map(card).join("")}</div>${SOURCES}`;
+}
+
+$("#view").addEventListener("click",e=>{
+  const s=e.target.closest("[data-star]");
+  if(s){ e.stopPropagation(); toggleFav(s.dataset.star); render(); return; }
+  const it=e.target.closest(".item"); if(it) openSheet(it.dataset.id);
+});
+
+function toggleFav(id){ favs.has(id)?favs.delete(id):favs.add(id); saveFavs(); }
+
+// detail sheet
+function openSheet(id){
+  const d=byId[id];
+  const sh=$("#sheet");
+  const codeBtns=(arr,cls)=>arr.map(c=>`<button class="code ${cls}" data-copy="${esc(c)}">${esc(c)}</button>`).join("");
+  sh.innerHTML = `<div class="grip"></div>
+    <div class="cat">${CATS[d.cat]}</div>
+    <h2>${esc(d.en)}</h2>
+    <div class="kot">${esc(d.ko)}</div>
+    <p>${esc(d.desc)}</p>
+    ${d.tip?`<div class="tip"><b>실무 포인트</b><br>${esc(d.tip)}</div>`:""}
+    ${d.tc.length?`<div class="sec">근거 조문 · T-CODE · 탭하여 복사</div><div class="codes">${codeBtns(d.tc,"")}</div>`:""}
+    ${d.tb.length?`<div class="sec">관련 서류 · 테이블 · 탭하여 복사</div><div class="codes">${codeBtns(d.tb,"tb")}</div>`:""}
+    ${d.rel.length?`<div class="sec">관련 용어</div><div class="rel">${d.rel.filter(r=>byId[r]).map(r=>`<button data-go="${r}">${esc(byId[r].ko)}</button>`).join("")}</div>`:""}
+    <div class="row">
+      <button class="btn" data-fav="${d.id}">${favs.has(d.id)?"★ 즐겨찾기 해제":"☆ 즐겨찾기"}</button>
+      <button class="btn pri" data-close>닫기</button>
+    </div>`;
+  sh.scrollTop=0;
+  sh.classList.add("open"); $("#bg").classList.add("open");
+}
+function closeSheet(){ $("#sheet").classList.remove("open"); $("#bg").classList.remove("open"); }
+$("#bg").addEventListener("click",closeSheet);
+$("#sheet").addEventListener("click",async e=>{
+  const t=e.target;
+  if(t.dataset.close!==undefined) return closeSheet();
+  if(t.dataset.go) return openSheet(t.dataset.go);
+  if(t.dataset.fav){ toggleFav(t.dataset.fav); openSheet(t.dataset.fav); render(); return; }
+  if(t.dataset.copy){
+    try{ await navigator.clipboard.writeText(t.dataset.copy); toast(`${t.dataset.copy} 복사됨`); }
+    catch(err){ toast("복사할 수 없습니다"); }
+  }
+});
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeSheet(); });
+
+let tt;
+function toast(m){ const el=$("#toast"); el.textContent=m; el.classList.add("show"); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove("show"),1400); }
+
+// search
+const qi=$("#q");
+qi.addEventListener("input",()=>{ query=qi.value.trim(); $("#clr").style.display=query?"block":"none"; render(); });
+$("#clr").addEventListener("click",()=>{ qi.value=""; query=""; $("#clr").style.display="none"; render(); qi.focus(); });
+
+// nav
+document.querySelector("nav").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  tab=b.dataset.tab;
+  document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
+  if(tab==="study") initStudy();
+  render(); window.scrollTo(0,0);
+});
+
+// study (flashcards)
+let deck=[], idx=0, mode="ko", src="all", known=0, unknown=0;
+function initStudy(){
+  let pool = src==="fav" ? DATA.filter(d=>favs.has(d.id)) : src==="all" ? DATA : DATA.filter(d=>d.cat===src);
+  deck = pool.slice().sort(()=>Math.random()-.5);
+  idx=0; known=0; unknown=0;
+}
+function renderStudy(){
+  const v=$("#view");
+  const opts=[["all","전체"],["fav","즐겨찾기"],...Object.entries(CATS)].map(([k,n])=>`<option value="${k}" ${src===k?"selected":""}>${n}</option>`).join("");
+  const top = `<div style="padding-top:calc(4px + env(safe-area-inset-top))">
+    <div class="brand" style="margin:6px 0 12px"><h1>학습 <span>카드</span></h1>
+      <select id="src" style="font:inherit;font-size:13px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)">${opts}</select></div>
+    <div class="seg"><button data-m="ko" class="${mode==="ko"?"on":""}">한글 → 영문</button><button data-m="en" class="${mode==="en"?"on":""}">영문 → 한글</button><button data-m="desc" class="${mode==="desc"?"on":""}">설명 → 용어</button></div>`;
+  if(!deck.length){ v.innerHTML = top+`<div class="empty">카드가 없습니다.<br>즐겨찾기를 추가하거나 다른 범위를 선택하세요.</div></div>`; bindStudy(); return; }
+  if(idx>=deck.length){
+    v.innerHTML = top+`<div class="empty" style="padding-top:40px"><div style="font-size:40px">🎯</div><b style="font-size:18px;color:var(--ink)">한 바퀴 완료</b><br>알았음 ${known} · 다시 볼 것 ${unknown}<div class="row" style="max-width:320px;margin:20px auto 0"><button class="btn pri" id="again">다시 섞기</button></div></div></div>`;
+    bindStudy(); $("#again").onclick=()=>{initStudy();render();}; return;
+  }
+  const d=deck[idx];
+  const front = mode==="ko" ? `<div class="q">영문 용어는?</div><div class="big">${esc(d.ko)}</div><div class="hint">${CATS[d.cat]}</div>`
+              : mode==="en" ? `<div class="q">한글 용어는?</div><div class="big">${esc(d.en)}</div><div class="hint">${CATS[d.cat]}</div>`
+              : `<div class="q">이 설명에 해당하는 용어는?</div><div class="hint" style="font-size:15px;color:var(--ink);margin:0">${esc(d.desc)}</div>`;
+  const back = `<div class="cat" style="font-size:12px;color:var(--sub)">${CATS[d.cat]}</div>
+    <div style="font-size:21px;font-weight:700;margin-top:4px">${esc(d.en)}</div>
+    <div style="color:var(--accent);font-weight:500;margin-bottom:10px">${esc(d.ko)}</div>
+    <div style="font-size:14px;line-height:1.7;color:var(--sub)">${esc(d.desc)}</div>
+    ${d.tc.length?`<div class="tags" style="margin-top:12px">${d.tc.map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div>`:""}`;
+  v.innerHTML = top+`
+    <div class="prog"><i style="width:${idx/deck.length*100}%"></i></div>
+    <div class="fc-meta"><span>${idx+1} / ${deck.length}</span><div class="score"><span>✓ ${known}</span><span>↻ ${unknown}</span></div></div>
+    <div class="fc-wrap"><div class="fc" id="fc"><div class="face">${front}<div class="tap">탭하여 뒤집기</div></div><div class="face back">${back}</div></div></div>
+    <div class="row"><button class="btn" id="no">↻ 다시 볼래요</button><button class="btn pri" id="yes">✓ 알아요</button></div>
+    <div class="row" style="margin-top:8px"><button class="btn" id="star">${favs.has(d.id)?"★ 즐겨찾기됨":"☆ 즐겨찾기 추가"}</button></div>
+  </div>`;
+  bindStudy();
+  $("#fc").onclick=()=>$("#fc").classList.toggle("flip");
+  $("#yes").onclick=()=>{known++;idx++;render();};
+  $("#no").onclick=()=>{unknown++;deck.push(d);idx++;render();};
+  $("#star").onclick=()=>{toggleFav(d.id);render();};
+}
+function bindStudy(){
+  const s=$("#src"); if(s) s.onchange=()=>{src=s.value;initStudy();render();};
+  document.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>{mode=b.dataset.m;render();});
+}
+
+renderChips(); render();
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#354A5F;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+</body>
+</html>

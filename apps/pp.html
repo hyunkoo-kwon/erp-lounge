@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAP PP 실습 앱 — 계획에서 생산 입고까지</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --shell:#354A5F; --brand:#0A6ED1; --brand2:#0854A0; --sel:#EBF5FE;
+  --ink:#1D2D3E; --sub:#556B82; --line:#D9DEE3; --soft:#F5F6F7;
+  --ok:#107E3E; --okbg:#F1FDF6; --ng:#BB0000; --ngbg:#FFEBEB; --warn:#E9730C;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;color:var(--ink);font-family:"Noto Sans KR","Malgun Gothic",system-ui,sans-serif;font-size:15px;line-height:1.6}
+button,select,input{font:inherit;color:inherit}
+.shell{background:var(--shell);color:#fff}
+.shell .in{max-width:1100px;margin:0 auto;padding:16px 18px 14px}
+.shell .eyebrow{font-size:12px;letter-spacing:.08em;color:#BCD4EA;font-weight:700}
+.shell h1{margin:2px 0 0;font-size:22px;font-weight:900;letter-spacing:-.02em}
+.shell p{margin:2px 0 0;color:#D5E1EC;font-size:13px}
+nav{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 1px 3px rgba(0,0,0,.04)}
+nav .in{max-width:1100px;margin:0 auto;display:flex;gap:2px;overflow-x:auto;padding:0 10px;scrollbar-width:none}
+nav .in::-webkit-scrollbar{display:none}
+nav a{flex:none;padding:12px 12px;text-decoration:none;color:var(--sub);font-weight:500;border-bottom:3px solid transparent;white-space:nowrap;font-size:14px}
+nav a.on{color:var(--brand);border-color:var(--brand);font-weight:700}
+main{max-width:1100px;margin:0 auto;padding:22px 18px 60px}
+section{display:none}
+section.on{display:block}
+h2{font-size:21px;margin:0 0 4px;font-weight:900;color:var(--shell)}
+h3{font-size:16px;margin:22px 0 8px;color:var(--shell)}
+.lead{color:var(--sub);margin:0 0 18px}
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.card{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:#fff;min-width:0}
+.card h4{margin:0 0 6px;font-size:15px;color:var(--shell)}
+.card p{margin:0;color:var(--sub);font-size:14px}
+.card ul{margin:6px 0 0;padding-left:18px;color:var(--sub);font-size:14px}
+.card.sel{background:var(--sel);border-color:#B0D4F7}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border-radius:20px;background:var(--sel);color:var(--brand2);margin:0 4px 4px 0;font-family:ui-monospace,Menlo,Consolas,monospace}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{background:var(--shell);color:#fff;font-weight:700;text-align:left;padding:8px 10px;white-space:nowrap}
+td{border-bottom:1px solid var(--line);padding:8px 10px;vertical-align:top}
+tr:hover td{background:#FAFBFC}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+.btn{border:1px solid var(--brand);background:#fff;color:var(--brand);border-radius:8px;padding:7px 14px;cursor:pointer;font-weight:700;font-size:14px}
+.btn:hover{background:var(--sel)}
+.btn.pri{background:var(--brand);color:#fff}
+.btn.pri:hover{background:var(--brand2)}
+.btn:disabled{opacity:.4;cursor:default}
+input[type=number],input[type=text],select{border:1px solid #B8C3CE;border-radius:6px;padding:6px 8px;width:100%;background:#fff}
+input:focus,select:focus{outline:2px solid var(--brand);outline-offset:-1px}
+label.f{display:block;font-size:13px;color:var(--sub);font-weight:500}
+label.ck{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--sub);font-weight:500;margin-bottom:8px}
+/* flow */
+.flow{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch}
+.step{flex:1 1 150px;border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;background:#fff;position:relative;text-align:left}
+.step .n{font-size:12px;color:var(--brand);font-weight:700}
+.step .t{font-weight:900;font-size:16px;color:var(--shell)}
+.step .c{font-size:13px;color:var(--sub)}
+.step.on{background:var(--sel);border-color:var(--brand);box-shadow:inset 0 0 0 1px var(--brand)}
+.detail{margin-top:12px;border:1px solid #B0D4F7;background:var(--sel);border-radius:10px;padding:16px;min-width:0}
+.detail h4{margin:0 0 6px;color:var(--shell)}
+.detail dl{display:grid;grid-template-columns:110px 1fr;gap:4px 12px;margin:10px 0 0;font-size:14px}
+.detail dt{color:var(--sub);font-weight:700}
+.detail dd{margin:0;min-width:0;overflow-wrap:anywhere}
+@media(max-width:520px){.detail dl{grid-template-columns:1fr}.detail dt{margin-top:6px}}
+/* org tree */
+.tree{font-size:14px}
+.node{display:inline-block;border:1px solid var(--line);border-radius:8px;padding:6px 12px;background:#fff;margin:4px 0;cursor:pointer}
+.node b{color:var(--shell)}
+.node.on{border-color:var(--brand);background:var(--sel)}
+.tree ul{list-style:none;margin:0;padding-left:26px;border-left:2px solid var(--line)}
+.tree li{position:relative;padding-left:10px}
+.tree li::before{content:"";position:absolute;left:-2px;top:20px;width:10px;border-top:2px solid var(--line)}
+/* sim */
+.sim{display:grid;grid-template-columns:300px 1fr;gap:16px}
+.sim>div{min-width:0}
+@media(max-width:820px){.sim{grid-template-columns:1fr}}
+.panel{border:1px solid var(--line);border-radius:10px;padding:14px}
+.panel h4{margin:0 0 10px;font-size:15px;color:var(--shell)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.seg{display:flex;border:1px solid var(--brand);border-radius:8px;overflow:hidden;margin-bottom:10px}
+.seg button{flex:1;border:0;background:#fff;color:var(--brand);padding:6px;cursor:pointer;font-weight:700;font-size:13px}
+.seg button.on{background:var(--brand);color:#fff}
+.stock{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stock div{background:var(--soft);border-radius:8px;padding:8px 10px;min-width:0}
+.stock small{display:block;color:var(--sub);font-size:12px}
+.stock b{font-size:18px;color:var(--shell)}
+@media(max-width:520px){.stock b{font-size:15px}}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.je{margin-bottom:10px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.je .h{background:var(--soft);padding:6px 10px;font-size:13px;font-weight:700;color:var(--shell);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.je .tb{overflow-x:auto}
+.je table td,.je table th{padding:5px 10px;font-size:13px}
+.je table th{background:#fff;color:var(--sub);border-bottom:1px solid var(--line)}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.note{font-size:13px;color:var(--sub);margin-top:6px}
+.empty{color:var(--sub);font-size:14px;padding:20px;text-align:center;border:1px dashed var(--line);border-radius:8px}
+.taccts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:6px}
+.tacc{border:1px solid var(--line);border-radius:8px;padding:8px}
+.tacc .nm{font-weight:700;font-size:13px;color:var(--shell);text-align:center;border-bottom:2px solid var(--shell);padding-bottom:4px}
+.tacc .sides{display:grid;grid-template-columns:1fr 1fr;font-size:13px}
+.tacc .sides div{padding:4px 6px}
+.tacc .sides div:first-child{border-right:2px solid var(--shell)}
+.tacc .bal{font-size:12px;color:var(--sub);text-align:center;margin-top:4px}
+/* search */
+.search{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.search input{flex:1 1 240px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#fff;border-radius:20px;padding:4px 12px;cursor:pointer;font-size:13px;color:var(--sub)}
+.chip.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:700}
+.lane{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:10px 0}
+.box{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:#fff;font-size:13px;min-width:110px}
+.box b{display:block;color:var(--shell);font-size:14px}
+.arr{color:var(--brand);font-weight:900}
+/* PP specific */
+.lv{color:var(--brand);font-weight:700;font-family:ui-monospace,Menlo,Consolas,monospace;white-space:nowrap}
+td input.scr{width:64px;padding:3px 6px}
+.dem td,.dem th{padding:4px 6px;text-align:center}
+.dem th:first-child,.dem td:first-child{text-align:left;white-space:nowrap}
+.dem input{width:58px;padding:3px 4px;text-align:right}
+.warnc{color:var(--warn);font-weight:700}
+.okc{color:var(--ok);font-weight:700}
+.ngc{color:var(--ng);font-weight:700}
+tr.rcpt td{background:var(--okbg)}
+.var{display:grid;grid-template-columns:1fr auto;gap:2px 12px;font-size:14px}
+.var div:nth-child(even){text-align:right;font-variant-numeric:tabular-nums}
+.var .tot{font-weight:900;border-top:1px solid var(--line);padding-top:4px}
+.bar{display:flex;height:26px;border-radius:6px;overflow:hidden;border:1px solid var(--line);margin:6px 0}
+.bar span{display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;white-space:nowrap;overflow:hidden}
+/* quiz */
+.q{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+.q .qt{font-weight:700;margin-bottom:8px}
+.opt{display:block;width:100%;text-align:left;border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:5px 0;background:#fff;cursor:pointer}
+.opt:hover{border-color:var(--brand)}
+.opt.ok{background:var(--okbg);border-color:var(--ok);color:var(--ok);font-weight:700}
+.opt.ng{background:var(--ngbg);border-color:var(--ng);color:var(--ng)}
+.exp{font-size:13px;color:var(--sub);margin-top:6px;display:none}
+.exp.on{display:block}
+.score{position:sticky;top:52px;background:#fff;padding:8px 0;font-weight:700;color:var(--shell);z-index:5}
+footer{max-width:1100px;margin:0 auto;padding:0 18px 30px;color:var(--sub);font-size:12px}
+</style>
+</head>
+<body>
+<div class="shell"><div class="in">
+  <div class="eyebrow">SAP PP · GLOBAL BIKE · USD</div>
+  <h1>SAP PP 실습 앱 — 계획에서 생산 입고까지</h1>
+  <p>수요관리 → MRP → 생산오더 → 출고·확인·입고 → 오더 결산 흐름을 눌러 보며 익힘 (S/4HANA 기준)</p>
+</div></div>
+<nav><div class="in" id="nav"></div></nav>
+<main id="main"></main>
+<footer>곰선비의 ERP 실무노트 · 학습용 예시 데이터(Global Bike 기준 가정, 자재번호·금액은 가상)</footer>
+
+<script>
+const TABS=[
+ ["flow","생산 흐름"],["master","조직구조·기준정보"],["bom","BOM 전개 시뮬레이터"],["mrp","MRP 시뮬레이터"],
+ ["cost","생산오더 원가 시뮬레이터"],["types","생산 유형 비교"],["cap","용량계획·일정"],["dict","T-code·테이블"],["quiz","퀴즈"]
+];
+const $=s=>document.querySelector(s);
+const fmt=n=>(Math.round(n*100)/100).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const fq=n=>(Math.round(n*1000)/1000).toLocaleString("en-US",{maximumFractionDigits:3});
+const num=id=>{const v=Number($(id).value);return isFinite(v)?v:0;};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------------- FLOW ---------------- */
+const FL=[
+ {t:"수요관리",tc:"MD61",c:"계획독립소요 등록",d:"판매계획·예측을 자재·플랜트·기간별 계획독립소요(PIR)로 등록. MRP가 계산할 '수요'의 출발점. 소요유형(예: LSF, VSF)은 자재의 전략그룹(MRP 3 뷰)에서 결정됨.",tab:"PBIM (헤더) / PBED (일정라인)",doc:"계획독립소요 (버전 00 등)",acc:"없음",tip:"MD62 변경 · MD63 조회. 활성 지시자가 켜진 버전만 MRP에 반영(보통 00). 판매오더와의 소진 여부는 계획전략·소진 모드에 따름."},
+ {t:"MRP 실행",tc:"MD01N",c:"순소요량 계산",d:"S/4HANA의 MRP Live. 총소요량에서 가용재고·입고예정을 빼고 안전재고를 지키는 순소요량을 구한 뒤 로트크기를 적용. BOM을 전개해 하위 부품의 종속소요까지 만든다.",tab:"PPH_DBVM (계획파일 항목) · PLAF · RESB (종속소요) · EBAN",doc:"계획오더 (자체생산 E) / 구매요청 (외부조달 F)",acc:"없음",tip:"클래식 MD01·MD02(단일 품목 다단계)·MD03(단일 품목 단일 단계)도 남아 있지만 S/4HANA에서는 MD01N 권장. 결과는 MD04(실시간 재고/소요량 목록)로 확인."},
+ {t:"계획오더",tc:"MD04 · MD12",c:"MRP 제안 검토",d:"MRP가 만든 내부 생산 제안. 확정하지 않으면 다음 MRP 실행 때 수량·일자가 다시 계산되거나 삭제될 수 있다. MRP 컨트롤러가 MD04에서 예외메시지를 보며 검토.",tab:"PLAF",doc:"계획오더 번호",acc:"없음",tip:"MD11 생성 · MD12 변경 · MD13 조회. 확정 지시자를 켜면 MRP가 해당 오더를 바꾸지 않음. MD05는 마지막 계획 실행 시점의 정적 MRP 리스트."},
+ {t:"생산오더 전환",tc:"CO40 · CO41",c:"계획오더 → 생산오더",d:"생산 스케줄러가 계획오더를 생산오더로 전환. 생산버전이 가리키는 BOM·라우팅이 오더에 복사되어 부품 예약과 공정이 생기고, 설정에 따라 계획원가가 계산된다. MRP 없이 CO01로 직접 생성도 가능.",tab:"AUFK · AFKO · AFPO · AFVC · RESB",doc:"생산오더 번호 (오더유형 예: PP01), 상태 CRTD",acc:"없음 — 계획원가(사전원가)만 계산",tip:"CO40 개별 전환 · CO41 일괄 전환 · MD04에서도 전환 가능. 정산규칙(수신자: 자재)이 오더 생성 시 정산 프로파일에 따라 자동으로 만들어짐."},
+ {t:"확정·릴리즈",tc:"CO02",c:"실행 가능 상태로",d:"릴리즈해야 부품 출고·작업 확인·입고가 가능하고 작업지시서를 인쇄할 수 있다. 생성·릴리즈 시 자재 가용성 점검을 할 수 있다.",tab:"JEST (상태) · AFKO",doc:"상태 CRTD → REL",acc:"없음",tip:"CO05N 일괄 릴리즈. 생산 스케줄링 프로파일에서 '생성 시 즉시 릴리즈' 설정 가능. 가용성 점검 실패 시 릴리즈를 막을지 여부도 설정 항목."},
+ {t:"부품 출고",tc:"MIGO · 261",c:"부품을 오더에 투입",d:"예약(RESB)을 참조해 부품을 출고. 재고가 줄고 실제원가가 오더에 쌓인다. 백플러시 설정 시 작업 확인과 동시에 자동 출고.",tab:"MATDOC · RESB · ACDOCA",doc:"자재문서 + 회계전표",acc:"차) 소비 GBB-VBR (생산오더 귀속) / 대) 재고 BSX",tip:"백플러시 지시자는 자재마스터 MRP 2 뷰·작업장·라우팅 부품 할당에서 결정. 취소는 262. 예약에 없는 부품도 오더로 출고 가능."},
+ {t:"작업 확인",tc:"CO11N",c:"실적 시간·수량 보고",d:"공정별 양품·불량 수량과 활동 시간(셋업·기계·인력)을 보고. 활동 단가 × 시간만큼 원가센터에서 오더로 내부 배부된다.",tab:"AFRU · ACDOCA",doc:"확인 번호 + CO 전표",acc:"차) 생산오더 / 대) 원가센터 — 2차 원가요소 (범주 43, 내부 활동 배부)",tip:"CO15 오더 헤더 확인 · CO13 확인 취소. 활동 단가는 KP26 계획 단가. 상태 PCNF(부분 확인) → CNF. 공정 컨트롤 키가 확인 필수 여부를 결정."},
+ {t:"완제품 입고",tc:"MIGO · 101",c:"완성품 재고 증가",d:"오더를 참조해 완제품을 입고. 표준가(S) 자재는 표준원가 × 입고수량으로 재고가 늘고, 같은 금액만큼 오더가 대변 처리된다.",tab:"MATDOC · AFPO · ACDOCA",doc:"자재문서 + 회계전표",acc:"차) 완제품 재고 BSX / 대) 제품 입고 상대계정 GBB-AUF (생산오더 대변)",tip:"공정 컨트롤 키에 '자동 입고'가 있으면 확인 시 자동 입고. 상태 PDLV → DLV. 과·부족 납품 허용치는 자재마스터 작업일정 뷰."},
+ {t:"오더 결산",tc:"KKS2 · KO88",c:"차이 계산과 정산",d:"목표원가(표준원가 × 입고수량)와 실제원가를 비교해 차이를 계산(KKS2)하고, 오더 잔액을 자재로 정산(KO88)한다. 정산 후 오더 잔액은 0.",tab:"COSB (차이) · ACDOCA",doc:"차이 계산 결과 + 정산 전표",acc:"불리한 차이: 차) 가격차이 PRD / 대) 생산오더 (정산)",tip:"차이는 DLV 또는 TECO 상태일 때 전액 계산되고, 진행 중이면 재공품(WIP, KKAX)으로 처리. 일괄은 KKS1 · CO88. S/4HANA는 Material Ledger 필수 — 실제원가계산 활성 시 가격차이가 재고·매출원가로 배분됨."},
+ {t:"TECO",tc:"CO02",c:"기술적 완료",d:"더 이상 생산하지 않을 오더를 기술적으로 완료. 미결 예약·용량소요가 삭제되고 MRP 대상에서 빠진다. 원가 전기는 계속 가능.",tab:"JEST · RESB",doc:"상태 TECO",acc:"없음",tip:"부분 입고 후 종료할 때 필요. 실무에서는 월말 차이 계산 전에 TECO를 먼저 처리해 차이가 WIP로 남지 않게 함. 정산 후 CLSD(업무 완료)로 전기 차단. TECO는 취소 가능."}
+];
+function renderFlow(){
+ return `<h2>계획에서 생산 입고까지 10단계</h2><p class="lead">단계를 누르면 T-code, 테이블, 생성 문서, 회계 영향, 실무 포인트가 보임</p>
+ <div class="flow">${FL.map((s,i)=>`<button class="step${i==0?' on':''}" data-i="${i}"><div class="n">STEP ${i+1} · <span class="mono">${s.tc}</span></div><div class="t">${s.t}</div><div class="c">${s.c}</div></button>`).join("")}</div>
+ <div class="detail" id="fld"></div>
+ <h3>계획 영역과 실행 영역 — 회계가 움직이는 시점</h3>
+ <div class="grid g3">
+  <div class="card"><h4>계획 (1~3단계)</h4><p>PIR · MRP · 계획오더는 모두 제안·계획 데이터. 재고·회계 영향 없음</p></div>
+  <div class="card"><h4>실행 (4~8단계)</h4><p>생산오더가 원가 수집 객체가 됨. 261 출고 · CO11N 확인 · 101 입고에서 전표 발생</p></div>
+  <div class="card"><h4>결산 (9~10단계)</h4><p>차이 계산은 CO 분석, 정산은 FI 전표. 오더 잔액이 0이 되어야 정상 결산</p></div>
+ </div>`;
+}
+function flDetail(i){const s=FL[i];$("#fld").innerHTML=`<h4>${i+1}. ${s.t} <span class="tag">${s.tc}</span></h4><div>${s.d}</div>
+ <dl><dt>테이블</dt><dd class="mono">${s.tab}</dd><dt>생성 문서</dt><dd>${s.doc}</dd><dt>회계 영향</dt><dd>${s.acc}</dd><dt>실무 포인트</dt><dd>${s.tip}</dd></dl>`;}
+
+/* ---------------- MASTER ---------------- */
+const ORG={
+ cl:["Client","클라이언트","SAP 시스템 안의 독립된 회사 묶음. 모든 데이터의 최상위 단위.","T000"],
+ cc:["Company Code US00","회사코드","Global Bike Inc.(미국). 생산오더 원가와 재고 금액이 이 회사코드 장부에 기록됨.","T001"],
+ dl:["Plant DL00 Dallas","플랜트","생산 거점. MRP·BOM·라우팅·작업장이 모두 플랜트 단위로 정의됨. 재고 평가도 보통 플랜트 단위.","T001W"],
+ rm:["SLoc RM00","저장위치","원자재 창고 (가정). 부품 출고 261의 출발지. 자재마스터 MRP 2의 생산 저장위치로 지정 가능.","T001L"],
+ sf:["SLoc SF00","저장위치","반제품 창고 (가정). 프레임·휠 어셈블리 같은 중간 조립품 보관.","T001L"],
+ fg:["SLoc FG00","저장위치","완제품 창고 (가정). 생산오더 입고 101의 도착지.","T001L"],
+ mc:["MRP 컨트롤러 001","MRP 담당자","자재별 MRP 담당자. MD04·MD07에서 자기 자재의 예외메시지를 검토. 자재마스터 MRP 1 뷰 MARC-DISPO (번호는 가정).","T024D"],
+ ps:["생산 스케줄러 001","생산 일정 담당자","생산오더를 전환·릴리즈·관리하는 담당자. 자재마스터 작업일정 뷰 MARC-FEVOR. 생산 스케줄링 프로파일과 함께 오더 처리 방식을 결정 (번호는 가정).","T024F"]
+};
+const MRPV=[
+ ["MRP 1","MRP 유형 · MRP 컨트롤러 · 로트크기 · 최소/최대/고정 로트 · 조립품 스크랩","DISMM · DISPO · DISLS · BSTMI/BSTMA/BSTFE · AUSSS"],
+ ["MRP 2","조달유형 · 특별조달 · 생산 저장위치 · 백플러시 · 자체생산시간 · 계획납품시간 · 입고처리시간 · 일정마진키 · 안전재고","BESKZ · SOBSL · LGPRO · RGEKZ · DZEIT · PLIFZ · WEBAZ · FHORI · EISBE"],
+ ["MRP 3","전략그룹 · 소진 모드 · 소진 기간 · 가용성 점검그룹","STRGR · VRMOD · VINT1/VINT2 · MTVFP"],
+ ["MRP 4","BOM 선택 방법 · 개별/일괄 소요 · 구성품 스크랩 · 생산버전","ALTSL · SBDKZ · KAUSF · (MKAL)"],
+ ["작업일정","생산 스케줄러 · 생산 스케줄링 프로파일 · 과/부족 납품 허용치","FEVOR · SFCPF · UEETO/UNETO"]
+];
+function renderMaster(){
+ const n=k=>`<span class="node" data-k="${k}"><b>${ORG[k][0]}</b> · ${ORG[k][1]}</span>`;
+ return `<h2>PP 조직구조</h2><p class="lead">PP의 중심은 플랜트. 상자를 누르면 설명과 테이블이 보임</p>
+ <div class="grid g2"><div class="card tree">
+ ${n("cl")}<ul><li>${n("cc")}<ul>
+  <li>${n("dl")}<ul><li>${n("rm")}</li><li>${n("sf")}</li><li>${n("fg")}</li></ul></li>
+ </ul></li></ul>
+ <div style="margin-top:10px">${n("mc")}<br>${n("ps")} <span class="note">— 플랜트별 담당자 키</span></div>
+ </div><div class="detail" id="orgd" style="margin-top:0"></div></div>
+
+ <h2 style="margin-top:28px">PP 기준정보 5가지</h2><p class="lead">생산오더가 만들어질 때 복사되어 들어가는 값들의 출처</p>
+ <div class="grid g3">
+  <div class="card sel"><h4>자재마스터 <span class="tag">MM01</span></h4><p>무엇을, 어떤 방식으로 계획하나. MRP 1~4 · 작업일정 뷰 (MARC)</p></div>
+  <div class="card"><h4>BOM <span class="tag">CS01</span></h4><p>무엇으로 만드나. 상위 자재 1단위에 필요한 구성품과 수량 (MAST · STKO · STPO)</p></div>
+  <div class="card"><h4>작업장 <span class="tag">CR01</span></h4><p>어디서 만드나. 용량 · 일정 공식 · 원가센터와 활동유형 연결 (CRHD · CRCO · KAKO)</p></div>
+  <div class="card"><h4>라우팅 <span class="tag">CA01</span></h4><p>어떤 순서로 얼마나 걸리나. 공정 · 작업장 · 표준값 · 컨트롤 키 (PLKO · PLPO)</p></div>
+  <div class="card"><h4>생산버전 <span class="tag">C223</span></h4><p>어떤 BOM과 어떤 라우팅을 짝지을까. 유효기간 · 로트 범위별 조합 (MKAL)</p></div>
+ </div>
+ <div class="lane"><div class="box"><b>생산버전</b>대체 BOM 01 + 라우팅 그룹/카운터</div><span class="arr">→</span><div class="box"><b>생산오더 생성</b>BOM 전개 · 일정 계산</div><span class="arr">→</span><div class="box"><b>부품 예약</b>RESB</div><span class="arr">+</span><div class="box"><b>공정</b>AFVC / AFVV</div></div>
+ <p class="note">S/4HANA에서는 BOM·라우팅 선택을 생산버전으로 하는 것이 기본 (simplification item) — 생산버전 없는 자재는 오더 전환 때 문제가 생기기 쉬움</p>
+
+ <h3>자재마스터 MRP 관련 뷰 (MARC)</h3>
+ <div class="tbl"><table><tr><th>뷰</th><th>핵심 필드</th><th>기술 필드명</th></tr>
+ ${MRPV.map(v=>`<tr><td><b>${v[0]}</b></td><td>${v[1]}</td><td class="mono" style="font-size:12px">${v[2]}</td></tr>`).join("")}</table></div>
+
+ <h3>MRP 동작을 결정하는 4개 키</h3>
+ <div class="grid g2">
+  <div class="card"><h4>MRP 유형</h4><ul><li><b>PD</b> MRP — 소요량 기반 순소요 계산</li><li><b>VB</b> 수동 재주문점 — 재고가 재주문점 아래로 가면 조달</li><li><b>VM</b> 자동 재주문점 — 소비 이력으로 재주문점 계산</li><li><b>ND</b> 계획 안 함</li></ul></div>
+  <div class="card"><h4>로트크기</h4><ul><li><b>EX</b> 로트별 — 부족한 만큼만</li><li><b>FX</b> 고정 — 고정 수량 단위 (부족하면 여러 개)</li><li><b>WB</b> 주별 — 한 주의 소요를 하나로 묶음</li><li><b>HB</b> 최대재고까지 보충</li></ul></div>
+  <div class="card"><h4>조달유형</h4><ul><li><b>E</b> 자체생산 → 계획오더</li><li><b>F</b> 외부조달 → 구매요청 (또는 계획오더)</li><li><b>X</b> 둘 다 가능</li></ul></div>
+  <div class="card"><h4>특별조달 키 (예)</h4><ul><li><b>30</b> 임가공</li><li><b>40</b> 플랜트 간 재고이전</li><li><b>50</b> 팬텀 조립품 — 재고 없이 BOM만 전개</li><li><b>10</b> 위탁</li></ul></div>
+ </div>
+ <div class="grid g3" style="margin-top:12px">
+  <div class="card"><h4>안전재고</h4><p>MRP가 가용재고로 쓰지 않고 남겨 두는 수량. 가용재고가 안전재고 아래로 내려가면 보충 제안</p></div>
+  <div class="card"><h4>리드타임</h4><p>자체생산시간(일 단위 또는 라우팅 일정) · 계획납품시간(외부조달) · 입고처리시간이 계획오더 시작일을 결정</p></div>
+  <div class="card"><h4>스크랩 2종</h4><p>조립품 스크랩(MRP 1, 상위 오더 수량을 늘림)과 구성품 스크랩(MRP 4 또는 BOM 품목, 해당 부품 소요만 늘림)</p></div>
+ </div>
+
+ <h3>BOM · 작업장 · 라우팅 · 생산버전</h3>
+ <div class="tbl"><table><tr><th>기준정보</th><th>T-code</th><th>테이블</th><th>실무 포인트</th></tr>
+  <tr><td><b>BOM</b></td><td class="mono">CS01 / CS02 / CS03 · CS11</td><td class="mono">MAST · STKO · STPO</td><td>BOM 용도 1 = 생산. 품목범주 L(재고 품목) · N(비재고) · R(가변 크기) · T(텍스트). CS11은 다단계 전개 조회</td></tr>
+  <tr><td><b>작업장</b></td><td class="mono">CR01 / CR02 / CR03</td><td class="mono">CRHD · CRCO · KAKO</td><td>원가 탭에서 원가센터와 활동유형(KL01, 단가 KP26)을 연결 → 작업 확인 시 활동 배부. 용량 탭에서 가용 용량 정의</td></tr>
+  <tr><td><b>라우팅</b></td><td class="mono">CA01 / CA02 / CA03</td><td class="mono">MAPL · PLKO · PLPO · PLAS</td><td>공정마다 작업장 · 컨트롤 키(예: PP01) · 표준값(셋업·기계·인력). 부품을 공정에 할당하면 출고·백플러시 시점이 정해짐</td></tr>
+  <tr><td><b>생산버전</b></td><td class="mono">C223 · MM02 (MRP 4)</td><td class="mono">MKAL</td><td>유효기간 · 로트 범위 · 대체 BOM · 라우팅 그룹/카운터. 반복제조는 생산버전에서 '반복제조 허용' 지정</td></tr>
+ </table></div>`;
+}
+function orgDetail(k){const o=ORG[k];document.querySelectorAll(".node").forEach(e=>e.classList.toggle("on",e.dataset.k==k));$("#orgd").innerHTML=`<h4>${o[0]}</h4><div><b>${o[1]}</b> — ${o[2]}</div><dl><dt>테이블</dt><dd class="mono">${o[3]}</dd></dl>`;}
+
+/* ---------------- BOM SIM ---------------- */
+const BOMD={m:"TB-1000",n:"투어링 바이크 (완제품)",u:"EA",t:"FERT",c:[
+ {m:"FR-1000",n:"알루미늄 프레임",q:1,u:"EA",t:"HALB",s:0,c:[
+   {m:"TU-1000",n:"알루미늄 튜브 세트",q:1,u:"SET",t:"ROH",s:2},
+   {m:"PT-1000",n:"프레임 도료",q:0.4,u:"L",t:"ROH",s:5}]},
+ {m:"WA-1000",n:"휠 어셈블리",q:2,u:"EA",t:"HALB",s:1,c:[
+   {m:"RM-1000",n:"림",q:1,u:"EA",t:"ROH",s:0},
+   {m:"SK-1000",n:"스포크",q:32,u:"EA",t:"ROH",s:3},
+   {m:"TI-1000",n:"타이어",q:1,u:"EA",t:"ROH",s:0},
+   {m:"IT-1000",n:"이너튜브",q:1,u:"EA",t:"ROH",s:2}]},
+ {m:"DG-1000",n:"변속기 세트",q:1,u:"SET",t:"ROH",s:0},
+ {m:"BR-1000",n:"브레이크 키트",q:1,u:"SET",t:"ROH",s:0},
+ {m:"CH-1000",n:"체인",q:1,u:"EA",t:"ROH",s:1},
+ {m:"SE-1000",n:"안장",q:1,u:"EA",t:"ROH",s:0},
+ {m:"HB-1000",n:"핸들바",q:1,u:"EA",t:"ROH",s:0},
+ {m:"PK-1000",n:"포장 박스",q:1,u:"EA",t:"VERP",s:0}]};
+function bomFlat(){const out=[];(function w(node,lv){(node.c||[]).forEach(ch=>{out.push({node:ch,lv});w(ch,lv+1);});})(BOMD,1);return out;}
+function renderBom(){
+ const rows=bomFlat();
+ return `<h2>BOM 전개 시뮬레이터</h2><p class="lead">오더 수량과 스크랩률을 바꾸면 다단계 BOM의 구성품 소요량이 다시 계산됨 (CS11 다단계 전개와 같은 개념)</p>
+ <div class="sim"><div class="panel"><h4>조건 입력</h4>
+  <div class="row"><label class="f">오더 수량 (${BOMD.m}) EA<input type="number" id="b_qty" value="100" min="0"></label><label class="f">조립품 스크랩 %<input type="number" id="b_as" value="0" min="0" step="0.1"></label></div>
+  <label class="ck"><input type="checkbox" id="b_cs" checked> 구성품 스크랩 % 적용</label>
+  <div class="stock" style="grid-template-columns:1fr 1fr" id="b_sum"></div>
+  <p class="note">계산식: 소요량 = 상위 소요량 × 구성품 수량 × (1 + 구성품 스크랩%). 반제품(HALB)의 스크랩은 그 아래 부품까지 전파됨.</p>
+  <p class="note">조립품 스크랩(MRP 1)은 상위 오더 수량 자체를 늘려 모든 구성품에 영향. 재고 차감 전 총소요 기준이며, 실제 MRP에서는 반제품 재고를 차감한 뒤 하위로 전개함.</p>
+ </div><div>
+  <div class="tbl"><table><thead><tr><th>레벨</th><th>자재</th><th>내역</th><th>유형</th><th class="num">BOM 수량</th><th>스크랩 %</th><th class="num">소요량</th><th class="num">스크랩분</th></tr></thead><tbody>
+  <tr style="background:var(--soft)"><td class="lv">0</td><td class="mono">${BOMD.m}</td><td><b>${BOMD.n}</b></td><td class="mono">${BOMD.t}</td><td class="num">—</td><td>—</td><td class="num" id="b_r0"></td><td class="num" id="b_x0"></td></tr>
+  ${rows.map((r,i)=>`<tr><td class="lv">${".".repeat(r.lv)}${r.lv}</td><td class="mono">${r.node.m}</td><td>${r.node.n}</td><td class="mono">${r.node.t}</td><td class="num">${fq(r.node.q)} ${r.node.u}</td><td><input type="number" class="scr" data-i="${i}" value="${r.node.s}" min="0" step="0.1"></td><td class="num" id="b_r${i+1}"></td><td class="num" id="b_x${i+1}"></td></tr>`).join("")}
+  </tbody></table></div>
+  <h3>원자재 집계 — 구매가 필요한 하위 부품 (CS13 요약 전개 개념)</h3>
+  <div class="tbl"><table><thead><tr><th>자재</th><th>내역</th><th class="num">총소요량</th><th>단위</th></tr></thead><tbody id="b_leaf"></tbody></table></div>
+ </div></div>`;
+}
+function drawBom(){
+ const rows=bomFlat(), useS=$("#b_cs").checked;
+ document.querySelectorAll("input.scr").forEach(inp=>{rows[+inp.dataset.i].node.s=Math.max(0,Number(inp.value)||0);inp.disabled=!useS;});
+ const q=Math.max(0,num("#b_qty")), as=Math.max(0,num("#b_as")), top=q*(1+as/100);
+ $("#b_r0").textContent=fq(top)+" EA"; $("#b_x0").textContent=as?fq(top-q):"";
+ const req=new Map(); req.set(BOMD,top);
+ const leaf={}; let i=0;
+ (function w(node){(node.c||[]).forEach(ch=>{i++;const base=req.get(node)*ch.q, s=useS?ch.s:0, r=base*(1+s/100);req.set(ch,r);
+   $("#b_r"+i).textContent=fq(r); $("#b_x"+i).textContent=r-base>1e-9?fq(r-base):"";
+   if(!ch.c){leaf[ch.m]=leaf[ch.m]||{n:ch.n,u:ch.u,q:0};leaf[ch.m].q+=r;}
+   w(ch);});})(BOMD);
+ $("#b_leaf").innerHTML=Object.keys(leaf).map(k=>`<tr><td class="mono">${k}</td><td>${leaf[k].n}</td><td class="num">${fq(leaf[k].q)}</td><td>${leaf[k].u}</td></tr>`).join("");
+ const halb=rows.filter(r=>r.node.c).length;
+ $("#b_sum").innerHTML=`<div><small>유효 오더 수량</small><b>${fq(top)}</b></div><div><small>구성품 / 반제품</small><b>${rows.length} / ${halb}</b></div>`;
+}
+
+/* ---------------- MRP SIM ---------------- */
+let mrpLot="EX";
+const DEM1=[40,0,60,30,0,80,40,50], DEM2=[20,30,0,40,25,0,30,10];
+function renderMrp(){
+ const wk=[1,2,3,4,5,6,7,8];
+ return `<h2>MRP 시뮬레이터</h2><p class="lead">반제품 FR-1000 알루미늄 프레임(자체생산 E, MRP 유형 PD) 기준. 값을 바꾸면 바로 다시 계획됨</p>
+ <div class="sim"><div class="panel"><h4>계획 파라미터</h4>
+  <div class="seg" id="lotseg">${[["EX","EX 로트별"],["FX","FX 고정"],["WB","WB 주별"]].map(l=>`<button data-l="${l[0]}" class="${l[0]==mrpLot?'on':''}">${l[1]}</button>`).join("")}</div>
+  <div class="row"><label class="f">기초 재고 EA<input type="number" id="m_s0" value="50" min="0"></label><label class="f">안전재고 EA<input type="number" id="m_ss" value="20" min="0"></label></div>
+  <div class="row"><label class="f">고정 로트 EA (FX)<input type="number" id="m_fx" value="100" min="1"></label><label class="f">리드타임 (주)<input type="number" id="m_lt" value="1" min="0" max="6"></label></div>
+  <p class="note">순소요 = 소요량 − (가용재고 − 안전재고). 가용재고가 안전재고 아래로 떨어지는 요소마다 부족분을 계산하고 로트크기를 적용. 계획오더 종료(가용)일 = 소요일, 시작일 = 종료 − 리드타임.</p>
+  <p class="note">단순화: 주 단위 리드타임, 입고처리시간·일정마진·영업일 달력은 생략.</p>
+ </div><div>
+  <h4 style="margin:0 0 6px;color:var(--shell)">주별 소요량 입력</h4>
+  <div class="tbl dem"><table><tr><th>소요 요소</th>${wk.map(w=>`<th>W${w}</th>`).join("")}</tr>
+   <tr><td>종속소요 (월) <span class="note">상위 바이크 오더</span></td>${wk.map(w=>`<td><input type="number" class="d1" data-w="${w}" value="${DEM1[w-1]}" min="0"></td>`).join("")}</tr>
+   <tr><td>계획독립소요 (목) <span class="note">보수용 프레임</span></td>${wk.map(w=>`<td><input type="number" class="d2" data-w="${w}" value="${DEM2[w-1]}" min="0"></td>`).join("")}</tr>
+  </table></div>
+  <div class="acts" style="margin-top:10px"><button class="btn pri" id="m_run">MRP 실행 (MD01N)</button></div>
+  <div class="stock" id="m_kpi"></div>
+  <h3 style="margin-top:6px">기간별 요약 (MD04 기간 합계 보기 개념)</h3>
+  <div class="tbl"><table><thead><tr><th>기간</th><th class="num">소요량</th><th class="num">입고 예정 (계획오더)</th><th class="num">기말 가용재고</th><th>안전재고 대비</th></tr></thead><tbody id="m_per"></tbody></table></div>
+  <h3>계획오더 목록</h3>
+  <div class="tbl"><table><thead><tr><th>#</th><th class="num">수량</th><th>시작</th><th>종료 (가용)</th><th>사유</th><th>예외</th></tr></thead><tbody id="m_po"></tbody></table></div>
+  <h3>MD04 형식 — 요소별 재고/소요량 목록</h3>
+  <div class="tbl"><table><thead><tr><th>일자</th><th>MRP 요소</th><th class="num">입고/소요</th><th class="num">가용 수량</th></tr></thead><tbody id="m_md04"></tbody></table></div>
+ </div></div>`;
+}
+function runMrp(){
+ const s0=Math.max(0,num("#m_s0")), ss=Math.max(0,num("#m_ss")), fx=Math.max(1,Math.round(num("#m_fx"))||1), lt=Math.max(0,Math.round(num("#m_lt")));
+ const els=[];
+ for(let w=1;w<=8;w++){
+  const a=Math.max(0,Number(document.querySelector(`.d1[data-w="${w}"]`).value)||0), b=Math.max(0,Number(document.querySelector(`.d2[data-w="${w}"]`).value)||0);
+  if(w==1) els.push({w,d:"월",k:"안전재고 점검",q:0,chk:1});
+  if(a) els.push({w,d:"월",k:"종속소요",q:a});
+  if(b) els.push({w,d:"목",k:"계획독립소요",q:b});
+ }
+ let st=s0; const orders=[], md=[{date:"기초",k:"플랜트 재고",q:s0,av:s0},{date:"",k:"안전재고",q:-ss,av:null}];
+ els.forEach((e,idx)=>{
+  const after=st-e.q;
+  if(after<ss){
+   let need;
+   if(mrpLot=="WB"){let rem=0;for(let j=idx+1;j<els.length&&els[j].w==e.w;j++)rem+=els[j].q;need=ss-(after-rem);}
+   else need=ss-after;
+   const lots=[]; if(mrpLot=="FX"){const k=Math.ceil(need/fx);for(let j=0;j<k;j++)lots.push(fx);} else lots.push(need);
+   lots.forEach(l=>{const o={n:orders.length+1,q:l,fw:e.w,fd:e.d,sw:e.w-lt,why:e.chk?"기초재고 < 안전재고":`${e.k} W${e.w} 부족`+(mrpLot=="WB"?" (주 합산)":"")};orders.push(o);st+=l;md.push({date:`W${e.w} ${e.d}`,k:`계획오더 #${o.n}`,q:l,av:st,rc:1});});
+  }
+  if(!e.chk){st-=e.q;md.push({date:`W${e.w} ${e.d}`,k:e.k,q:-e.q,av:st});}
+ });
+ // period table
+ let run=s0, rows="";
+ for(let w=1;w<=8;w++){
+  const dq=els.filter(e=>e.w==w).reduce((a,e)=>a+e.q,0), rq=orders.filter(o=>o.fw==w).reduce((a,o)=>a+o.q,0);
+  run=run+rq-dq;
+  rows+=`<tr><td>W${w}</td><td class="num">${dq||""}</td><td class="num">${rq?`<span class="okc">${rq}</span>`:""}</td><td class="num"><b>${run}</b></td><td>${run<ss?'<span class="ngc">부족</span>':run==ss?'<span class="warnc">안전재고 수준</span>':'<span class="okc">충족</span>'}</td></tr>`;
+ }
+ $("#m_per").innerHTML=rows;
+ $("#m_po").innerHTML=orders.length?orders.map(o=>`<tr><td>${o.n}</td><td class="num"><b>${o.q}</b></td><td>${o.sw>=1?`W${o.sw}`:`<span class="ngc">W${o.sw} (과거)</span>`}</td><td>W${o.fw} ${o.fd}</td><td>${o.why}</td><td>${o.sw<1?'<span class="ngc">06 시작일 과거</span>':'<span class="note">—</span>'}</td></tr>`).join(""):`<tr><td colspan="6" class="empty">계획오더 없음 — 재고로 충족</td></tr>`;
+ $("#m_md04").innerHTML=md.map(r=>`<tr class="${r.rc?'rcpt':''}"><td>${r.date}</td><td>${r.k}</td><td class="num">${r.q>0?"+":""}${r.q}</td><td class="num">${r.av===null?"":r.av}</td></tr>`).join("");
+ const tot=orders.reduce((a,o)=>a+o.q,0), dem=els.reduce((a,e)=>a+e.q,0);
+ $("#m_kpi").innerHTML=`<div><small>총소요량</small><b>${dem}</b></div><div><small>계획오더 수 / 수량</small><b>${orders.length} / ${tot}</b></div><div><small>W8 기말 재고</small><b>${run}</b></div>`;
+}
+
+/* ---------------- COST SIM ---------------- */
+let C={};
+function costReset(){
+ C={pq:Math.max(0,num("#c_pq")),aq:Math.max(0,num("#c_aq")),sm:num("#c_sm"),sh:num("#c_sh"),sr:num("#c_sr"),cq:Math.max(0,num("#c_cq")),ah:Math.max(0,num("#c_ah")),ar:num("#c_ar"),step:0,docs:[],acc:{},od:0,oc:0,vr:null};
+ C.std=C.sm+C.sh*C.sr;
+ drawCost();
+}
+function cpost(title,lines,ana){
+ C.docs.push({title,lines,ana});
+ lines.forEach(l=>{const a=C.acc[l[3]]||(C.acc[l[3]]={d:0,c:0});if(l[1]>0)a.d+=l[1];else a.c+=-l[1];
+  if(l[3]=="생산오더 (CO)"){if(l[1]>0)C.od+=l[1];else C.oc+=-l[1];}});
+}
+const ORD="생산오더 (CO)";
+function cGI(){const v=C.cq*C.sm;cpost("① 부품 출고 MIGO 261",[["소비 GBB-VBR → 생산오더 귀속",v,`${fq(C.cq)} SET × 표준가 ${fmt(C.sm)}`,ORD],["원자재 재고 BSX",-v,"부품 표준가로 출고","원자재 재고 BSX"]]);C.step=1;drawCost();}
+function cCF(){const v=C.ah*C.ar;cpost("② 작업 확인 CO11N (활동 배부)",[["생산오더 ← 2차 원가요소 (범주 43)",v,`${fq(C.ah)} h × 활동 단가 ${fmt(C.ar)}`,ORD],["원가센터 조립 (활동유형 공급)",-v,"원가센터 대변 · 오더 차변","원가센터 (조립)"]]);C.step=2;drawCost();}
+function cGR(){const v=C.aq*C.std;cpost("③ 완제품 입고 MIGO 101",[["완제품 재고 BSX",v,`${fq(C.aq)} EA × 표준원가 ${fmt(C.std)}`,"완제품 재고 BSX"],["제품 입고 상대계정 (GBB-AUF)",-v,"생산오더 대변 처리",ORD]]);C.step=3;drawCost();}
+function cVAR(){
+ const tMat=C.aq*C.sm, tAct=C.aq*C.sh*C.sr, aMat=C.cq*C.sm, aAct=C.ah*C.ar;
+ C.vr={tMat,tAct,aMat,aAct,qMat:(C.cq-C.aq)*C.sm,qAct:(C.ah-C.aq*C.sh)*C.sr,pAct:C.ah*(C.ar-C.sr),tot:aMat+aAct-tMat-tAct};
+ C.docs.push({title:"④ 차이 계산 KKS2 (전표 없음 · CO 분석)",lines:[],ana:true});C.step=4;drawCost();
+}
+function cSET(){const b=C.od-C.oc;
+ if(Math.abs(b)<0.005){C.docs.push({title:"⑤ 정산 KO88 — 잔액 0, 정산할 금액 없음",lines:[],ana:false});}
+ else if(b>0) cpost("⑤ 정산 KO88 (불리한 차이)",[["가격차이 PRD",b,"차이를 자재(완제품)로 정산","가격차이 PRD"],["생산오더 (정산)",-b,"오더 잔액 0으로",ORD]]);
+ else cpost("⑤ 정산 KO88 (유리한 차이)",[["생산오더 (정산)",-b,"오더 대변 잔액 정리",ORD],["가격차이 PRD",b,"유리한 차이",'가격차이 PRD']]);
+ C.step=5;drawCost();}
+function varHtml(){const v=C.vr;if(!v)return"";
+ const r=(a,b)=>`<div>${a}</div><div>${fmt(b)}</div>`;
+ return `<div class="grid g2" style="padding:10px">
+  <div><b style="font-size:13px;color:var(--shell)">목표원가 (입고 ${fq(C.aq)} EA × 표준원가)</b><div class="var">${r("부품",v.tMat)}${r("활동",v.tAct)}<div class="tot">목표원가 합계</div><div class="tot">${fmt(v.tMat+v.tAct)}</div></div>
+  <b style="font-size:13px;color:var(--shell);display:block;margin-top:8px">실제원가 (오더 차변)</b><div class="var">${r("부품 261",v.aMat)}${r("활동 CO11N",v.aAct)}<div class="tot">실제원가 합계</div><div class="tot">${fmt(v.aMat+v.aAct)}</div></div></div>
+  <div><b style="font-size:13px;color:var(--shell)">차이 범주</b><div class="var">${r("투입수량 차이 — 부품",v.qMat)}${r("투입수량 차이 — 활동",v.qAct)}${r("투입가격 차이 — 활동 단가",v.pAct)}<div class="tot">총 차이 (실제 − 목표)</div><div class="tot ${v.tot>0?'ngc':v.tot<0?'okc':''}">${fmt(v.tot)}</div></div>
+  <p class="note">수량 차이 = (실제수량 − 목표수량) × 표준단가, 가격 차이 = 실제수량 × (실제단가 − 표준단가). 계획 ${fq(C.pq)} EA 대비 부족 입고는 목표원가가 입고수량 기준이라 별도 차이로 잡히지 않고 수량 차이에 반영됨. 로트크기·스크랩 차이는 생략.</p></div></div>`;}
+function drawCost(){
+ const b=C.od-C.oc;
+ $("#c_kpi").innerHTML=`<div><small>표준원가 / EA</small><b>${fmt(C.std)}</b></div><div><small>계획원가 (${fq(C.pq)} EA)</small><b>${fmt(C.pq*C.std)}</b></div><div><small>오더 잔액 (차−대)</small><b class="${Math.abs(b)<0.005?'':b>0?'ngc':'okc'}">${fmt(b)}</b></div>`;
+ ["c_b1","c_b2","c_b3","c_b4","c_b5"].forEach((id,i)=>$("#"+id).disabled=C.step!=i);
+ $("#c_jes").innerHTML=C.docs.length?C.docs.map(j=>`<div class="je"><div class="h"><span>${j.title}</span></div>${j.lines.length?`<div class="tb"><table><tr><th>계정</th><th class="num">차변</th><th class="num">대변</th><th>근거</th></tr>${j.lines.map(l=>`<tr><td>${l[0]}</td><td class="num">${l[1]>0?fmt(l[1]):""}</td><td class="num">${l[1]<0?fmt(-l[1]):""}</td><td style="color:var(--sub)">${l[2]}</td></tr>`).join("")}</table></div>`:(j.ana?varHtml():"")}</div>`).join(""):`<div class="empty">왼쪽 값을 정하고 ① 부품 출고부터 누름</div>`;
+ $("#c_tacc").innerHTML=Object.keys(C.acc).map(k=>{const a=C.acc[k],bb=a.d-a.c;return `<div class="tacc"><div class="nm">${k}</div><div class="sides"><div class="num">${a.d?fmt(a.d):""}</div><div class="num">${a.c?fmt(a.c):""}</div></div><div class="bal">잔액 ${Math.abs(bb)<0.005?"0":(bb>0?"차 ":"대 ")+fmt(Math.abs(bb))}</div></div>`}).join("");
+ const msg=["릴리즈된 생산오더 — 아직 실적 없음","출고 완료 — 오더 차변에 부품 실제원가","작업 확인 완료 — 활동원가가 오더로 배부됨","입고 완료 — 오더 대변(표준원가 × 입고수량). 남은 잔액이 차이","차이 계산 완료 — 차이 범주 확인 후 정산","정산 완료 — 오더 잔액 0, 차이는 가격차이 PRD로"];
+ $("#c_msg").textContent=msg[C.step];
+}
+function renderCost(){
+ return `<h2>생산오더 원가 시뮬레이터</h2><p class="lead">완제품 TB-1000 (표준가 S) 생산오더 1건. 출고 → 확인 → 입고 → 차이 계산 → 정산 순서로 오더에 원가가 쌓이고 비워지는 과정</p>
+ <div class="sim"><div class="panel"><h4>표준 (원가 추정 기준)</h4>
+  <div class="row"><label class="f">부품 세트 표준가 /EA<input type="number" id="c_sm" value="250" step="0.01"></label><label class="f">표준 작업시간 h/EA<input type="number" id="c_sh" value="1.5" step="0.01"></label></div>
+  <div class="row"><label class="f">표준 활동 단가 /h<input type="number" id="c_sr" value="40" step="0.01"></label><label class="f">계획 수량 EA<input type="number" id="c_pq" value="100" min="0"></label></div>
+  <h4 style="margin-top:6px">실적</h4>
+  <div class="row"><label class="f">부품 소비 SET<input type="number" id="c_cq" value="98" min="0" step="0.01"></label><label class="f">입고 수량 EA<input type="number" id="c_aq" value="95" min="0"></label></div>
+  <div class="row"><label class="f">확인 작업시간 h<input type="number" id="c_ah" value="150" min="0" step="0.1"></label><label class="f">확인 시점 활동 단가 /h<input type="number" id="c_ar" value="40" step="0.01"></label></div>
+  <button class="btn" id="c_reset" style="width:100%">조건 적용 · 처음부터</button>
+  <p class="note">단순화: 부품은 '부품 세트' 1종(표준가)으로 묶음. 표준원가 = 부품 + 작업시간 × 활동 단가. 오더 상태는 정산 전 DLV/TECO로 가정. 확인은 KP26 계획 단가로 전기되므로, 원가 추정 이후 단가가 바뀌면 투입가격 차이가 생김. 플랜트 DL00 · USD.</p>
+ </div><div>
+  <div class="stock" id="c_kpi"></div>
+  <div class="acts"><button class="btn pri" id="c_b1">① 출고 261</button><button class="btn pri" id="c_b2">② 확인 CO11N</button><button class="btn pri" id="c_b3">③ 입고 101</button><button class="btn pri" id="c_b4">④ 차이 KKS2</button><button class="btn pri" id="c_b5">⑤ 정산 KO88</button></div>
+  <div class="note" id="c_msg" style="margin:-4px 0 10px;font-weight:700;color:var(--brand2)"></div>
+  <div id="c_jes"></div>
+  <h3 style="margin-top:14px">T계정 누계</h3><div class="taccts" id="c_tacc"></div>
+  <p class="note">생산오더 T계정은 CO 객체 관점의 차·대 누계. S/4HANA에서는 1차·2차 원가요소 모두 G/L 계정이라 오더 귀속 정보와 함께 ACDOCA 한 테이블에 기록됨.</p>
+ </div></div>`;
+}
+
+/* ---------------- TYPES ---------------- */
+function renderTypes(){
+ const R=[
+  ["대상","오더 단위로 관리하는 이산 제조 (자전거 조립, 기계)","같은 제품을 일정 기간 라인에서 연속 생산","화학 · 식품 · 제약 등 배치 · 레시피 기반 공정"],
+  ["실행 객체","생산오더 (오더범주 10)","생산오더 없음 — 계획오더 + 제품원가수집기(PCC)","프로세스 오더 (오더범주 40)"],
+  ["주요 T-code","CO01 · CO02 · CO11N · COOIS","MFBF 백플러시 · MF50 계획 테이블 · KKF6N PCC","COR1 · COR2 · COR6N 확인"],
+  ["기준정보","BOM + 라우팅 + 작업장","BOM + 라우팅(또는 레이트 라우팅) + 생산라인, 생산버전에서 반복제조 허용 + REM 프로파일","BOM + 마스터 레시피(C201) + 자원(CRC1)"],
+  ["실적 보고","공정별 작업 확인, 출고·입고는 개별 또는 자동","백플러시 한 번에 입고 · 부품 출고 · 활동 전기","페이즈 단위 확인, 프로세스 관리(설정 시)"],
+  ["원가 수집","오더별","기간별 (PCC)","오더별"],
+  ["차이·정산","오더 완료(DLV/TECO) 후 KKS2 · KO88","매 기간말 PCC 단위로 차이 계산 · 정산","오더 완료 후 (생산오더와 같은 CO 로직)"]];
+ return `<h2>생산 유형 비교</h2><p class="lead">같은 PP라도 '무엇으로 실적을 모으는가'가 다름</p>
+ <div class="tbl"><table><tr><th>구분</th><th>개별/오더 생산 (PP-SFC)</th><th>반복제조 (PP-REM)</th><th>프로세스 제조 (PP-PI)</th></tr>
+ ${R.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join("")}</table></div>
+ <h3>재고생산(MTS) vs 주문생산(MTO) — 계획전략</h3>
+ <p class="note" style="margin-top:-4px">자재마스터 MRP 3 뷰의 전략그룹(MARC-STRGR)이 계획전략을 결정</p>
+ <div class="grid g3" style="margin-top:8px">
+  <div class="card"><h4>10 순소요 계획 <span class="tag">MTS</span></h4><p>PIR(소요유형 LSF)로 미리 생산해 재고 보유. 판매오더는 PIR을 소진하지 않고, 출고 시 PIR이 감소</p></div>
+  <div class="card"><h4>40 최종조립 계획 <span class="tag">MTS+</span></h4><p>PIR(VSF)로 계획하고 판매오더가 들어오면 PIR을 소진. 예측보다 주문이 많으면 그만큼 추가 계획</p></div>
+  <div class="card"><h4>20 주문생산 <span class="tag">MTO</span></h4><p>PIR 없이 판매오더 자체가 소요. 판매오더별 개별 재고(특별재고 E)로 생산·출고하고 원가도 판매오더 단위로 추적 가능</p></div>
+ </div>
+ <div class="lane"><div class="box"><b>MTS</b>예측 → 생산 → 재고 → 판매</div><span class="arr">vs</span><div class="box"><b>MTO</b>판매오더 → 생산 → 해당 고객 출고</div></div>`;
+}
+
+/* ---------------- CAP ---------------- */
+function renderCap(){
+ return `<h2>용량계획 · 일정계산</h2><p class="lead">개념 수준 정리. 라우팅 표준값 × 수량으로 공정 시간을 구하고, 작업장 용량과 비교</p>
+ <h3>리드타임 일정계산 (Lead-time scheduling)</h3>
+ <div class="grid g2">
+  <div class="card"><h4>기본 일자 vs 일정계산 일자</h4><p>기본 일자(시작·종료)는 오더의 바깥 틀, 일정계산 일자(생산 시작·종료)는 라우팅 공정 시간으로 계산한 실제 생산 구간. 그 사이 간격이 일정마진키의 여유</p></div>
+  <div class="card"><h4>일정계산 방향</h4><p>후진(backward): 기본 종료일에서 거꾸로 — 생산오더 기본값으로 흔함. 전진(forward): 시작일부터 앞으로. 오늘 일정: 후진 결과가 과거면 오늘부터 전진</p></div>
+ </div>
+ <h3>일정마진키 4요소 (MRP 2 · MARC-FHORI)</h3>
+ <div class="lane"><div class="box"><b>개설 기간</b>계획오더 → 생산오더 전환 시점</div><span class="arr">·</span><div class="box"><b>생산 전 여유</b>기본 시작 ~ 생산 시작</div><span class="arr">·</span><div class="box"><b>생산 후 여유</b>생산 종료 ~ 기본 종료</div><span class="arr">·</span><div class="box"><b>릴리즈 기간</b>릴리즈 일자 계산</div></div>
+ <h3>공정 시간 요소</h3>
+ <div class="bar"><span style="flex:1;background:#8396A8">대기</span><span style="flex:1.2;background:#5B738B">셋업</span><span style="flex:4;background:var(--brand)">처리 (수량 × 표준값)</span><span style="flex:.8;background:#5B738B">해체</span><span style="flex:1;background:#8396A8">이동</span></div>
+ <p class="note">셋업·처리·해체는 작업장의 일정 공식으로 계산. 대기·이동 같은 공정 간 시간은 작업장·라우팅 설정에서 옴</p>
+ <h3>작업장 용량과 용량계획 T-code</h3>
+ <div class="grid g3">
+  <div class="card"><h4>가용 용량</h4><p>작업장 용량 탭: 운영 시간(교대 시작·종료 − 휴식) × 가동률 % × 개별 용량 수</p></div>
+  <div class="card"><h4>용량 부하 조회 <span class="tag">CM01</span></h4><p>작업장별 기간 단위 용량소요 vs 가용 용량. 과부하 기간 파악</p></div>
+  <div class="card"><h4>용량 평준화 <span class="tag">CM21</span></h4><p>그래픽 계획 테이블에서 공정을 다른 기간·작업장으로 옮겨 부하 조정</p></div>
+ </div>
+ <p class="note">MRP에서 계획오더 용량소요를 만들려면 일정계산 파라미터를 '리드타임 일정계산 + 용량소요' 쪽으로 설정해야 함. 기본(자체생산시간만 사용)이면 용량소요가 생기지 않음.</p>
+ <h3>미니 계산기 — 조립 작업장 1개 공정</h3>
+ <div class="sim"><div class="panel"><h4>입력</h4>
+  <div class="row"><label class="f">오더 수량 EA<input type="number" id="k_q" value="95" min="0"></label><label class="f">셋업 분<input type="number" id="k_su" value="30" min="0"></label></div>
+  <div class="row"><label class="f">처리 분/EA<input type="number" id="k_pr" value="12" min="0" step="0.1"></label><label class="f">교대 시간 h/일<input type="number" id="k_h" value="8" min="0" step="0.5"></label></div>
+  <div class="row"><label class="f">가동률 %<input type="number" id="k_u" value="85" min="0" max="100"></label><label class="f">개별 용량 수<input type="number" id="k_n" value="2" min="1"></label></div>
+ </div><div><div class="stock" id="k_out"></div><p class="note" id="k_note"></p></div></div>`;
+}
+function drawCap(){
+ const q=Math.max(0,num("#k_q")),su=Math.max(0,num("#k_su")),pr=Math.max(0,num("#k_pr")),h=Math.max(0,num("#k_h")),u=Math.max(0,Math.min(100,num("#k_u"))),n=Math.max(1,num("#k_n"));
+ const req=(su+q*pr)/60, av=h*u/100*n, d=av?req/av:0;
+ $("#k_out").innerHTML=`<div><small>용량소요 h</small><b>${fmt(req)}</b></div><div><small>가용 용량 h/일</small><b>${fmt(av)}</b></div><div><small>필요 작업일</small><b>${av?fmt(d):"—"}</b></div>`;
+ $("#k_note").textContent=`용량소요 = (셋업 ${su}분 + ${q} EA × ${pr}분) ÷ 60. 가용 용량 = ${h}h × ${u}% × ${n}. 여러 사람이 동시에 일하는 것으로 단순 가정(실제 일정 공식은 분할·중첩 설정에 따라 다름).`;
+}
+
+/* ---------------- DICT ---------------- */
+const DICT=[
+ ["T-code","MD61","계획독립소요 생성"],["T-code","MD62","계획독립소요 변경"],["T-code","MD63","계획독립소요 조회"],
+ ["T-code","MD01N","MRP Live 실행 (S/4HANA)"],["T-code","MD01","MRP 전체 실행 (클래식)"],["T-code","MD02","MRP 단일 품목 다단계"],["T-code","MD03","MRP 단일 품목 단일 단계"],
+ ["T-code","MD04","재고/소요량 목록 (실시간)"],["T-code","MD05","MRP 리스트 (마지막 실행 결과)"],["T-code","MD07","재고/소요량 목록 일괄 조회"],
+ ["T-code","MD11","계획오더 생성"],["T-code","MD12","계획오더 변경"],["T-code","MD13","계획오더 조회"],
+ ["T-code","CS01","BOM 생성"],["T-code","CS02","BOM 변경"],["T-code","CS03","BOM 조회"],["T-code","CS11","BOM 다단계 전개 (레벨별)"],["T-code","CS12","BOM 다단계 구조"],["T-code","CS13","BOM 요약 전개"],
+ ["T-code","CR01","작업장 생성"],["T-code","CR02","작업장 변경"],["T-code","CA01","라우팅 생성"],["T-code","CA02","라우팅 변경"],["T-code","C223","생산버전 일괄 관리"],
+ ["T-code","CO01","생산오더 생성"],["T-code","CO02","생산오더 변경 (릴리즈 · TECO)"],["T-code","CO03","생산오더 조회"],["T-code","CO40","계획오더 → 생산오더 개별 전환"],["T-code","CO41","계획오더 → 생산오더 일괄 전환"],["T-code","CO05N","생산오더 일괄 릴리즈"],
+ ["T-code","CO11N","작업 확인 (공정 단위)"],["T-code","CO13","작업 확인 취소"],["T-code","CO15","작업 확인 (오더 헤더)"],["T-code","COOIS","생산오더 정보시스템"],
+ ["T-code","MIGO","부품 출고 261 · 오더 입고 101"],["T-code","KKS2","차이 계산 (개별 오더)"],["T-code","KKS1","차이 계산 (일괄)"],["T-code","KKAX","재공품 WIP 계산 (개별)"],["T-code","KO88","오더 정산 (개별)"],["T-code","CO88","오더 정산 (일괄)"],
+ ["T-code","KL01","활동유형 생성"],["T-code","KP26","활동 단가 계획"],["T-code","CM01","작업장 용량 부하"],["T-code","CM21","용량 평준화 (그래픽 계획 테이블)"],
+ ["T-code","MFBF","반복제조 백플러시"],["T-code","MF50","반복제조 계획 테이블"],["T-code","COR1","프로세스 오더 생성"],["T-code","COR6N","프로세스 오더 확인"],["T-code","C201","마스터 레시피 생성"],
+ ["테이블","MARC","자재 플랜트 데이터 (MRP 뷰)"],["테이블","MAST","자재 ↔ BOM 연결"],["테이블","STKO","BOM 헤더"],["테이블","STPO","BOM 품목"],
+ ["테이블","CRHD","작업장 헤더"],["테이블","CRCO","작업장 ↔ 원가센터 연결"],["테이블","KAKO","용량 헤더"],["테이블","MAPL","자재 ↔ 라우팅 연결"],["테이블","PLKO","라우팅 헤더"],["테이블","PLPO","라우팅 공정"],["테이블","MKAL","생산버전"],
+ ["테이블","PBIM","계획독립소요 헤더"],["테이블","PBED","계획독립소요 일정라인"],["테이블","PLAF","계획오더"],["테이블","PPH_DBVM","MRP 계획파일 항목 (S/4HANA)"],
+ ["테이블","AUFK","오더 마스터 (공통)"],["테이블","AFKO","생산오더 헤더"],["테이블","AFPO","생산오더 품목"],["테이블","AFVC","오더 공정"],["테이블","AFVV","오더 공정 수량·일자·값"],["테이블","RESB","예약 · 종속소요 (오더 부품)"],["테이블","AFRU","작업 확인"],
+ ["테이블","JEST","오브젝트 상태 (CRTD · REL · TECO)"],["테이블","MATDOC","자재문서 (S/4HANA)"],["테이블","ACDOCA","Universal Journal (FI·CO 통합)"],["테이블","COSB","CO 차이 · 결과분석 합계"]
+];
+let dictF="전체";
+function renderDict(){
+ return `<h2>T-code · 테이블 사전</h2><p class="lead">PP 실습에서 가장 자주 쓰는 T-code와 테이블</p>
+ <div class="search"><input type="text" id="dq" placeholder="검색 (예: 전환, AFKO, CO1, 정산)"></div>
+ <div class="chips" id="dc" style="margin-bottom:12px">${["전체","T-code","테이블"].map(c=>`<button class="chip${c==dictF?' on':''}" data-c="${c}">${c}</button>`).join("")}</div>
+ <div class="grid g4" id="db"></div>`;
+}
+function drawDict(){
+ const q=($("#dq").value||"").trim().toLowerCase();
+ const r=DICT.filter(d=>(dictF=="전체"||d[0]==dictF)&&(!q||d.join(" ").toLowerCase().includes(q)));
+ $("#db").innerHTML=r.length?r.map(d=>`<div class="card"><span class="tag">${d[1]}</span><p style="margin-top:4px">${d[2]}</p></div>`).join(""):`<div class="empty">결과 없음</div>`;
+}
+
+/* ---------------- QUIZ ---------------- */
+const QZ=[
+ ["S/4HANA에서 MRP Live를 실행하는 T-code는?",["MD01N","MD04","MD61","CO41"],0,"MD01N이 MRP Live. MD04는 재고/소요량 목록, MD61은 PIR 생성, CO41은 일괄 전환"],
+ ["MRP가 만든 계획오더가 저장되는 테이블은?",["AFKO","PLAF","RESB","PBED"],1,"계획오더는 PLAF. 전환되면 생산오더(AUFK/AFKO/AFPO)가 만들어지고 계획오더는 삭제됨"],
+ ["생산오더에 부품을 출고할 때 이동유형은?",["101","201","261","311"],2,"261 = 오더 출고 (취소 262). 101은 오더 입고, 201은 코스트센터 출고"],
+ ["CO11N 작업 확인으로 활동원가가 오더에 배부될 때 쓰이는 원가요소 범주는?",["1 (1차)","21 (내부 정산)","42 (배부)","43 (내부 활동 배부)"],3,"원가센터 대변 · 오더 차변, 2차 원가요소 범주 43"],
+ ["표준가(S) 완제품을 생산오더에서 101로 입고할 때 재고 차변 금액은?",["실제 누적원가","계획원가 전체","표준원가 × 입고수량","부품 출고 금액"],2,"재고는 표준원가로 늘고 같은 금액이 GBB-AUF로 오더에 대변 처리됨. 남은 잔액이 차이"],
+ ["KO88 정산 시 불리한 생산 차이는 어디로 가는가? (표준가 자재)",["재고 BSX","가격차이 PRD","GR/IR WRX","원가센터"],1,"표준가는 바뀌지 않으므로 차이는 가격차이로. S/4HANA에서는 Material Ledger에도 기록"],
+ ["TECO(기술적 완료)의 효과로 틀린 것은?",["미결 예약 삭제","용량소요 삭제","MRP 대상 제외","이후 모든 원가 전기 차단"],3,"전기 차단은 CLSD(업무 완료). TECO 후에도 원가 전기·정산은 가능"],
+ ["로트크기 FX, 고정 로트 100, 순소요 250이면 MRP 제안은?",["계획오더 250 × 1건","계획오더 100 × 2건","계획오더 100 × 3건","계획오더 300 × 1건"],2,"고정 로트는 수량을 바꾸지 않고 필요한 만큼 여러 건 생성: 100 × 3 = 300"],
+ ["반복제조(REM)에서 입고·부품 출고·활동을 한 번에 전기하는 T-code는?",["MFBF","CO11N","COR6N","MIGO"],0,"MFBF 백플러시. 원가는 생산오더가 아니라 제품원가수집기(PCC)에 모임"],
+ ["판매오더가 들어오면 PIR을 소진하는 계획전략은?",["10 순소요 계획","20 주문생산","40 최종조립 계획","전략 없음"],2,"전략 40은 PIR(VSF)을 판매오더가 소진. 10은 소진하지 않고 출고 시 PIR 감소, 20은 PIR 없이 판매오더 기준"]
+];
+let qs={};
+function renderQuiz(){
+ qs={};
+ return `<h2>PP 퀴즈 10문항</h2><p class="lead">답을 누르면 정답과 해설이 바로 보임</p>
+ <div class="score" id="qsc"></div>
+ ${QZ.map((q,i)=>`<div class="q"><div class="qt">${i+1}. ${q[0]}</div>${q[1].map((o,j)=>`<button class="opt" data-q="${i}" data-o="${j}">${String.fromCharCode(65+j)}. ${o}</button>`).join("")}<div class="exp" id="e${i}">${q[3]}</div></div>`).join("")}
+ <button class="btn" id="qreset">다시 풀기</button>`;
+}
+function drawScore(){const n=Object.keys(qs).length,c=Object.values(qs).filter(Boolean).length;$("#qsc").textContent=`점수 ${c} / ${QZ.length}  ·  푼 문제 ${n}`;}
+
+/* ---------------- ROUTER ---------------- */
+const R={flow:[renderFlow,()=>flDetail(0)],master:[renderMaster,()=>orgDetail("dl")],bom:[renderBom,drawBom],mrp:[renderMrp,runMrp],cost:[renderCost,costReset],types:[renderTypes],cap:[renderCap,drawCap],dict:[renderDict,drawDict],quiz:[renderQuiz,drawScore]};
+$("#nav").innerHTML=TABS.map(t=>`<a href="#${t[0]}" data-t="${t[0]}">${t[1]}</a>`).join("");
+function go(){
+ let t=location.hash.slice(1); if(!R[t]) t="flow";
+ document.querySelectorAll("nav a").forEach(a=>a.classList.toggle("on",a.dataset.t==t));
+ $("#main").innerHTML=`<section class="on">${R[t][0]()}</section>`;
+ if(R[t][1]) R[t][1]();
+ const a=document.querySelector(`nav a[data-t="${t}"]`); if(a) a.scrollIntoView({inline:"center",block:"nearest"});
+}
+window.addEventListener("hashchange",()=>{go();window.scrollTo(0,0)});
+document.addEventListener("click",e=>{
+ const el=e.target.closest("button,.node"); if(!el) return;
+ if(el.classList.contains("step")){document.querySelectorAll(".step").forEach(s=>s.classList.remove("on"));el.classList.add("on");flDetail(+el.dataset.i);}
+ else if(el.classList.contains("node")) orgDetail(el.dataset.k);
+ else if(el.closest("#lotseg")){mrpLot=el.dataset.l;document.querySelectorAll("#lotseg button").forEach(b=>b.classList.toggle("on",b===el));runMrp();}
+ else if(el.id=="m_run") runMrp();
+ else if(el.id=="c_reset") costReset();
+ else if(el.id=="c_b1") cGI(); else if(el.id=="c_b2") cCF(); else if(el.id=="c_b3") cGR(); else if(el.id=="c_b4") cVAR(); else if(el.id=="c_b5") cSET();
+ else if(el.closest("#dc")){dictF=el.dataset.c;document.querySelectorAll("#dc .chip").forEach(c=>c.classList.toggle("on",c===el));drawDict();}
+ else if(el.classList.contains("opt")){const qi=+el.dataset.q,oi=+el.dataset.o;if(qi in qs)return;const ok=oi==QZ[qi][2];qs[qi]=ok;
+  document.querySelectorAll(`.opt[data-q="${qi}"]`).forEach(b=>{if(+b.dataset.o==QZ[qi][2])b.classList.add("ok");else if(b===el)b.classList.add("ng");});
+  $("#e"+qi).classList.add("on");drawScore();}
+ else if(el.id=="qreset") go();
+});
+document.addEventListener("input",e=>{const t=e.target;
+ if(t.id=="dq")drawDict();
+ else if(t.closest&&t.closest(".dem")||["m_s0","m_ss","m_fx","m_lt"].includes(t.id))runMrp();
+ else if(t.id=="b_qty"||t.id=="b_as"||t.id=="b_cs"||t.classList.contains("scr"))drawBom();
+ else if(t.id&&t.id.startsWith("k_"))drawCap();
+});
+document.addEventListener("change",e=>{if(e.target.id=="b_cs")drawBom();});
+go();
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#354A5F;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+</body>
+</html>
