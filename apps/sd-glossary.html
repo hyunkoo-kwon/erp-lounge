@@ -1,4 +1,25 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><style id="white-shell">/* WHITE SHELL — SAP Horizon 느낌 흰색 상단 */
+.shell,body>header,nav.top{background:#fff!important;color:#1D2D3E!important;border-bottom:1px solid #E5E5E5!important;box-shadow:0 1px 3px rgba(0,0,0,.06)!important}
+nav.top{box-shadow:0 0 0 100vmax #fff,0 1px 3px rgba(0,0,0,.06)!important}
+body::before{background:#fff!important}
+.shell *,body>header *,nav.top *{color:inherit}
+.shell p,.shell small,body>header p,body>header small,nav.top small{color:#556B82!important}
+.shell .eyebrow,body>header .eyebrow{color:#0A6ED1!important}
+.shell h1,body>header h1,nav.top a.logo{color:#1D2D3E!important}
+body>header h1 span,body>header h1 em,body>header em{color:#0A6ED1!important}
+nav.top a{color:#0854A0!important}
+.shell a{color:#0A6ED1!important}
+.shell span.logo{color:#fff!important}
+body>header .hw>button,body>header #home{background:#EEF2F6!important;color:#1D2D3E!important}
+body>header .chip{background:#EEF2F6!important;color:#32363A!important}
+body>header .chip.on{background:#0A6ED1!important;color:#fff!important}
+body>header input{border:1px solid #CDD5DE!important}
+#seg{background:#EEF2F6!important}
+#seg button{color:#556B82!important}
+#seg button b{color:inherit!important}
+#seg button.on{background:#fff!important;color:#0854A0!important;box-shadow:0 1px 3px rgba(0,0,0,.12)!important}
+</style>
+</head><body>
 <title>SD 용어집</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -9,7 +30,7 @@
 :root{
   color-scheme:light;
   --bg:#FFFFFF; --surface:#FFFFFF; --fg:#1A1A1A; --muted:#5B6672; --line:#E1E4E8;
-  --shell:#354A5F; --shell-fg:#FFFFFF;
+  --shell:#4E6A87; --shell-fg:#FFFFFF;
   --accent:#0A6ED1; --accent-soft:#EEF5FD; --accent-ink:#0854A0;
   --mark:#FFF0A8; --mark-fg:#1A1A1A; --code-bg:#F2F4F6;
   --sans:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;
@@ -110,7 +131,7 @@ mark{background:var(--mark);color:var(--mark-fg);border-radius:2px;padding:0 1px
   <div class="wrap">
     <div class="brand">
       <h1>SD 용어집</h1>
-      <p><span id="count">0</span>개 용어 · Sales and Distribution · Global Bike 예시</p>
+      <p><span id="count">0</span>개 용어 · Sales and Distribution · 실습 예시</p>
     </div>
     <div class="search">
       <label class="sr" for="q">용어 검색</label>
@@ -133,11 +154,11 @@ mark{background:var(--mark);color:var(--mark-fg);border-radius:2px;padding:0 1px
 </main>
 
 <script>
-// [id, 영문 용어, 한글, 분류, 정의, Global Bike 예시, T-code, 테이블, 관련 id, 별칭]
+// [id, 영문 용어, 한글, 분류, 정의, 예시, T-code, 테이블, 관련 id, 별칭]
 const TERMS = [
 // ───────── 조직 (org)
-["client","Client","클라이언트","org","SAP 시스템 안에서 데이터를 가르는 최상위 단위임. 로그온할 때 선택하며, 클라이언트가 다르면 마스터와 거래 데이터가 완전히 분리됨.","실습 시스템에는 하나의 클라이언트에 Global Bike 데이터가 들어 있음.","","T000","company-code",""],
-["company-code","Company Code","회사코드","org","재무제표를 작성하는 법적 회계 단위임. 판매와 청구의 금액이 이 회사코드의 회계에 기록됨.","US00은 Global Bike 미국 법인, DE00은 독일 법인임.","OX02","T001","sales-org,plant,accounting-doc","BUKRS"],
+["client","Client","클라이언트","org","SAP 시스템 안에서 데이터를 가르는 최상위 단위임. 로그온할 때 선택하며, 클라이언트가 다르면 마스터와 거래 데이터가 완전히 분리됨.","실습 시스템에는 하나의 클라이언트에 예시 데이터가 들어 있음.","","T000","company-code",""],
+["company-code","Company Code","회사코드","org","재무제표를 작성하는 법적 회계 단위임. 판매와 청구의 금액이 이 회사코드의 회계에 기록됨.","US00은 예시 미국 법인, DE00은 독일 법인임.","OX02","T001","sales-org,plant,accounting-doc","BUKRS"],
 ["sales-org","Sales Organization","영업조직","org","판매 조건과 책임을 갖는 조직 단위임. 판매오더와 청구문서는 반드시 하나의 영업조직에 속함.","UE00이 미국 판매를 맡는 영업조직임.","OVX5","TVKO","company-code,distr-channel,sales-area","VKORG"],
 ["distr-channel","Distribution Channel","유통채널","org","고객에게 제품이 도달하는 경로를 나눈 단위임. 같은 제품도 채널에 따라 가격과 납품 방식이 달라질 수 있음.","WH는 도매(Wholesale) 채널임.","OVXI","TVTW","sales-org,sales-area","VTWEG"],
 ["division","Division","제품군","org","제품을 묶는 분류 단위임. 영업조직과 유통채널이 같아도 제품군이 다르면 별도로 실적을 집계할 수 있음.","BI는 자전거(Bikes) 제품군임.","OVXB","TSPA","sales-area","SPART"],
@@ -397,7 +418,7 @@ const TERMS = [
       </button>
       <div class="body" id="b-${t.id}" ${open ? "" : "hidden"}>
         <p class="def">${hl(t.def, toks)}</p>
-        ${t.ex ? `<p class="ex"><b>Global Bike</b>${hl(t.ex, toks)}</p>` : ""}
+        ${t.ex ? `<p class="ex"><b>예시</b>${hl(t.ex, toks)}</p>` : ""}
         <div class="meta">${codes}${tabs}${alias}${rel}</div>
         <div class="acts">
           <button class="btn" type="button" data-fav="${t.id}" aria-pressed="${favs.has(t.id)}">${favs.has(t.id) ? "★ 즐겨찾기 해제" : "☆ 즐겨찾기"}</button>
@@ -487,5 +508,34 @@ const TERMS = [
 })();
 </script>
 
-<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#354A5F;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+<style id="lounge-read">
+body{word-break:keep-all;overflow-wrap:break-word;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+p,li,dd,td,.lead{line-height:1.75}
+pre,code,textarea{line-height:1.65}
+</style>
+<script id="lounge-read-js">
+(function(){
+ var MIN=13, MINCODE=13.5, BODY=15;
+ function fix(root){
+  var els=(root||document.body).querySelectorAll('*');
+  for(var i=0;i<els.length;i++){var el=els[i];
+   if(el.dataset.lr)continue;
+   var t='';for(var c=el.firstChild;c;c=c.nextSibling)if(c.nodeType===3)t+=c.nodeValue;
+   if(!t.trim()){continue}
+   var cs=getComputedStyle(el),fs=parseFloat(cs.fontSize),ff=cs.fontFamily.toLowerCase();
+   var mono=/mono|consolas|courier|menlo|d2coding/.test(ff);
+   var min=mono?MINCODE:MIN;
+   if(el.tagName==='P'||el.tagName==='LI'||el.tagName==='DD'){min=Math.max(min,BODY-1)}
+   if(fs<min){el.style.fontSize=min+'px'}
+   el.dataset.lr='1';
+  }
+ }
+ var tm;function run(){clearTimeout(tm);tm=setTimeout(function(){fix()},30)}
+ if(document.readyState!=='loading')run();else document.addEventListener('DOMContentLoaded',run);
+ new MutationObserver(run).observe(document.documentElement,{childList:true,subtree:true});
+ window.addEventListener('hashchange',run);
+})();
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#4E6A87;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+<script>if(self!==top){document.querySelectorAll('a[href="../index.html"]').forEach(function(a){a.style.display="none"})}</script>
 </body></html>

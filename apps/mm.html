@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SAP MM 실습 앱 — 구매에서 송장까지</title>
+<title>SAP MM 실습 앱 — 모듈 소개부터 IMG 구축까지</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --shell:#354A5F; --brand:#0A6ED1; --brand2:#0854A0; --sel:#EBF5FE;
+  --shell:#4E6A87; --brand:#0A6ED1; --brand2:#0854A0; --sel:#EBF5FE;
   --ink:#1D2D3E; --sub:#556B82; --line:#D9DEE3; --soft:#F5F6F7;
   --ok:#107E3E; --okbg:#F1FDF6; --ng:#BB0000; --ngbg:#FFEBEB; --warn:#E9730C;
 }
@@ -124,23 +124,74 @@ label.f{display:block;font-size:13px;color:var(--sub);font-weight:500}
 .exp.on{display:block}
 .score{position:sticky;top:52px;background:#fff;padding:8px 0;font-weight:700;color:var(--shell);z-index:5}
 footer{max-width:1100px;margin:0 auto;padding:0 18px 30px;color:var(--sub);font-size:12px}
+/* course */
+.chh{border-left:4px solid var(--brand);background:var(--sel);border-radius:0 10px 10px 0;padding:12px 16px;margin-bottom:18px}
+.chh .chn{display:inline-block;font-size:12px;font-weight:700;color:#fff;background:var(--brand);border-radius:20px;padding:1px 10px;margin-right:8px}
+.chh b{font-size:18px;color:var(--ink)}
+.chh p{margin:4px 0 0;color:var(--sub);font-size:14px}
+.imgbox{margin-top:28px;border:1px solid #B0D4F7;border-radius:12px;overflow:hidden}
+.imgh{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#EBF5FE;padding:12px 16px}
+.imgh b{font-size:16px;color:var(--ink)}
+.imgt{display:inline-block;font-size:12px;font-weight:700;background:var(--brand2);color:#fff;border-radius:4px;padding:1px 8px;margin-right:8px}
+.imgn{font-size:13px;font-weight:700;color:var(--brand2)}
+.imgl{list-style:none;margin:0;padding:6px 12px 4px}
+.imgl li{display:flex;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line)}
+.imgl li:last-child{border-bottom:0}
+.imgl li.ok{background:#F6FBF8}
+.ick{position:relative;flex:none;cursor:pointer}
+.ick input{position:absolute;opacity:0;width:30px;height:30px;margin:0;cursor:pointer}
+.ick span{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#EBF5FE;color:var(--brand2);font-weight:700;font-size:13px}
+.imgl li.ok .ick span{background:var(--ok);color:#fff;font-size:0}.imgl li.ok .ick span::after{content:"✓";font-size:15px}
+.ick input:focus-visible+span{outline:2px solid var(--brand);outline-offset:2px}
+.ib{flex:1;min-width:0}
+.ihd{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.ihd b{font-size:15px}
+.iex{font-size:14px;margin-top:3px}.iex em{font-style:normal;font-size:11.5px;font-weight:700;color:var(--ok);background:var(--okbg);border-radius:4px;padding:1px 6px;margin-right:6px}
+.iwhy{font-size:13.5px;color:var(--sub);margin-top:2px}
+.ib details{margin-top:4px}.ib summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--brand2)}
+.ipath{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;background:var(--soft);border-radius:6px;padding:7px 9px;margin-top:4px;word-break:break-word}
+.inote{font-size:12.5px;color:var(--sub);padding:8px 16px 12px}
+.pn{display:flex;justify-content:space-between;gap:8px;margin-top:24px}.pn .btn{text-decoration:none}
+.road{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.rd{display:block;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-left:3px solid var(--brand);border-radius:8px;padding:10px 12px}
+.rd:hover{background:var(--sel)}
+.rd span{font-size:12px;font-weight:700;color:var(--brand)}.rd b{display:block;font-size:15px}.rd small{display:block;color:var(--sub);font-size:12.5px}
+.rd em{font-style:normal;font-size:11.5px;font-weight:700;color:var(--brand2);background:#EBF5FE;border-radius:4px;padding:1px 6px;display:inline-block;margin-top:4px}
+.note{font-size:13px;color:var(--sub)}
+</style>
+<style id="white-shell">/* WHITE SHELL — SAP Horizon 느낌 흰색 상단 */
+.shell,body>header,nav.top{background:#fff!important;color:#1D2D3E!important;border-bottom:1px solid #E5E5E5!important;box-shadow:0 1px 3px rgba(0,0,0,.06)!important}
+nav.top{box-shadow:0 0 0 100vmax #fff,0 1px 3px rgba(0,0,0,.06)!important}
+body::before{background:#fff!important}
+.shell *,body>header *,nav.top *{color:inherit}
+.shell p,.shell small,body>header p,body>header small,nav.top small{color:#556B82!important}
+.shell .eyebrow,body>header .eyebrow{color:#0A6ED1!important}
+.shell h1,body>header h1,nav.top a.logo{color:#1D2D3E!important}
+body>header h1 span,body>header h1 em,body>header em{color:#0A6ED1!important}
+nav.top a{color:#0854A0!important}
+.shell a{color:#0A6ED1!important}
+.shell span.logo{color:#fff!important}
+body>header .hw>button,body>header #home{background:#EEF2F6!important;color:#1D2D3E!important}
+body>header .chip{background:#EEF2F6!important;color:#32363A!important}
+body>header .chip.on{background:#0A6ED1!important;color:#fff!important}
+body>header input{border:1px solid #CDD5DE!important}
+#seg{background:#EEF2F6!important}
+#seg button{color:#556B82!important}
+#seg button b{color:inherit!important}
+#seg button.on{background:#fff!important;color:#0854A0!important;box-shadow:0 1px 3px rgba(0,0,0,.12)!important}
 </style>
 </head>
 <body>
 <div class="shell"><div class="in">
-  <div class="eyebrow">SAP MM · GLOBAL BIKE · USD</div>
-  <h1>SAP MM 실습 앱 — 구매에서 송장까지</h1>
-  <p>Procure-to-Pay 흐름, 이동유형, 계정결정, 특수조달을 눌러 보며 익힘</p>
+  <div class="eyebrow">SAP MM · 실습 예시 · USD</div>
+  <h1>SAP MM 실습 앱 — 모듈 소개부터 IMG 구축까지</h1>
+  <p>단계마다 콘텐츠로 개념을 잡고, 이어지는 IMG 설정으로 직접 구현해 봄</p>
 </div></div>
 <nav><div class="in" id="nav"></div></nav>
 <main id="main"></main>
-<footer>곰선비의 ERP 실무노트 · 학습용 예시 데이터(Global Bike 기준 가정, 금액은 가상)</footer>
+<footer>곰선비의 ERP 실무노트 · 학습용 예시 데이터(가상 회사 기준, 금액은 가상)</footer>
 
 <script>
-const TABS=[
- ["p2p","P2P 흐름"],["org","조직구조"],["master","기준정보"],["sim","입고·송장 시뮬레이터"],
- ["mvt","이동유형"],["iv","송장검증"],["obyc","계정결정"],["special","특수조달"],["dict","T-code·테이블"],["quiz","퀴즈"]
-];
+const TABS=[["intro","0 소개"],["org","1 조직구조"],["master","2 기준정보"],["p2p","3 구매"],["mvt","4 재고·이동유형"],["sim","5 입고·송장 실습"],["iv","6 송장검증"],["obyc","7 평가·계정결정"],["close","8 기간마감"],["special","심화 특수조달"],["dict","T-code·테이블"],["quiz","퀴즈"]];
 const $=s=>document.querySelector(s);
 const fmt=n=>(Math.round(n*100)/100).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -170,7 +221,7 @@ function p2pDetail(i){const s=P2P[i];$("#p2pd").innerHTML=`<h4>${i+1}. ${s.t} <s
 /* ---------------- ORG ---------------- */
 const ORG={
  cl:["Client","클라이언트","SAP 시스템 안의 독립된 회사 묶음. 모든 데이터의 최상위 단위.","T000"],
- cc:["Company Code US00","회사코드","재무제표를 내는 법인 단위. Global Bike Inc.(미국).","T001"],
+ cc:["Company Code US00","회사코드","재무제표를 내는 법인 단위. 실습용 미국 법인.","T001"],
  po:["Purch. Org US00","구매조직","공급업체와 가격·조건을 협상하는 조직. 회사코드 또는 플랜트에 할당.","T024E"],
  pg:["Purch. Group N00","구매그룹","구매 담당자(바이어) 또는 팀. 조직 할당 없이 독립적으로 사용.","T024"],
  dl:["Plant DL00 Dallas","플랜트","생산·보관 거점. 재고 평가는 보통 플랜트 단위(평가영역).","T001W"],
@@ -180,7 +231,7 @@ const ORG={
 };
 function renderOrg(){
  const n=k=>`<span class="node" data-k="${k}"><b>${ORG[k][0]}</b> · ${ORG[k][1]}</span>`;
- return `<h2>MM 조직구조</h2><p class="lead">Global Bike 미국 법인 기준 예시. 상자를 누르면 설명과 테이블이 보임</p>
+ return `<h2>MM 조직구조</h2><p class="lead">실습용 미국 법인(US00) 기준 예시. 상자를 누르면 설명과 테이블이 보임</p>
  <div class="grid g2"><div class="card tree">
  ${n("cl")}<ul><li>${n("cc")}<ul>
   <li>${n("po")}</li>
@@ -422,17 +473,117 @@ function renderQuiz(){
 }
 function drawScore(){const n=Object.keys(qs).length,c=Object.values(qs).filter(Boolean).length;$("#qsc").textContent=`점수 ${c} / ${QZ.length}  ·  푼 문제 ${n}`;}
 
+/* ===== 과정 구조: 소개 → 단계별 콘텐츠 → 단계별 IMG ===== */
+const CH=[
+ {k:"intro",n:"0",t:"MM 모듈 소개",lead:"MM이 무엇을 하고, ERP 안에서 어디와 연결되는지 먼저 봅니다."},
+ {k:"org",n:"1",t:"조직구조",lead:"회사코드·플랜트·저장위치·구매조직. 가장 먼저, 한 번 정하면 바꾸기 어려운 뼈대입니다."},
+ {k:"master",n:"2",t:"기준정보",lead:"자재·공급업체·구매정보레코드·소스리스트. 거래 문서가 자동으로 끌어오는 값의 출처입니다."},
+ {k:"p2p",n:"3",t:"구매 프로세스 (P2P)",lead:"구매요청 → 구매오더 → 입고 → 송장 → 지급. MM의 기본 흐름입니다."},
+ {k:"mvt",n:"4",t:"재고관리 · 이동유형",lead:"입고·출고·이전이 모두 이동유형으로 움직입니다."},
+ {k:"sim",n:"5",t:"입고 · 송장 실습",lead:"직접 입고와 송장을 처리하며 재고·회계가 어떻게 바뀌는지 봅니다."},
+ {k:"iv",n:"6",t:"송장검증",lead:"구매오더·입고·송장을 맞춰 보고(3-Way Match) 채무를 확정합니다."},
+ {k:"obyc",n:"7",t:"자재평가 · 계정결정",lead:"MM 거래가 어떤 G/L 계정으로 회계에 들어가는지 정하는 핵심 설정입니다."},
+ {k:"close",n:"8",t:"기간마감 · 리포트",lead:"월말에 MM 기간을 넘기고, 재고와 GR/IR을 점검합니다."},
+ {k:"special",n:"+",t:"심화 · 특수조달",lead:"외주·위탁·재고이전처럼 표준 구매와 다른 조달 방식입니다."},
+ {k:"dict",n:"≡",t:"T-code · 테이블",lead:""},
+ {k:"quiz",n:"?",t:"퀴즈",lead:""}
+];
+/* [제목, T-code, SPRO 경로, 실습 설정 예시, 설정 포인트] */
+const IMG={
+ org:[
+  ["평가 수준 정의","OX14","Enterprise Structure > Definition > Logistics - General > Define valuation level","플랜트 단위","재고 금액 계산 단위. 가장 먼저 정하고, 한 번 정하면 사실상 바꿀 수 없습니다."],
+  ["플랜트 정의 · 회사코드 할당","OX10 · OX18","Enterprise Structure > Definition / Assignment > Logistics - General","DL00 · MI00 → 회사코드 US00","공장·물류센터를 만들고 어느 법인 소속인지 연결합니다."],
+  ["저장위치 정의","OX09","Enterprise Structure > Definition > Materials Management > Maintain storage location","DL00: RM00 원자재 · MI00: FG00 완제품","플랜트 안의 창고 칸. 재고 수량을 나눠 관리합니다."],
+  ["구매조직 정의 · 할당","OX08 · OX01 · OX17","Enterprise Structure > Definition / Assignment > Materials Management","US00 → 회사코드 US00, 플랜트 DL00·MI00","누가 어느 플랜트를 위해 살 수 있는지 정합니다."],
+  ["구매그룹 정의","OME4","Materials Management > Purchasing > Create Purchasing Groups","N00 구매팀","실제 발주 담당자. 조직 할당 없이 씁니다."]
+ ],
+ master:[
+  ["자재 유형","OMS2","Logistics - General > Material Master > Basic Settings > Material Types > Define Attributes of Material Types","ROH 원자재(V) · HALB 반제품(S) · FERT 완제품(S)","유형별 화면(뷰), 가격 관리(S 표준 / V 이동평균), 번호 방식을 정합니다."],
+  ["자재 번호 범위","MMNR","Logistics - General > Material Master > Basic Settings > Material Types > Define Number Ranges for Each Material Type","내부 채번 · 유형별 번호 범위","자동 채번을 쓰면 번호 규칙 변경에 흔들리지 않습니다."],
+  ["평가 클래스","OMSK","Materials Management > Valuation and Account Assignment > Account Determination > Account Determination Without Wizard > Define Valuation Classes","3000 원자재 · 7900 반제품 · 7920 완제품","자재 회계 뷰의 꼬리표. 7단계 계정결정과 이어집니다."],
+  ["공급업체 BP 그룹 · 번호 범위","","Cross-Application Components > SAP Business Partner > Business Partner > Basic Settings > Number Ranges and Groupings","공급업체용 BP 그룹","S/4HANA에서는 공급업체도 BP로 만들고 역할을 붙입니다."]
+ ],
+ p2p:[
+  ["구매요청 문서 유형","","Materials Management > Purchasing > Purchase Requisition > Define Document Types","NB 표준 구매요청","구매요청 번호 범위와 품목 범주를 정합니다."],
+  ["구매오더 문서 유형 · 번호 범위","","Materials Management > Purchasing > Purchase Order > Define Document Types / Define Number Ranges","NB 표준 · UB 재고이전 · 45로 시작하는 번호","구매오더 종류와 번호를 정합니다."],
+  ["구매오더 승인 전략","","Materials Management > Purchasing > Purchase Order > Release Procedure for Purchase Orders","금액 1만 USD 초과 시 팀장 승인","금액·구매그룹 조건으로 발주 승인을 겁니다."],
+  ["출력(메시지) 설정","","Materials Management > Purchasing > Output Control (S/4: Output Management)","구매오더 저장 시 공급업체 메일 발송","발주서를 언제, 어떤 방식으로 보낼지 정합니다."]
+ ],
+ mvt:[
+  ["MM 기간 초기화","OMSY","Logistics - General > Material Master > Basic Settings > Maintain Company Codes for Materials Management","US00 · 현재 연도·기간","재고 전기가 가능한 기간을 회사코드별로 시작합니다."],
+  ["이동유형 확인 · 복사","OMJJ","Materials Management > Inventory Management and Physical Inventory > Movement Types > Copy, Change Movement Types","101 입고 · 201 원가센터 출고 · 261 생산 출고 · 311 저장위치 이전","표준 이동유형을 그대로 쓰고, 꼭 필요할 때만 9xx로 복사합니다."],
+  ["마이너스 재고 허용 여부","OMJ1","Materials Management > Inventory Management and Physical Inventory > Goods Issue / Transfer Postings > Allow Negative Stocks","기본은 허용 안 함","백플러시 등 특수한 경우에만 플랜트·저장위치별로 허용합니다."],
+  ["저장위치 자동 생성","","Materials Management > Inventory Management and Physical Inventory > Goods Receipt > Create Storage Location Automatically","입고 시 저장위치 자동 확장","첫 입고 때 자재의 저장위치 데이터를 자동으로 만듭니다."]
+ ],
+ iv:[
+  ["송장 허용 오차","OMR6","Materials Management > Logistics Invoice Verification > Invoice Block > Set Tolerance Limits","가격 차이(PP) ±5% 초과 시 지급 블록","구매오더와 송장 금액이 많이 다르면 자동으로 지급을 막습니다."],
+  ["세금 코드 기본값","","Materials Management > Logistics Invoice Verification > Incoming Invoice > Maintain Default Values for Tax Codes","V1 매입 세금 코드","송장 입력 시 기본 세금 코드를 제안합니다."],
+  ["GR/IR 정리 계정","","Materials Management > Logistics Invoice Verification > Clear Account Maintenance (MR11) > Maintain Number Assignments","정리 전표 번호 범위","8단계 GR/IR 정리(MR11)를 위한 준비입니다."]
+ ],
+ obyc:[
+  ["평가 영역 그룹","OMWD","Materials Management > Valuation and Account Assignment > Account Determination > Account Determination Without Wizard > Group Together Valuation Areas","DL00·MI00 → 평가 영역 그룹 0001","같은 계정을 쓰는 플랜트를 묶습니다."],
+  ["자동 계정 결정","OBYC","Materials Management > Valuation and Account Assignment > Account Determination > Account Determination Without Wizard > Configure Automatic Postings","BSX 재고 · WRX GR/IR · PRD 가격차이 · GBB 출고 상대계정","입고·출고 때 G/L 계정이 자동으로 정해집니다. MM과 FI를 잇는 핵심입니다."],
+  ["자재원장 활성화","OMX1","Controlling > Product Cost Controlling > Actual Costing/Material Ledger > Activate Valuation Areas for Material Ledger","DL00·MI00 활성 · 가격 결정 2","S/4HANA에서 자재원장은 필수입니다. 실제원가 계산은 선택입니다."]
+ ],
+ close:[
+  ["MM 기간 넘기기 (운영)","MMPV","(월말 운영 작업) Close Period for Material Master Records","매월 1일 새 기간 열기","전월로 늦은 전기를 허용할지 정책을 함께 정합니다."],
+  ["재고 · GR/IR 점검 (운영)","MB52 · MB5S · MB5L","(리포트) 재고 현황 · GR/IR 잔액 · 재고 대사","월말 체크리스트에 포함","재고 금액과 G/L 잔액이 맞는지, GR/IR 미결이 쌓이지 않는지 봅니다."]
+ ]
+};
+const IKEY="mm-img-done";let IDONE={};try{IDONE=JSON.parse(localStorage.getItem(IKEY)||"{}")}catch(e){}
+function imgBlock(k){
+ const L=IMG[k];if(!L)return"";
+ const n=L.filter((_,i)=>IDONE[k+i]).length;
+ return `<div class="imgbox"><div class="imgh"><div><span class="imgt">IMG 설정</span><b>이 단계를 SAP에 구현하기</b></div><span class="imgn">${n} / ${L.length}</span></div>
+ <ol class="imgl">${L.map((s,i)=>`<li class="${IDONE[k+i]?"ok":""}"><label class="ick"><input type="checkbox" data-img="${k+i}"${IDONE[k+i]?" checked":""}><span>${i+1}</span></label><div class="ib"><div class="ihd"><b>${s[0]}</b>${s[1]?`<span class="tag">${s[1]}</span>`:""}</div><div class="iex"><em>설정 예시</em>${s[3]}</div><div class="iwhy">${s[4]}</div><details><summary>SPRO 경로</summary><div class="ipath">${s[2].startsWith("(")?"":"SPRO > "}${s[2]}</div></details></div></li>`).join("")}</ol>
+ <div class="inote">경로는 S/4HANA 온프레미스 기준이며 릴리스마다 조금 다릅니다. 실습 시스템에서 설정했다면 체크하세요.</div></div>`;
+}
+function renderIntro(){
+ return `<h2>SAP MM이란</h2><p class="lead">MM(Materials Management)은 회사가 <b>무엇을, 누구에게서, 얼마에 사고, 어디에 보관하는지</b>를 관리합니다. 모든 거래는 수량(재고)과 금액(회계)으로 동시에 남습니다.</p>
+ <div class="grid g3">
+  <div class="card"><h4>구매</h4><p>구매요청 → 구매오더. 공급업체·단가·납기를 확정합니다.</p></div>
+  <div class="card"><h4>재고관리</h4><p>입고·출고·이전. 이동유형 하나가 재고와 회계를 함께 움직입니다.</p></div>
+  <div class="card"><h4>송장검증</h4><p>구매오더·입고·송장을 맞춰 채무를 확정합니다.</p></div>
+ </div>
+ <h3>MM은 어디와 연결되나</h3>
+ <div class="tbl"><table><tr><th>모듈</th><th>연결 지점</th></tr>
+  <tr><td><b>FI</b></td><td>입고 → 재고·GR/IR 전표, 송장 → 공급업체 채무, 지급</td></tr>
+  <tr><td><b>CO</b></td><td>원가센터·내부오더로 출고(201), 제품원가의 원자재 단가</td></tr>
+  <tr><td><b>PP</b></td><td>MRP가 구매요청 생성, 생산오더 부품 출고(261)와 완제품 입고(101)</td></tr>
+  <tr><td><b>SD</b></td><td>출하 시 재고 출고(601), 가용성 점검</td></tr>
+  <tr><td><b>QM</b></td><td>입고 검사, 품질 재고</td></tr></table></div>
+ <h3>이 앱의 학습 순서</h3>
+ <div class="road">${CH.filter(c=>/^\d$/.test(c.n)&&c.n!=="0").map(c=>`<a href="#${c.k}" class="rd"><span>STEP ${c.n}</span><b>${c.t}</b><small>${c.lead}</small>${IMG[c.k]?`<em>IMG ${IMG[c.k].length}</em>`:""}</a>`).join("")}</div>
+ <p class="note">각 단계는 <b>콘텐츠 → IMG 설정</b> 순서입니다. 콘텐츠로 개념을 잡고, 아래 IMG 목록으로 실습 시스템에 직접 구현해 보세요.</p>`;
+}
+function renderClose(){
+ return `<h2>월말 MM 마감 체크리스트</h2><p class="lead">재고와 회계 숫자가 맞는지 확인하고 다음 기간을 엽니다.</p>
+ <div class="tbl"><table><tr><th>순서</th><th>작업</th><th>T-code</th><th>확인할 것</th></tr>
+ <tr><td>1</td><td>미처리 입고·송장 정리</td><td class="mono">MIGO · MIRO</td><td>월내 입고·송장 누락 없음</td></tr>
+ <tr><td>2</td><td>GR/IR 잔액 점검</td><td class="mono">MB5S</td><td>오래된 미결 품목 원인 확인, 필요 시 MR11 정리</td></tr>
+ <tr><td>3</td><td>재고 금액 ↔ G/L 대사</td><td class="mono">MB5L</td><td>재고 계정 잔액과 재고 금액 일치</td></tr>
+ <tr><td>4</td><td>재고 현황 확인</td><td class="mono">MB52 · MMBE</td><td>마이너스·이상 재고 없음</td></tr>
+ <tr><td>5</td><td>MM 기간 넘기기</td><td class="mono">MMPV</td><td>새 기간 열기 (FI 기간 OB52와 함께)</td></tr></table></div>`;
+}
+function chapterWrap(k,inner){
+ const c=CH.find(x=>x.k===k);if(!c)return inner;
+ const i=CH.indexOf(c),pv=CH[i-1],nx=CH[i+1];
+ const head=/^\d$/.test(c.n)||c.n==="+"?`<div class="chh"><span class="chn">${c.n==="+"?"심화":"STEP "+c.n}</span><b>${c.t}</b>${c.lead?`<p>${c.lead}</p>`:""}</div>`:"";
+ return head+`<div class="chbody">${inner}</div>`+imgBlock(k)+`<div class="pn">${pv?`<a href="#${pv.k}" class="btn">← ${pv.t}</a>`:"<span></span>"}${nx?`<a href="#${nx.k}" class="btn pri">${nx.t} →</a>`:""}</div>`;
+}
+
 /* ---------------- ROUTER ---------------- */
-const R={p2p:[renderP2P,()=>{p2pDetail(0)}],org:[renderOrg,()=>orgDetail("cc")],master:[renderMaster],sim:[renderSim,()=>simReset()],mvt:[renderMvt,drawMvt],iv:[renderIV],obyc:[renderObyc],special:[renderSpecial,drawSp],dict:[renderDict,drawDict],quiz:[renderQuiz,drawScore]};
+const R={intro:[renderIntro],close:[renderClose],p2p:[renderP2P,()=>{p2pDetail(0)}],org:[renderOrg,()=>orgDetail("cc")],master:[renderMaster],sim:[renderSim,()=>simReset()],mvt:[renderMvt,drawMvt],iv:[renderIV],obyc:[renderObyc],special:[renderSpecial,drawSp],dict:[renderDict,drawDict],quiz:[renderQuiz,drawScore]};
 $("#nav").innerHTML=TABS.map(t=>`<a href="#${t[0]}" data-t="${t[0]}">${t[1]}</a>`).join("");
 function go(){
- let t=location.hash.slice(1); if(!R[t]) t="p2p";
+ let t=location.hash.slice(1); if(!R[t]) t="intro";
  document.querySelectorAll("nav a").forEach(a=>a.classList.toggle("on",a.dataset.t==t));
- $("#main").innerHTML=`<section class="on">${R[t][0]()}</section>`;
+ $("#main").innerHTML=`<section class="on">${chapterWrap(t,R[t][0]())}</section>`;
  if(R[t][1]) R[t][1]();
  const a=document.querySelector(`nav a[data-t="${t}"]`); if(a) a.scrollIntoView({inline:"center",block:"nearest"});
 }
 window.addEventListener("hashchange",()=>{go();window.scrollTo(0,0)});
+document.addEventListener("change",e=>{const k=e.target.dataset&&e.target.dataset.img;if(!k)return;if(e.target.checked)IDONE[k]=1;else delete IDONE[k];try{localStorage.setItem(IKEY,JSON.stringify(IDONE))}catch(err){}const y=scrollY;go();scrollTo(0,y)});
 document.addEventListener("click",e=>{
  const el=e.target.closest("button,.node"); if(!el) return;
  if(el.classList.contains("step")){document.querySelectorAll(".step").forEach(s=>s.classList.remove("on"));el.classList.add("on");p2pDetail(+el.dataset.i);}
@@ -451,6 +602,69 @@ document.addEventListener("click",e=>{
 document.addEventListener("input",e=>{if(e.target.id=="mvtq")drawMvt();if(e.target.id=="dq")drawDict();});
 go();
 </script>
-<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#354A5F;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+<style id="lounge-read">
+body{word-break:keep-all;overflow-wrap:break-word;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+p,li,dd,td,.lead{line-height:1.75}
+pre,code,textarea{line-height:1.65}
+</style>
+<script id="lounge-read-js">
+(function(){
+ var MIN=13, MINCODE=13.5, BODY=15;
+ function fix(root){
+  var els=(root||document.body).querySelectorAll('*');
+  for(var i=0;i<els.length;i++){var el=els[i];
+   if(el.dataset.lr)continue;
+   var t='';for(var c=el.firstChild;c;c=c.nextSibling)if(c.nodeType===3)t+=c.nodeValue;
+   if(!t.trim()){continue}
+   var cs=getComputedStyle(el),fs=parseFloat(cs.fontSize),ff=cs.fontFamily.toLowerCase();
+   var mono=/mono|consolas|courier|menlo|d2coding/.test(ff);
+   var min=mono?MINCODE:MIN;
+   if(el.tagName==='P'||el.tagName==='LI'||el.tagName==='DD'){min=Math.max(min,BODY-1)}
+   if(fs<min){el.style.fontSize=min+'px'}
+   el.dataset.lr='1';
+  }
+ }
+ var tm;function run(){clearTimeout(tm);tm=setTimeout(function(){fix()},30)}
+ if(document.readyState!=='loading')run();else document.addEventListener('DOMContentLoaded',run);
+ new MutationObserver(run).observe(document.documentElement,{childList:true,subtree:true});
+ window.addEventListener('hashchange',run);
+})();
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#4E6A87;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+<!-- LOUNGE TOOLS -->
+<style>
+#ltBtn{position:fixed;right:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9998;background:#0A6ED1;color:#fff;border:0;border-radius:4px;font:700 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer}
+#ltBack{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:10000;opacity:0;pointer-events:none;transition:opacity .2s}
+#ltBack.on{opacity:1;pointer-events:auto}
+#ltPanel{position:fixed;top:0;right:0;bottom:0;width:min(620px,100vw);background:#FAFBFD;z-index:10001;transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column;box-shadow:-4px 0 16px rgba(0,0,0,.2)}
+#ltPanel.on{transform:none}
+#ltHead{background:#4E6A87;color:#fff;padding:10px 12px 0;font-family:'Noto Sans KR',system-ui,sans-serif}
+#ltHead .r{display:flex;justify-content:space-between;align-items:center}
+#ltHead b{font-size:15px}
+#ltHead .x{background:rgba(255,255,255,.18);border:0;color:#fff;border-radius:4px;padding:6px 10px;font:600 13px/1 inherit;cursor:pointer}
+#ltTabs{display:flex;gap:2px;margin-top:8px;overflow-x:auto}
+#ltTabs button{flex:none;border:0;background:transparent;color:#E3ECF5;font:600 13.5px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 12px;border-radius:6px 6px 0 0;cursor:pointer}
+#ltTabs button.on{background:#FAFBFD;color:#0854A0}
+#ltBody{flex:1;position:relative}
+#ltBody iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:none;background:#fff}
+#ltBody iframe.on{display:block}
+@media print{#ltBtn,#ltPanel,#ltBack{display:none!important}}
+</style>
+<button id="ltBtn" type="button" aria-haspopup="dialog">📚 학습 자료</button>
+<div id="ltBack"></div>
+<aside id="ltPanel" role="dialog" aria-label="학습 자료" aria-hidden="true">
+ <div id="ltHead"><div class="r"><b>학습 자료</b><button class="x" id="ltX" type="button">닫기 ✕</button></div><div id="ltTabs"></div></div>
+ <div id="ltBody"></div>
+</aside>
+<script>
+(function(){var T=[["테이블 · CDS", "tables-cds.html#mm"], ["BAPI · API", "tables-cds.html#mm-bapi"], ["IMG 설정", "img-guide.html#mm"], ["용어집", "mm-glossary.html"]],cur=0,tabs=document.getElementById('ltTabs'),body=document.getElementById('ltBody'),P=document.getElementById('ltPanel'),B=document.getElementById('ltBack');
+T.forEach(function(t,i){var b=document.createElement('button');b.type='button';b.textContent=t[0];b.onclick=function(){show(i)};tabs.appendChild(b);var f=document.createElement('iframe');f.title=t[0];f.dataset.src=t[1];body.appendChild(f)});
+function show(i){cur=i;[].forEach.call(tabs.children,function(b,j){b.classList.toggle('on',j===i)});[].forEach.call(body.children,function(f,j){if(j===i&&!f.src)f.src=f.dataset.src;f.classList.toggle('on',j===i)})}
+function open(){P.classList.add('on');B.classList.add('on');P.setAttribute('aria-hidden','false');show(cur)}
+function close(){P.classList.remove('on');B.classList.remove('on');P.setAttribute('aria-hidden','true')}
+document.getElementById('ltBtn').onclick=open;document.getElementById('ltX').onclick=close;B.onclick=close;
+document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});})();
+</script>
+<!-- /LOUNGE TOOLS -->
 </body>
 </html>

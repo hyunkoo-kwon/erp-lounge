@@ -9,8 +9,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --shell:#354A5F; --brand:#0A6ED1; --brand2:#0854A0; --sel:#EBF5FE; --sel2:#D1E8FF;
-  --ink:#32363A; --sub:#6A6D70; --line:#E5E5E5; --soft:#F7F7F7;
+  --shell:#4E6A87; --brand:#0A6ED1; --brand2:#0854A0; --sel:#EBF5FE; --sel2:#D1E8FF;
+  --ink:#32363A; --sub:#6A6D70; --line:#E5E5E5; --soft:#FAFBFD;
   --ok:#107E3E; --okbg:#F1FDF6; --ng:#BB0000; --ngbg:#FFEBEB;
   --mono:Consolas,"Courier New",monospace;
 }
@@ -123,9 +123,30 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .tcg table td:first-child{font-family:var(--mono);font-weight:700;color:var(--brand2);white-space:nowrap;width:1%}
 .back{border:0;background:none;color:var(--brand);font-weight:700;cursor:pointer;padding:0;margin-bottom:8px}
 </style>
+<style id="white-shell">/* WHITE SHELL — SAP Horizon 느낌 흰색 상단 */
+.shell,body>header,nav.top{background:#fff!important;color:#1D2D3E!important;border-bottom:1px solid #E5E5E5!important;box-shadow:0 1px 3px rgba(0,0,0,.06)!important}
+nav.top{box-shadow:0 0 0 100vmax #fff,0 1px 3px rgba(0,0,0,.06)!important}
+body::before{background:#fff!important}
+.shell *,body>header *,nav.top *{color:inherit}
+.shell p,.shell small,body>header p,body>header small,nav.top small{color:#556B82!important}
+.shell .eyebrow,body>header .eyebrow{color:#0A6ED1!important}
+.shell h1,body>header h1,nav.top a.logo{color:#1D2D3E!important}
+body>header h1 span,body>header h1 em,body>header em{color:#0A6ED1!important}
+nav.top a{color:#0854A0!important}
+.shell a{color:#0A6ED1!important}
+.shell span.logo{color:#fff!important}
+body>header .hw>button,body>header #home{background:#EEF2F6!important;color:#1D2D3E!important}
+body>header .chip{background:#EEF2F6!important;color:#32363A!important}
+body>header .chip.on{background:#0A6ED1!important;color:#fff!important}
+body>header input{border:1px solid #CDD5DE!important}
+#seg{background:#EEF2F6!important}
+#seg button{color:#556B82!important}
+#seg button b{color:inherit!important}
+#seg button.on{background:#fff!important;color:#0854A0!important;box-shadow:0 1px 3px rgba(0,0,0,.12)!important}
+</style>
 </head>
 <body>
-<div class="shell"><div class="in"><span class="logo">SAP</span><h1>FI 모듈 교육 앱</h1><small>Global Bike · US00 · USD</small></div></div>
+<div class="shell"><div class="in"><span class="logo">SAP</span><h1>FI 모듈 교육 앱</h1><small>US00 · USD</small></div></div>
 <nav><div class="in" id="nav">
   <a href="#home" data-v="home">홈</a>
   <a href="#lessons" data-v="lessons">레슨</a>
@@ -135,8 +156,9 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 </div></nav>
 <main id="app"></main>
 
+<script src="course-kit.js"></script>
 <script>
-/* ───────── 실습용 기준정보 (Global Bike 기반, 계정번호는 실습용) ───────── */
+/* ───────── 실습용 기준정보 (실습용, 계정번호는 실습용) ───────── */
 const ACCT = {
   "113100":"은행 보통예금","140000":"매출채권(조정계정)","160000":"매입채무(조정계정)",
   "310000":"상품 재고","191100":"GR/IR 대사계정","211000":"기계장치(자산 조정계정)","211099":"감가상각누계액",
@@ -153,16 +175,18 @@ const DR = new Set(["01","21","25","40","70","81","86","89"]);
 const fmt = n => Number(n).toLocaleString("en-US");
 
 /* ───────── 레슨 ───────── */
+const FI_IMG={"0": [["회사코드 복사 · 정의", "EC01 · OX02", "Enterprise Structure > Definition > Financial Accounting > Edit, Copy, Delete, Check Company Code", "US00 · USD", "법인 단위 회사코드를 만듭니다."], ["회계연도 변형", "OB29 · OB37", "Financial Accounting > Financial Accounting Global Settings > Ledgers > Fiscal Year and Posting Periods", "K4 (1~12월 + 특별기간 4)", "회계연도 기간 구성을 정하고 회사코드에 연결합니다."], ["전기기간 변형", "OBBO · OBBP", "Financial Accounting > Financial Accounting Global Settings > Ledgers > Fiscal Year and Posting Periods > Posting Periods", "US00 전용 변형", "기간을 열고 닫는 단위입니다."], ["원장 · 통화 유형", "FINSC_LEDGER", "Financial Accounting > Financial Accounting Global Settings > Ledgers > Ledger > Define Settings for Ledgers and Currency Types", "0L 대표 원장", "S/4 단일 원장의 통화 구성을 정합니다."]], "1": [["계정과목표 · 회사코드 할당", "OB13 · OB62", "Financial Accounting > General Ledger Accounting > Master Data > G/L Accounts > Preparations", "공통 계정과목표 → US00", "계정 체계를 만들고 회사코드에 연결합니다."], ["G/L 계정 그룹", "OBD4", "Financial Accounting > General Ledger Accounting > Master Data > G/L Accounts > Preparations > Define Account Group", "자산 · 부채 · 손익 그룹", "번호 범위와 입력 항목을 정합니다."], ["필드 상태 변형", "OBC4 · OBC5", "Financial Accounting > Financial Accounting Global Settings > Ledgers > Fields > Define Field Status Variants", "비용 계정 원가센터 필수", "전표 입력 필수·선택 필드를 정합니다."], ["BP 그룹 · 번호 범위", "", "Cross-Application Components > SAP Business Partner > Business Partner > Basic Settings > Number Ranges and Groupings", "고객 · 공급업체 BP 그룹", "고객·공급업체를 BP로 만듭니다."]], "2": [["전표 유형", "OBA7", "Financial Accounting > Financial Accounting Global Settings > Document > Document Types > Define Document Types for Entry View", "SA 일반 · KR 매입 · DR 매출", "전표 종류를 정합니다."], ["전표 번호 범위", "FBN1", "Financial Accounting > Financial Accounting Global Settings > Document > Document Number Ranges", "연도별 번호", "전표 번호를 정합니다."], ["전기키", "OB41", "Financial Accounting > Financial Accounting Global Settings > Document > Define Posting Keys", "40 차변 · 50 대변 · 31 공급업체 대변", "차대와 계정 유형을 정합니다. 표준을 그대로 씁니다."], ["허용 한도 그룹", "OBA4", "Financial Accounting > Financial Accounting Global Settings > Document > Tolerance Groups > Define Tolerance Groups for Employees", "직원별 한도", "전기 금액 한도를 둡니다."]], "3": [["지급 조건", "OBB8", "Financial Accounting > Accounts Receivable and Accounts Payable > Business Transactions > Incoming Invoices/Credit Memos > Maintain Terms of Payment", "0001 즉시 · 30일", "만기 계산의 기준입니다."], ["자동 지급 프로그램", "FBZP", "Financial Accounting > Accounts Receivable and Accounts Payable > Business Transactions > Outgoing Payments > Automatic Outgoing Payments > Payment Method/Bank Selection for Payment Program", "지급 방법 T 송금 · 거래은행", "F110 자동지급을 준비합니다."], ["GR/IR 계정 연결 (MM)", "OBYC", "Materials Management > Valuation and Account Assignment > Account Determination > Account Determination Without Wizard > Configure Automatic Postings", "WRX → GR/IR 계정", "입고·송장의 중간 계정을 연결합니다."]], "4": [["매출 계정 결정 (SD)", "VKOA", "Sales and Distribution > Basic Functions > Account Assignment/Costing > Revenue Account Determination", "ERL → 매출 계정", "청구 시 매출 계정이 정해집니다."], ["독촉 절차", "FBMP", "Financial Accounting > Accounts Receivable and Accounts Payable > Business Transactions > Dunning > Dunning Procedure > Define Dunning Procedures", "4단계 독촉", "연체 채권 독촉 단계를 정합니다."]], "5": [["감가상각표 복사", "EC08", "Financial Accounting > Asset Accounting > Organizational Structures > Copy Reference Chart of Depreciation/Depreciation Areas", "국가 표준 복사", "감가상각 영역 구성을 가져옵니다."], ["자산 클래스", "OAOA", "Financial Accounting > Asset Accounting > Organizational Structures > Asset Classes > Specify Asset Classes", "기계장치 · 차량 · 건물", "자산 종류별 기본값을 정합니다."], ["자산 계정 결정", "AO90", "Financial Accounting > Asset Accounting > Integration with General Ledger Accounting > Assign G/L Accounts", "취득가 · 감가상각누계액 · 상각비", "자산 거래의 G/L 계정을 정합니다."]], "6": [["거래은행", "FI12", "Financial Accounting > Bank Accounting > Bank Accounts > Define House Banks", "BOFA1 · 운영 계좌", "회사 계좌를 정의합니다. S/4는 은행 계좌 관리 앱과 함께 씁니다."], ["전자 은행명세 설정", "OT83", "Financial Accounting > Bank Accounting > Business Transactions > Payment Transactions > Electronic Bank Statement > Make Global Settings for Electronic Bank Statement", "거래 유형 → 전기 규칙", "은행명세를 자동으로 전기·반제합니다."]], "7": [["전기기간 열기 · 닫기", "OB52", "Financial Accounting > Financial Accounting Global Settings > Ledgers > Fiscal Year and Posting Periods > Posting Periods > Open and Close Posting Periods", "당월만 열기", "결산 통제의 기본입니다."], ["환율 유형 · 환율", "OB07 · OB08", "SAP NetWeaver > General Settings > Currencies", "M 표준 환율", "외화 평가의 기준 환율입니다."], ["외화평가 계정", "OBA1", "Financial Accounting > General Ledger Accounting > Periodic Processing > Valuate > Foreign Currency Valuation > Prepare Automatic Postings for Foreign Currency Valuation", "외화환산이익 · 손실 계정", "FAGL_FCV 평가 전표의 계정을 정합니다."]], "8": [["원장 그룹 · 통화", "FINSC_LEDGER", "Financial Accounting > Financial Accounting Global Settings > Ledgers > Ledger > Define Settings for Ledgers and Currency Types", "0L + 그룹 통화", "Universal Journal의 통화 구성을 봅니다."], ["문서 분할 활성화", "", "Financial Accounting > General Ledger Accounting > Business Transactions > Document Splitting > Activate Document Splitting", "이익센터 · 세그먼트 분할", "세그먼트 재무제표를 위해 전표 라인을 나눕니다."], ["자재원장 활성화", "OMX1", "Controlling > Product Cost Controlling > Actual Costing/Material Ledger > Activate Valuation Areas for Material Ledger", "DL00 · MI00", "S/4HANA에서 필수입니다."]]};
+CK.init("fi-img-done");
 const L = [
 { t:"FI 개요와 조직구조", g:"FI가 맡는 일과 회사코드 중심의 조직 단위를 이해함",
   html:`
   <div class="concept"><b>FI(Financial Accounting)</b><p>외부 보고용 회계. 모든 거래를 회사코드 단위 전표로 기록하고 재무상태표·손익계산서를 만듦. 내부 관리는 CO가 담당함.</p></div>
   <div class="concept"><b>하위 컴포넌트</b><p>GL(총계정원장) · AP(채무) · AR(채권) · AA(고정자산) · BL(은행) · 결산. AP·AR·AA는 보조원장이고 결과는 GL의 조정계정으로 모임.</p></div>
-  <h3 style="margin-top:16px">Global Bike 조직구조</h3>
+  <h3 style="margin-top:16px">예시 회사 조직구조</h3>
   <div class="org">
     <div class="n k">Client<small>GBI 실습 클라이언트</small></div><div class="v">↓</div>
     <div class="n">Chart of Accounts <b>GL00</b><small>계정과목표 — 두 회사가 공유</small></div><div class="v">↓</div>
-    <div class="h"><div class="n k">Company Code <b>US00</b><small>Global Bike Inc. · USD</small></div><div class="n k">Company Code <b>DE00</b><small>Global Bike Germany · EUR</small></div></div><div class="v">↑</div>
+    <div class="h"><div class="n k">Company Code <b>US00</b><small>실습용 미국 법인 · USD</small></div><div class="n k">Company Code <b>DE00</b><small>실습용 독일 법인 · EUR</small></div></div><div class="v">↑</div>
     <div class="n">Controlling Area <b>NA00</b> 등<small>CO 연결 단위</small></div>
   </div>
   <div class="note"><b>핵심</b> — 회사코드 = 재무제표를 만드는 최소 단위. 계정과목표·회계연도변형·통화가 회사코드에 붙음.</div>
@@ -434,7 +458,7 @@ function vHome(){
   app.innerHTML=`
   <div class="hero">
     <h2>SAP FI, 한 바퀴</h2>
-    <p class="lead" style="margin:0">조직구조 → 기준정보 → 전표 → P2P → O2C → 자산 → 은행 → 결산 → S/4HANA. Global Bike US00 회사코드, USD 거래로 배움.</p>
+    <p class="lead" style="margin:0">조직구조 → 기준정보 → 전표 → P2P → O2C → 자산 → 은행 → 결산 → S/4HANA. US00 회사코드, USD 거래로 배움.</p>
     <div class="grid g2" style="margin-top:12px">
       <div><b>레슨 진도</b> ${S.done.length}/${L.length}<div class="bar"><i style="width:${pct}%"></i></div></div>
       <div><b>전표 실습</b> ${S.lab.length}/${LAB.length}<div class="bar"><i style="width:${lp}%"></i></div></div>
@@ -458,8 +482,8 @@ function openLesson(i){
   const l=L[i]; let right=0, answered=0;
   app.innerHTML=`<button class="back" id="bk">← 레슨 목록</button>
    <div class="row"><span class="pill ${S.done.includes(i)?"done":""}">LESSON ${i+1}${S.done.includes(i)?" · 완료":""}</span></div>
-   <h2>${l.t}</h2><p class="lead"><b>학습 목표</b> — ${l.g}</p>
-   <div class="card">${l.html}</div>
+   <h2>${l.t}</h2><p class="lead"><b>학습 목표</b> — ${l.g}</p><p class="lead" style="font-size:13.5px;margin-top:-6px">레슨 콘텐츠 → IMG 설정 → 이해도 체크 순서입니다.</p>
+   <div class="card">${l.html}</div>${CK.img("L"+i+"_",FI_IMG[i])}
    <h3>이해도 체크</h3>${quizBlock(l.q,"l"+i)}
    <div class="row" style="margin-top:8px">
     ${i>0?`<button class="btn ghost" id="prev">← 이전</button>`:""}
@@ -483,7 +507,7 @@ function vLab(){
   <div class="dots">${LAB.map((_,k)=>`<button class="${S.lab.includes(k)?"done":""} ${k===li?"cur":""}" data-k="${k}">${k+1}</button>`).join("")}</div>
   <div class="scene">${li+1}. ${x.s}</div>
   <div class="gui">
-   <div class="tb"><span class="tc">${x.tc}</span> 전표 입력 — Global Bike Inc.</div>
+   <div class="tb"><span class="tc">${x.tc}</span> 전표 입력 — 실습용 미국 법인 US00</div>
    <div class="hd"><div><label>회사코드</label><b>US00</b></div><div><label>전표유형</label><b>${x.dt}</b></div><div><label>전기일</label><b>2026-11-30</b></div><div><label>통화</label><b>USD</b></div></div>
    <div class="lines"><div class="lnh"><span>전기키</span><span>계정</span><span style="text-align:right">금액</span><span></span></div><div id="rows"></div>
     <button class="btn ghost sm" id="add">+ 라인 추가</button></div>
@@ -575,6 +599,69 @@ function route(){
 window.addEventListener("hashchange",route);
 route();
 </script>
-<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#354A5F;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+<style id="lounge-read">
+body{word-break:keep-all;overflow-wrap:break-word;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+p,li,dd,td,.lead{line-height:1.75}
+pre,code,textarea{line-height:1.65}
+</style>
+<script id="lounge-read-js">
+(function(){
+ var MIN=13, MINCODE=13.5, BODY=15;
+ function fix(root){
+  var els=(root||document.body).querySelectorAll('*');
+  for(var i=0;i<els.length;i++){var el=els[i];
+   if(el.dataset.lr)continue;
+   var t='';for(var c=el.firstChild;c;c=c.nextSibling)if(c.nodeType===3)t+=c.nodeValue;
+   if(!t.trim()){continue}
+   var cs=getComputedStyle(el),fs=parseFloat(cs.fontSize),ff=cs.fontFamily.toLowerCase();
+   var mono=/mono|consolas|courier|menlo|d2coding/.test(ff);
+   var min=mono?MINCODE:MIN;
+   if(el.tagName==='P'||el.tagName==='LI'||el.tagName==='DD'){min=Math.max(min,BODY-1)}
+   if(fs<min){el.style.fontSize=min+'px'}
+   el.dataset.lr='1';
+  }
+ }
+ var tm;function run(){clearTimeout(tm);tm=setTimeout(function(){fix()},30)}
+ if(document.readyState!=='loading')run();else document.addEventListener('DOMContentLoaded',run);
+ new MutationObserver(run).observe(document.documentElement,{childList:true,subtree:true});
+ window.addEventListener('hashchange',run);
+})();
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#4E6A87;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+<!-- LOUNGE TOOLS -->
+<style>
+#ltBtn{position:fixed;right:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9998;background:#0A6ED1;color:#fff;border:0;border-radius:4px;font:700 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer}
+#ltBack{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:10000;opacity:0;pointer-events:none;transition:opacity .2s}
+#ltBack.on{opacity:1;pointer-events:auto}
+#ltPanel{position:fixed;top:0;right:0;bottom:0;width:min(620px,100vw);background:#FAFBFD;z-index:10001;transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column;box-shadow:-4px 0 16px rgba(0,0,0,.2)}
+#ltPanel.on{transform:none}
+#ltHead{background:#4E6A87;color:#fff;padding:10px 12px 0;font-family:'Noto Sans KR',system-ui,sans-serif}
+#ltHead .r{display:flex;justify-content:space-between;align-items:center}
+#ltHead b{font-size:15px}
+#ltHead .x{background:rgba(255,255,255,.18);border:0;color:#fff;border-radius:4px;padding:6px 10px;font:600 13px/1 inherit;cursor:pointer}
+#ltTabs{display:flex;gap:2px;margin-top:8px;overflow-x:auto}
+#ltTabs button{flex:none;border:0;background:transparent;color:#E3ECF5;font:600 13.5px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 12px;border-radius:6px 6px 0 0;cursor:pointer}
+#ltTabs button.on{background:#FAFBFD;color:#0854A0}
+#ltBody{flex:1;position:relative}
+#ltBody iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:none;background:#fff}
+#ltBody iframe.on{display:block}
+@media print{#ltBtn,#ltPanel,#ltBack{display:none!important}}
+</style>
+<button id="ltBtn" type="button" aria-haspopup="dialog">📚 학습 자료</button>
+<div id="ltBack"></div>
+<aside id="ltPanel" role="dialog" aria-label="학습 자료" aria-hidden="true">
+ <div id="ltHead"><div class="r"><b>학습 자료</b><button class="x" id="ltX" type="button">닫기 ✕</button></div><div id="ltTabs"></div></div>
+ <div id="ltBody"></div>
+</aside>
+<script>
+(function(){var T=[["테이블 · CDS", "tables-cds.html#fi"], ["BAPI · API", "tables-cds.html#fi-bapi"], ["IMG 설정", "img-guide.html#fi"], ["용어집", "fi-glossary.html"]],cur=0,tabs=document.getElementById('ltTabs'),body=document.getElementById('ltBody'),P=document.getElementById('ltPanel'),B=document.getElementById('ltBack');
+T.forEach(function(t,i){var b=document.createElement('button');b.type='button';b.textContent=t[0];b.onclick=function(){show(i)};tabs.appendChild(b);var f=document.createElement('iframe');f.title=t[0];f.dataset.src=t[1];body.appendChild(f)});
+function show(i){cur=i;[].forEach.call(tabs.children,function(b,j){b.classList.toggle('on',j===i)});[].forEach.call(body.children,function(f,j){if(j===i&&!f.src)f.src=f.dataset.src;f.classList.toggle('on',j===i)})}
+function open(){P.classList.add('on');B.classList.add('on');P.setAttribute('aria-hidden','false');show(cur)}
+function close(){P.classList.remove('on');B.classList.remove('on');P.setAttribute('aria-hidden','true')}
+document.getElementById('ltBtn').onclick=open;document.getElementById('ltX').onclick=close;B.onclick=close;
+document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});})();
+</script>
+<!-- /LOUNGE TOOLS -->
 </body>
 </html>

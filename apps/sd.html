@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --shell:#354A5F; --brand:#0A6ED1; --brand2:#0854A0; --sel:#EBF5FE;
+  --shell:#4E6A87; --brand:#0A6ED1; --brand2:#0854A0; --sel:#EBF5FE;
   --ink:#1D2D3E; --sub:#556B82; --line:#D9DEE3; --soft:#F5F6F7;
   --ok:#107E3E; --okbg:#F1FDF6; --ng:#BB0000; --ngbg:#FFEBEB; --warn:#E9730C;
 }
@@ -134,22 +134,46 @@ tr.tot td{background:var(--sel);font-weight:900;color:var(--brand2)}
 .score{position:sticky;top:52px;background:#fff;padding:8px 0;font-weight:700;color:var(--shell);z-index:5}
 footer{max-width:1100px;margin:0 auto;padding:0 18px 30px;color:var(--sub);font-size:12px}
 </style>
+<style id="white-shell">/* WHITE SHELL — SAP Horizon 느낌 흰색 상단 */
+.shell,body>header,nav.top{background:#fff!important;color:#1D2D3E!important;border-bottom:1px solid #E5E5E5!important;box-shadow:0 1px 3px rgba(0,0,0,.06)!important}
+nav.top{box-shadow:0 0 0 100vmax #fff,0 1px 3px rgba(0,0,0,.06)!important}
+body::before{background:#fff!important}
+.shell *,body>header *,nav.top *{color:inherit}
+.shell p,.shell small,body>header p,body>header small,nav.top small{color:#556B82!important}
+.shell .eyebrow,body>header .eyebrow{color:#0A6ED1!important}
+.shell h1,body>header h1,nav.top a.logo{color:#1D2D3E!important}
+body>header h1 span,body>header h1 em,body>header em{color:#0A6ED1!important}
+nav.top a{color:#0854A0!important}
+.shell a{color:#0A6ED1!important}
+.shell span.logo{color:#fff!important}
+body>header .hw>button,body>header #home{background:#EEF2F6!important;color:#1D2D3E!important}
+body>header .chip{background:#EEF2F6!important;color:#32363A!important}
+body>header .chip.on{background:#0A6ED1!important;color:#fff!important}
+body>header input{border:1px solid #CDD5DE!important}
+#seg{background:#EEF2F6!important}
+#seg button{color:#556B82!important}
+#seg button b{color:inherit!important}
+#seg button.on{background:#fff!important;color:#0854A0!important;box-shadow:0 1px 3px rgba(0,0,0,.12)!important}
+</style>
 </head>
 <body>
 <div class="shell"><div class="in">
-  <div class="eyebrow">SAP SD · GLOBAL BIKE · USD</div>
+  <div class="eyebrow">SAP SD · 실습 예시 · USD</div>
   <h1>SAP SD 실습 앱 — 주문에서 입금까지</h1>
-  <p>Order-to-Cash 흐름, 가격결정, 출하·청구 회계, 문서흐름을 눌러 보며 익힘</p>
+  <p>단계마다 콘텐츠로 개념을 잡고, 이어지는 IMG 설정으로 직접 구현해 봄</p>
 </div></div>
 <nav><div class="in" id="nav"></div></nav>
 <main id="main"></main>
-<footer>곰선비의 ERP 실무노트 · 학습용 예시 데이터(Global Bike 기준 가정, 금액은 가상)</footer>
+<footer>곰선비의 ERP 실무노트 · 학습용 예시 데이터(가상 회사 기준, 금액은 가상)</footer>
 
+<script src="course-kit.js"></script>
 <script>
-const TABS=[
- ["o2c","O2C 흐름"],["org","조직구조"],["master","기준정보"],["price","가격결정 시뮬레이터"],["sim","출하·청구 시뮬레이터"],
- ["flow","문서흐름"],["doct","판매문서 유형"],["acct","계정결정·가용성"],["dict","T-code·테이블"],["quiz","퀴즈"]
-];
+const TABS=[["intro", "0 소개"], ["org", "1 조직구조"], ["master", "2 기준정보"], ["o2c", "3 판매 흐름"], ["doct", "4 판매문서 유형"], ["price", "5 가격결정"], ["sim", "6 출하·청구 실습"], ["flow", "7 문서흐름"], ["acct", "8 계정결정·가용성"], ["dict", "T-code·테이블"], ["quiz", "퀴즈"]];
+const CH=[{"k": "intro", "n": "0", "t": "SD 모듈 소개", "lead": "SD가 무엇을 하고, ERP 안에서 어디와 연결되는지 먼저 봅니다."}, {"k": "org", "n": "1", "t": "조직구조", "lead": "판매조직·유통경로·제품군·출하지점. 판매의 뼈대입니다."}, {"k": "master", "n": "2", "t": "기준정보", "lead": "고객(BP)·자재 판매 데이터·가격 조건. 주문이 자동으로 끌어오는 값입니다."}, {"k": "o2c", "n": "3", "t": "판매 프로세스 (O2C)", "lead": "견적 → 주문 → 출하 → 청구 → 수금. SD의 기본 흐름입니다."}, {"k": "doct", "n": "4", "t": "판매문서 유형", "lead": "주문 유형·품목 범주·일정라인 범주가 문서의 동작을 정합니다."}, {"k": "price", "n": "5", "t": "가격결정", "lead": "조건 유형·액세스 시퀀스·가격결정 절차로 가격이 계산됩니다."}, {"k": "sim", "n": "6", "t": "출하 · 청구 실습", "lead": "직접 출하와 청구를 처리하며 재고·회계 변화를 봅니다."}, {"k": "flow", "n": "7", "t": "문서흐름", "lead": "문서가 어떻게 이어지고 상태가 바뀌는지 봅니다."}, {"k": "acct", "n": "8", "t": "계정결정 · 가용성", "lead": "청구가 어떤 매출 계정으로 가는지, 재고 가용성은 어떻게 보는지 정합니다."}, {"k": "dict", "n": "", "t": "T-code · 테이블", "lead": ""}, {"k": "quiz", "n": "", "t": "퀴즈", "lead": ""}];
+const IMG={"org": [["판매조직 정의 · 회사코드 할당", "OVX5 · OVX3", "Enterprise Structure > Definition / Assignment > Sales and Distribution", "UE00 → 회사코드 US00", "판매 책임 조직을 만들고 법인에 연결합니다."], ["유통경로 정의 · 할당", "OVXI · OVXK", "Enterprise Structure > Definition / Assignment > Sales and Distribution", "WH 도매 · RE 소매", "고객에게 가는 경로를 만듭니다."], ["제품군 정의 · 할당", "OVXB · OVXA", "Enterprise Structure > Definition > Logistics - General / Assignment > Sales and Distribution", "BI 자전거 · AS 부품", "제품 그룹 단위를 만듭니다."], ["판매영역 설정", "OVXG", "Enterprise Structure > Assignment > Sales and Distribution > Set up sales area", "UE00-WH-BI", "판매조직 + 유통경로 + 제품군 조합을 확정합니다."], ["판매조직·유통경로 → 플랜트", "OVX6", "Enterprise Structure > Assignment > Sales and Distribution > Assign sales organization - distribution channel - plant", "UE00-WH → DL00 · MI00", "어느 플랜트 재고를 팔 수 있는지 정합니다."], ["출하지점 정의 · 플랜트 할당", "OVXD · OVXC", "Enterprise Structure > Definition / Assignment > Logistics Execution", "MI00 출하지점 → 플랜트 MI00", "실제로 물건이 나가는 장소입니다."]], "master": [["고객 BP 그룹 · 번호 범위", "", "Cross-Application Components > SAP Business Partner > Business Partner > Basic Settings > Number Ranges and Groupings", "고객용 BP 그룹", "S/4HANA에서는 고객도 BP로 만들고 역할(FLCU00·FLCU01)을 붙입니다."], ["고객 계정 지정 그룹", "", "Sales and Distribution > Basic Functions > Account Assignment/Costing > Revenue Account Determination > Check Master Data Relevant For Account Assignment", "01 국내 · 02 해외", "고객 판매 데이터의 이 값이 8단계 매출 계정 결정에 쓰입니다."], ["인코텀즈 · 지급조건 확인", "", "Sales and Distribution > Master Data > Business Partners > Customers > Shipping / Billing Document", "FOB · 30일 지급", "고객 판매 데이터의 기본값을 준비합니다."]], "o2c": [["출하지점 결정", "OVL2", "Logistics Execution > Shipping > Basic Shipping Functions > Shipping Point and Goods Receiving Point Determination > Assign Shipping Points", "출하 조건 + 적재 그룹 + 플랜트 → 출하지점", "주문 품목마다 출하지점이 자동으로 정해집니다."], ["복사 제어 (주문 → 출하)", "VTLA", "Logistics Execution > Shipping > Copying Control > Specify Copy Control for Deliveries", "OR → LF", "주문 데이터가 출하 문서로 어떻게 넘어갈지 정합니다."], ["복사 제어 (출하 → 청구)", "VTFL", "Sales and Distribution > Billing > Billing Documents > Maintain Copying Control for Billing Documents", "LF → F2", "출하 수량 기준으로 청구하게 합니다."]], "doct": [["판매 문서 유형", "VOV8", "Sales and Distribution > Sales > Sales Documents > Sales Document Header > Define Sales Document Types", "OR 표준 주문 · QT 견적", "번호·필수 항목·블록 기본값을 정합니다."], ["품목 범주 · 결정", "VOV7 · VOV4", "Sales and Distribution > Sales > Sales Documents > Sales Document Item", "TAN 표준 품목 · TANN 무상", "품목이 출하·청구 대상인지 정합니다."], ["일정라인 범주 · 결정", "VOV6 · VOV5", "Sales and Distribution > Sales > Sales Documents > Schedule Lines", "CP (MRP 연계 · 이동유형 601)", "출하 시 이동유형과 MRP 연계를 정합니다."]], "price": [["조건 유형", "V/06", "Sales and Distribution > Basic Functions > Pricing > Pricing Control > Define Condition Types", "PR00 가격 · K007 고객 할인 · MWST 세금", "가격 요소의 종류를 정합니다."], ["액세스 시퀀스", "V/07", "Sales and Distribution > Basic Functions > Pricing > Pricing Control > Define Access Sequences", "고객/자재 → 가격목록/자재 → 자재 순서", "조건 레코드를 어떤 키 순서로 찾을지 정합니다."], ["가격결정 절차", "V/08", "Sales and Distribution > Basic Functions > Pricing > Pricing Control > Define And Assign Pricing Procedures", "가격 → 할인 → 순가 → 세금 → 총액", "조건 유형의 계산 순서를 정합니다."], ["가격결정 절차 결정", "OVKK", "Sales and Distribution > Basic Functions > Pricing > Pricing Control > Define And Assign Pricing Procedures > Define Pricing Procedure Determination", "판매영역 + 문서 절차 + 고객 절차", "주문마다 어떤 절차를 쓸지 정합니다."]], "acct": [["매출 계정 결정", "VKOA", "Sales and Distribution > Basic Functions > Account Assignment/Costing > Revenue Account Determination", "ERL 매출 · ERS 할인 → 계정 지정 그룹별 G/L", "청구 시 매출 G/L 계정이 자동으로 정해집니다."], ["가용성 점검 그룹", "OVZ9", "Sales and Distribution > Basic Functions > Availability Check and Transfer of Requirements > Availability Check > Availability Check with ATP Logic or Against Planning > Define Checking Groups", "02 개별 요구 · 일괄 요구", "재고 가용성을 어떻게 볼지 정합니다."], ["출하 블록 사유", "", "Logistics Execution > Shipping > Deliveries > Define Reasons for Blocking in Shipping", "L/C 미확인", "조건이 갖춰지기 전 출하를 막습니다."]]};
+const INTRO={"title": "SAP SD란", "lead": "SD(Sales and Distribution)는 회사가 <b>누구에게, 무엇을, 얼마에 팔고, 어떻게 보내고 청구하는지</b>를 관리합니다. 출하는 재고를, 청구는 매출과 채권을 남깁니다.", "cards": [["판매", "견적 → 주문. 고객·가격·납기를 확정합니다."], ["출하", "납품 문서로 피킹·출고. 재고가 줄고 매출원가가 생깁니다."], ["청구", "대금청구로 매출과 고객 채권이 FI에 기록됩니다."]], "linkTitle": "SD는 어디와 연결되나", "links": [["FI", "청구 → 매출·채권 전표(VKOA), 수금"], ["MM", "출고(601)로 재고 감소, 가용성 점검"], ["CO", "매출·매출원가가 수익성 분석(CO-PA)으로"], ["PP", "주문이 수요가 되어 MRP·생산으로"], ["LE", "출하지점·피킹·운송"]]};
+CK.init("sd-img-done");
+function renderIntro(){return CK.intro(INTRO,CH,IMG)}
 const $=s=>document.querySelector(s);
 const fmt=n=>(Math.round(n*100)/100).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
 const num=id=>{const v=Number($(id).value);return isFinite(v)&&v>=0?v:0};
@@ -180,7 +204,7 @@ function o2cDetail(i){const s=O2C[i];$("#o2cd").innerHTML=`<h4>${i+1}. ${s.t} <s
 /* ---------------- ORG ---------------- */
 const ORG={
  cl:["Client","클라이언트","SAP 시스템 안의 독립된 회사 묶음. 모든 데이터의 최상위 단위.","T000"],
- cc:["Company Code US00","회사코드","재무제표를 내는 법인 단위. Global Bike Inc.(미국). 청구 전표가 전기되는 곳.","T001"],
+ cc:["Company Code US00","회사코드","재무제표를 내는 법인 단위. 실습용 미국 법인. 청구 전표가 전기되는 곳.","T001"],
  so:["Sales Org UE00","판매조직","판매 책임·가격 협상·클레임 책임을 지는 조직. 반드시 하나의 회사코드에 할당.","TVKO"],
  wh:["DChl WH","유통경로","도매(Wholesale). 고객에게 제품이 전달되는 경로.","TVTW"],
  re:["DChl RE","유통경로","소매(Retail). 같은 고객·자재라도 유통경로별로 가격·조건을 다르게 가져갈 수 있음.","TVTW"],
@@ -193,7 +217,7 @@ const ORG={
 };
 function renderOrg(){
  const n=k=>`<span class="node" data-k="${k}"><b>${ORG[k][0]}</b> · ${ORG[k][1]}</span>`;
- return `<h2>SD 조직구조</h2><p class="lead">Global Bike 미국 법인 기준 예시. 상자를 누르면 설명과 테이블이 보임</p>
+ return `<h2>SD 조직구조</h2><p class="lead">실습용 미국 법인(US00) 기준 예시. 상자를 누르면 설명과 테이블이 보임</p>
  <div class="grid g2"><div class="card tree">
  ${n("cl")}<ul><li>${n("cc")}<ul>
   <li>${n("so")}<ul><li>${n("wh")}</li><li>${n("re")}</li><li>${n("bi")}</li></ul></li>
@@ -487,12 +511,12 @@ function renderQuiz(){
 function drawScore(){const n=Object.keys(qs).length,c=Object.values(qs).filter(Boolean).length;$("#qsc").textContent=`점수 ${c} / ${QZ.length}  ·  푼 문제 ${n}`;}
 
 /* ---------------- ROUTER ---------------- */
-const R={o2c:[renderO2C,()=>o2cDetail(0)],org:[renderOrg,()=>orgDetail("so")],master:[renderMaster],price:[renderPrice,drawPrice],sim:[renderSim,()=>simReset()],flow:[renderFlow],doct:[renderDoct,drawDoct],acct:[renderAcct],dict:[renderDict,drawDict],quiz:[renderQuiz,drawScore]};
+const R={intro:[renderIntro],o2c:[renderO2C,()=>o2cDetail(0)],org:[renderOrg,()=>orgDetail("so")],master:[renderMaster],price:[renderPrice,drawPrice],sim:[renderSim,()=>simReset()],flow:[renderFlow],doct:[renderDoct,drawDoct],acct:[renderAcct],dict:[renderDict,drawDict],quiz:[renderQuiz,drawScore]};
 $("#nav").innerHTML=TABS.map(t=>`<a href="#${t[0]}" data-t="${t[0]}">${t[1]}</a>`).join("");
 function go(){
- let t=location.hash.slice(1); if(!R[t]) t="o2c";
+ let t=location.hash.slice(1); if(!R[t]) t="intro";
  document.querySelectorAll("nav a").forEach(a=>a.classList.toggle("on",a.dataset.t==t));
- $("#main").innerHTML=`<section class="on">${R[t][0]()}</section>`;
+ $("#main").innerHTML=`<section class="on">${CK.wrap(CH,IMG,t,R[t][0]())}</section>`;
  if(R[t][1]) R[t][1]();
  const a=document.querySelector(`nav a[data-t="${t}"]`); if(a) a.scrollIntoView({inline:"center",block:"nearest"});
 }
@@ -514,6 +538,69 @@ document.addEventListener("click",e=>{
 document.addEventListener("input",e=>{const id=e.target.id;if(id=="dtq")drawDoct();else if(id=="dq")drawDict();else if(id.startsWith("p_"))drawPrice();});
 go();
 </script>
-<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#354A5F;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+<style id="lounge-read">
+body{word-break:keep-all;overflow-wrap:break-word;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+p,li,dd,td,.lead{line-height:1.75}
+pre,code,textarea{line-height:1.65}
+</style>
+<script id="lounge-read-js">
+(function(){
+ var MIN=13, MINCODE=13.5, BODY=15;
+ function fix(root){
+  var els=(root||document.body).querySelectorAll('*');
+  for(var i=0;i<els.length;i++){var el=els[i];
+   if(el.dataset.lr)continue;
+   var t='';for(var c=el.firstChild;c;c=c.nextSibling)if(c.nodeType===3)t+=c.nodeValue;
+   if(!t.trim()){continue}
+   var cs=getComputedStyle(el),fs=parseFloat(cs.fontSize),ff=cs.fontFamily.toLowerCase();
+   var mono=/mono|consolas|courier|menlo|d2coding/.test(ff);
+   var min=mono?MINCODE:MIN;
+   if(el.tagName==='P'||el.tagName==='LI'||el.tagName==='DD'){min=Math.max(min,BODY-1)}
+   if(fs<min){el.style.fontSize=min+'px'}
+   el.dataset.lr='1';
+  }
+ }
+ var tm;function run(){clearTimeout(tm);tm=setTimeout(function(){fix()},30)}
+ if(document.readyState!=='loading')run();else document.addEventListener('DOMContentLoaded',run);
+ new MutationObserver(run).observe(document.documentElement,{childList:true,subtree:true});
+ window.addEventListener('hashchange',run);
+})();
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#4E6A87;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+<!-- LOUNGE TOOLS -->
+<style>
+#ltBtn{position:fixed;right:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9998;background:#0A6ED1;color:#fff;border:0;border-radius:4px;font:700 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer}
+#ltBack{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:10000;opacity:0;pointer-events:none;transition:opacity .2s}
+#ltBack.on{opacity:1;pointer-events:auto}
+#ltPanel{position:fixed;top:0;right:0;bottom:0;width:min(620px,100vw);background:#FAFBFD;z-index:10001;transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column;box-shadow:-4px 0 16px rgba(0,0,0,.2)}
+#ltPanel.on{transform:none}
+#ltHead{background:#4E6A87;color:#fff;padding:10px 12px 0;font-family:'Noto Sans KR',system-ui,sans-serif}
+#ltHead .r{display:flex;justify-content:space-between;align-items:center}
+#ltHead b{font-size:15px}
+#ltHead .x{background:rgba(255,255,255,.18);border:0;color:#fff;border-radius:4px;padding:6px 10px;font:600 13px/1 inherit;cursor:pointer}
+#ltTabs{display:flex;gap:2px;margin-top:8px;overflow-x:auto}
+#ltTabs button{flex:none;border:0;background:transparent;color:#E3ECF5;font:600 13.5px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 12px;border-radius:6px 6px 0 0;cursor:pointer}
+#ltTabs button.on{background:#FAFBFD;color:#0854A0}
+#ltBody{flex:1;position:relative}
+#ltBody iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:none;background:#fff}
+#ltBody iframe.on{display:block}
+@media print{#ltBtn,#ltPanel,#ltBack{display:none!important}}
+</style>
+<button id="ltBtn" type="button" aria-haspopup="dialog">📚 학습 자료</button>
+<div id="ltBack"></div>
+<aside id="ltPanel" role="dialog" aria-label="학습 자료" aria-hidden="true">
+ <div id="ltHead"><div class="r"><b>학습 자료</b><button class="x" id="ltX" type="button">닫기 ✕</button></div><div id="ltTabs"></div></div>
+ <div id="ltBody"></div>
+</aside>
+<script>
+(function(){var T=[["테이블 · CDS", "tables-cds.html#sd"], ["BAPI · API", "tables-cds.html#sd-bapi"], ["IMG 설정", "img-guide.html#sd"], ["용어집", "sd-glossary.html"]],cur=0,tabs=document.getElementById('ltTabs'),body=document.getElementById('ltBody'),P=document.getElementById('ltPanel'),B=document.getElementById('ltBack');
+T.forEach(function(t,i){var b=document.createElement('button');b.type='button';b.textContent=t[0];b.onclick=function(){show(i)};tabs.appendChild(b);var f=document.createElement('iframe');f.title=t[0];f.dataset.src=t[1];body.appendChild(f)});
+function show(i){cur=i;[].forEach.call(tabs.children,function(b,j){b.classList.toggle('on',j===i)});[].forEach.call(body.children,function(f,j){if(j===i&&!f.src)f.src=f.dataset.src;f.classList.toggle('on',j===i)})}
+function open(){P.classList.add('on');B.classList.add('on');P.setAttribute('aria-hidden','false');show(cur)}
+function close(){P.classList.remove('on');B.classList.remove('on');P.setAttribute('aria-hidden','true')}
+document.getElementById('ltBtn').onclick=open;document.getElementById('ltX').onclick=close;B.onclick=close;
+document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});})();
+</script>
+<!-- /LOUNGE TOOLS -->
 </body>
 </html>

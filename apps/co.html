@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --shell:#354A5F; --brand:#0A6ED1; --brand2:#0854A0; --sel:#EBF5FE;
+  --shell:#4E6A87; --brand:#0A6ED1; --brand2:#0854A0; --sel:#EBF5FE;
   --ink:#1D2D3E; --sub:#556B82; --line:#D9DEE3; --soft:#F5F6F7;
   --ok:#107E3E; --okbg:#F1FDF6; --ng:#BB0000; --ngbg:#FFEBEB; --warn:#E9730C;
 }
@@ -142,22 +142,46 @@ tr.sum td{font-weight:900;background:var(--soft)}
 .score{position:sticky;top:52px;background:#fff;padding:8px 0;font-weight:700;color:var(--shell);z-index:5}
 footer{max-width:1100px;margin:0 auto;padding:0 18px 30px;color:var(--sub);font-size:12px}
 </style>
+<style id="white-shell">/* WHITE SHELL — SAP Horizon 느낌 흰색 상단 */
+.shell,body>header,nav.top{background:#fff!important;color:#1D2D3E!important;border-bottom:1px solid #E5E5E5!important;box-shadow:0 1px 3px rgba(0,0,0,.06)!important}
+nav.top{box-shadow:0 0 0 100vmax #fff,0 1px 3px rgba(0,0,0,.06)!important}
+body::before{background:#fff!important}
+.shell *,body>header *,nav.top *{color:inherit}
+.shell p,.shell small,body>header p,body>header small,nav.top small{color:#556B82!important}
+.shell .eyebrow,body>header .eyebrow{color:#0A6ED1!important}
+.shell h1,body>header h1,nav.top a.logo{color:#1D2D3E!important}
+body>header h1 span,body>header h1 em,body>header em{color:#0A6ED1!important}
+nav.top a{color:#0854A0!important}
+.shell a{color:#0A6ED1!important}
+.shell span.logo{color:#fff!important}
+body>header .hw>button,body>header #home{background:#EEF2F6!important;color:#1D2D3E!important}
+body>header .chip{background:#EEF2F6!important;color:#32363A!important}
+body>header .chip.on{background:#0A6ED1!important;color:#fff!important}
+body>header input{border:1px solid #CDD5DE!important}
+#seg{background:#EEF2F6!important}
+#seg button{color:#556B82!important}
+#seg button b{color:inherit!important}
+#seg button.on{background:#fff!important;color:#0854A0!important;box-shadow:0 1px 3px rgba(0,0,0,.12)!important}
+</style>
 </head>
 <body>
 <div class="shell"><div class="in">
-  <div class="eyebrow">SAP CO · GLOBAL BIKE · USD</div>
+  <div class="eyebrow">SAP CO · 실습 예시 · USD</div>
   <h1>SAP CO 실습 앱 — 원가센터에서 수익성 분석까지</h1>
-  <p>S/4HANA 관리회계 구조, 배부·분배, 오더 정산, 제품원가, 차이, Material Ledger, CO-PA를 눌러 보며 익힘</p>
+  <p>단계마다 콘텐츠로 개념을 잡고, 이어지는 IMG 설정으로 직접 구현해 봄</p>
 </div></div>
 <nav><div class="in" id="nav"></div></nav>
 <main id="main"></main>
-<footer>곰선비의 ERP 실무노트 · 학습용 예시 데이터(Global Bike 기준 가정, 관리회계영역 NA00 · 회사코드 US00, 계정번호·코드·금액은 가상)</footer>
+<footer>곰선비의 ERP 실무노트 · 학습용 예시 데이터(가상 회사 기준, 관리회계영역 NA00 · 회사코드 US00, 계정번호·코드·금액은 가상)</footer>
 
+<script src="course-kit.js"></script>
 <script>
-const TABS=[
- ["org","CO 구조"],["ce","원가요소"],["cca","원가센터 시뮬레이터"],["io","내부오더"],["pc","제품원가 산정"],
- ["var","생산오더 차이·정산"],["ml","Material Ledger"],["pa","CO-PA 수익성"],["close","기간마감 순서"],["dict","T-code·테이블"],["quiz","퀴즈"]
-];
+const TABS=[["intro", "0 소개"], ["org", "1 CO 구조"], ["ce", "2 원가요소"], ["cca", "3 원가센터"], ["io", "4 내부오더"], ["pc", "5 제품원가"], ["var", "6 차이·정산"], ["ml", "7 Material Ledger"], ["pa", "8 CO-PA"], ["close", "9 기간마감"], ["dict", "T-code·테이블"], ["quiz", "퀴즈"]];
+const CH=[{"k": "intro", "n": "0", "t": "CO 모듈 소개", "lead": "CO가 무엇을 하고, ERP 안에서 어디와 연결되는지 먼저 봅니다."}, {"k": "org", "n": "1", "t": "CO 조직구조", "lead": "관리회계 영역·회사코드 할당·버전."}, {"k": "ce", "n": "2", "t": "원가요소", "lead": "S/4HANA에서는 G/L 계정이 곧 원가요소입니다."}, {"k": "cca", "n": "3", "t": "원가센터 회계", "lead": "비용을 모으고, 배부하고, 활동 단가로 제품에 보냅니다."}, {"k": "io", "n": "4", "t": "내부오더", "lead": "행사·프로젝트처럼 기간이 있는 비용을 따로 모읍니다."}, {"k": "pc", "n": "5", "t": "제품원가 산정", "lead": "표준원가를 계산합니다."}, {"k": "var", "n": "6", "t": "생산오더 차이 · 정산", "lead": "표준과 실제의 차이를 분석하고 결산합니다."}, {"k": "ml", "n": "7", "t": "Material Ledger", "lead": "재고를 여러 통화·평가로 관리하고, 필요하면 실제원가를 계산합니다."}, {"k": "pa", "n": "8", "t": "수익성 분석 (CO-PA)", "lead": "제품·고객·지역별 마진을 봅니다."}, {"k": "close", "n": "9", "t": "기간마감", "lead": "CO 월말 작업 순서입니다."}, {"k": "dict", "n": "", "t": "T-code · 테이블", "lead": ""}, {"k": "quiz", "n": "", "t": "퀴즈", "lead": ""}];
+const IMG={"org": [["관리회계 영역 정의", "OKKP", "Controlling > General Controlling > Organization > Maintain Controlling Area", "NA00 · USD · 표준 계층", "원가 관리 범위와 통화, 원가센터 표준 계층을 정합니다."], ["회사코드 할당", "OX19", "Enterprise Structure > Assignment > Controlling > Assign company code to controlling area", "US00 → NA00", "어느 법인의 원가를 이 영역에서 볼지 연결합니다."], ["버전 설정", "OKEQ", "Controlling > General Controlling > Organization > Maintain Versions", "0 실적/계획", "실적·계획 버전을 관리합니다."]], "ce": [["원가요소 범주 지정 (마스터)", "FS00", "(마스터 데이터) G/L 계정 › 원가요소 범주", "1 1차 원가 · 42 배부 · 43 활동", "S/4HANA에서는 G/L 계정 마스터에서 원가요소 범주를 지정합니다."], ["원가요소 그룹 (마스터)", "KAH1", "(마스터 데이터) 원가요소 그룹", "인건비 · 재료비 · 경비", "배부·계획·보고에 쓸 묶음을 만듭니다."]], "cca": [["원가센터 범주", "OKA2", "Controlling > Cost Center Accounting > Master Data > Cost Centers > Define Cost Center Categories", "F 생산 · W 관리 · V 판매", "원가센터 성격을 정합니다."], ["활동유형 · 단가 계획 (마스터·계획)", "KL01 · KP26", "(마스터 데이터 · 계획) 활동유형 생성 · 단가 계획", "기계시간(MH) · 시간당 50 USD", "생산 실적이 원가로 이어지는 단가입니다."], ["배부 사이클 (운영)", "KSU1 · KSV1", "(운영) 배부(Assessment) · 분배(Distribution) 사이클", "IT 비용 → 생산·영업 원가센터", "공통 비용을 기준에 따라 나눕니다."]], "io": [["내부오더 유형", "KOT2_OPA", "Controlling > Internal Orders > Order Master Data > Define Order Types", "Z100 행사 오더", "번호 범위·결산 프로파일을 연결합니다."], ["결산 프로파일", "OKO7", "Controlling > Internal Orders > Actual Postings > Settlement > Maintain Settlement Profiles", "내부오더 → 원가센터", "모은 비용을 어디로 넘길지 정합니다."]], "pc": [["원가 구성요소 구조", "OKTZ", "Controlling > Product Cost Controlling > Product Cost Planning > Basic Settings for Material Costing > Define Cost Component Structure", "재료비 · 인건비 · 경비", "원가를 어떤 항목으로 나눠 볼지 정합니다."], ["간접비 원가계산표", "KZS2", "Controlling > Product Cost Controlling > Cost Object Controlling > Product Cost by Order > Basic Settings > Overhead > Define Costing Sheets", "재료비의 3%", "비율로 붙이는 간접비를 정합니다."], ["원가계산 유형 · 평가 변형", "OKKI · OKK4", "Controlling > Product Cost Controlling > Product Cost Planning > Material Cost Estimate with Quantity Structure > Costing Variant: Components", "원자재 이동평균 · 활동 계획 단가", "가격 출처를 정합니다."], ["원가계산 변형", "OKKN", "Controlling > Product Cost Controlling > Product Cost Planning > Material Cost Estimate with Quantity Structure > Define Costing Variants", "PPC1 표준원가", "표준원가 계산 묶음입니다."]], "var": [["차이 키", "OKV1", "Controlling > Product Cost Controlling > Cost Object Controlling > Product Cost by Order > Period-End Closing > Variance Calculation > Define Variance Keys", "000001", "차이를 계산할지, 어떻게 계산할지 정합니다."], ["결과 분석 키 (재공품)", "OKG1", "Controlling > Product Cost Controlling > Cost Object Controlling > Product Cost by Order > Period-End Closing > Work in Process > Define Results Analysis Keys", "000001 재공품", "월말 미완성 오더를 재공품으로 잡습니다."]], "ml": [["자재원장 활성화", "OMX1", "Controlling > Product Cost Controlling > Actual Costing/Material Ledger > Activate Valuation Areas for Material Ledger", "DL00 · MI00 활성 · 가격 결정 2", "S/4HANA에서 자재원장은 필수입니다."], ["실제원가 계산 활성화 (선택)", "", "Controlling > Product Cost Controlling > Actual Costing/Material Ledger > Actual Costing > Activate Actual Costing", "필요한 플랜트만", "켜면 월말 실제원가 결산(CKMLCP)이 추가됩니다. 생산 시작은 CKMSTART."]], "pa": [["운영 관심 영역", "KEA0", "Controlling > Profitability Analysis > Structures > Define Operating Concern", "계정 기준 활성", "수익성 분석의 틀을 만듭니다."], ["특성 정의", "KEA5", "Controlling > Profitability Analysis > Structures > Define Operating Concern > Maintain Characteristics", "제품군 · 고객 · 지역 · 유통경로", "마진을 쪼개 볼 기준입니다."]], "close": [["CO 월말 운영 작업", "KSII · KO88 · CKMLCP", "(운영) 실제 활동 단가 · 오더 결산 · 실제원가 결산", "결산 순서표 기준", "IMG가 아니라 월말에 실행하는 작업입니다. 순서는 위 콘텐츠를 따릅니다."]]};
+const INTRO={"title": "SAP CO란", "lead": "CO(Controlling)는 같은 거래를 <b>경영의 눈으로 다시 보는</b> 관리회계입니다. 비용이 어디서 생겼고, 어떤 제품이 얼마를 남겼는지 보여 줍니다.", "cards": [["원가 관리", "원가센터·내부오더에 비용을 모으고 배부합니다."], ["제품원가", "표준원가를 계산하고 생산 차이를 분석합니다."], ["수익성", "제품·고객·지역별 마진을 봅니다."]], "linkTitle": "CO는 어디와 연결되나", "links": [["FI", "같은 전표(ACDOCA)를 원가 관점으로 봄"], ["MM", "원가센터 출고(201), 자재 단가·자재원장"], ["PP", "작업장 활동 단가, 생산오더 원가·결산"], ["SD", "매출·매출원가가 수익성 분석으로"]]};
+CK.init("co-img-done");
+function renderIntro(){return CK.intro(INTRO,CH,IMG)}
 const $=s=>document.querySelector(s);
 const fmt=n=>(Math.round(n*100)/100).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
 const sfmt=n=>(n<0?"−":n>0?"+":"")+fmt(Math.abs(n));
@@ -171,7 +195,7 @@ function jeHtml(docs,cols){
 const ORG={
  oc:["Operating Concern GB00","경영단위 (CO-PA)","수익성 분석의 최상위 단위. 특성(고객·제품·지역 등)을 정의하고 관리회계영역에 할당(KEKK). 여러 관리회계영역이 하나의 경영단위를 공유할 수 있음.","KEA0 · KEKK","코드 GB00은 예시"],
  ka:["Controlling Area NA00","관리회계영역","원가센터·오더·손익센터가 속하는 CO의 기본 조직 단위. 통화, 계정과목표, 회계연도변형, 표준계층을 지정(OKKP).","TKA01","같은 관리회계영역에 묶이는 회사코드는 운영 계정과목표와 회계연도변형이 같아야 함"],
- cc:["Company Code US00","회사코드","재무제표를 내는 법인 단위(Global Bike Inc.). 관리회계영역에 할당(OX19). 하나의 회사코드는 하나의 관리회계영역에만 속함.","T001 · TKA02 (할당)","여러 회사코드를 하나의 관리회계영역에 할당하면 회사 간 원가 배분이 가능"],
+ cc:["Company Code US00","회사코드","재무제표를 내는 법인 단위(실습용 미국 법인). 관리회계영역에 할당(OX19). 하나의 회사코드는 하나의 관리회계영역에만 속함.","T001 · TKA02 (할당)","여러 회사코드를 하나의 관리회계영역에 할당하면 회사 간 원가 배분이 가능"],
  sh:["Std. Hierarchy NA00","원가센터 표준계층","관리회계영역의 모든 원가센터가 반드시 한 노드에 속하는 트리. 원가센터 생성 시 필수 입력(OKEON).","SETHEADER · SETNODE","대체 계층은 원가센터 그룹(KSH1)으로 따로 만듦"],
  n1:["노드 NA-ADM","관리 부문","관리·IT 같은 지원 원가센터를 묶는 노드.","OKEON",""],
  n2:["노드 NA-OPS","운영 부문","생산·영업 같은 수신(운영) 원가센터를 묶는 노드.","OKEON",""],
@@ -183,7 +207,7 @@ const ORG={
 };
 function renderOrg(){
  const n=k=>`<span class="node" data-k="${k}"><b>${ORG[k][0]}</b> · ${ORG[k][1]}</span>`;
- return `<h2>CO 조직구조</h2><p class="lead">Global Bike 미국 법인 기준 예시. 상자를 누르면 설명과 테이블이 보임</p>
+ return `<h2>CO 조직구조</h2><p class="lead">실습용 미국 법인(US00) 기준 예시. 상자를 누르면 설명과 테이블이 보임</p>
  <div class="grid g2"><div class="card tree">
  ${n("oc")}<ul><li>${n("ka")}<ul>
   <li>${n("cc")}</li>
@@ -675,13 +699,13 @@ function renderQuiz(){
 function drawScore(){const n=Object.keys(qs).length,c=Object.values(qs).filter(Boolean).length;$("#qsc").textContent=`점수 ${c} / ${QZ.length}  ·  푼 문제 ${n}`;}
 
 /* ---------------- ROUTER ---------------- */
-const R={org:[renderOrg,()=>orgDetail("ka")],ce:[renderCE,ceDetail],cca:[renderCCA,ccInit],io:[renderIO,()=>{ioRule();drawIO()}],pc:[renderPC,drawPC],var:[renderVar,drawVar],ml:[renderML,drawML],pa:[renderPA,drawPA],close:[renderClose,drawClose],dict:[renderDict,drawDict],quiz:[renderQuiz,drawScore]};
+const R={intro:[renderIntro],org:[renderOrg,()=>orgDetail("ka")],ce:[renderCE,ceDetail],cca:[renderCCA,ccInit],io:[renderIO,()=>{ioRule();drawIO()}],pc:[renderPC,drawPC],var:[renderVar,drawVar],ml:[renderML,drawML],pa:[renderPA,drawPA],close:[renderClose,drawClose],dict:[renderDict,drawDict],quiz:[renderQuiz,drawScore]};
 $("#nav").innerHTML=TABS.map(t=>`<a href="#${t[0]}" data-t="${t[0]}">${t[1]}</a>`).join("");
 let cur="";
 function go(){
- let t=location.hash.slice(1); if(!R[t]) t="org"; cur=t;
+ let t=location.hash.slice(1); if(!R[t]) t="intro"; cur=t;
  document.querySelectorAll("nav a").forEach(a=>a.classList.toggle("on",a.dataset.t==t));
- $("#main").innerHTML=`<section class="on">${R[t][0]()}</section>`;
+ $("#main").innerHTML=`<section class="on">${CK.wrap(CH,IMG,t,R[t][0]())}</section>`;
  if(R[t][1]) R[t][1]();
  const a=document.querySelector(`nav a[data-t="${t}"]`); if(a) a.scrollIntoView({inline:"center",block:"nearest"});
 }
@@ -718,6 +742,69 @@ document.addEventListener("input",e=>{
 });
 go();
 </script>
-<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#354A5F;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+<style id="lounge-read">
+body{word-break:keep-all;overflow-wrap:break-word;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+p,li,dd,td,.lead{line-height:1.75}
+pre,code,textarea{line-height:1.65}
+</style>
+<script id="lounge-read-js">
+(function(){
+ var MIN=13, MINCODE=13.5, BODY=15;
+ function fix(root){
+  var els=(root||document.body).querySelectorAll('*');
+  for(var i=0;i<els.length;i++){var el=els[i];
+   if(el.dataset.lr)continue;
+   var t='';for(var c=el.firstChild;c;c=c.nextSibling)if(c.nodeType===3)t+=c.nodeValue;
+   if(!t.trim()){continue}
+   var cs=getComputedStyle(el),fs=parseFloat(cs.fontSize),ff=cs.fontFamily.toLowerCase();
+   var mono=/mono|consolas|courier|menlo|d2coding/.test(ff);
+   var min=mono?MINCODE:MIN;
+   if(el.tagName==='P'||el.tagName==='LI'||el.tagName==='DD'){min=Math.max(min,BODY-1)}
+   if(fs<min){el.style.fontSize=min+'px'}
+   el.dataset.lr='1';
+  }
+ }
+ var tm;function run(){clearTimeout(tm);tm=setTimeout(function(){fix()},30)}
+ if(document.readyState!=='loading')run();else document.addEventListener('DOMContentLoaded',run);
+ new MutationObserver(run).observe(document.documentElement,{childList:true,subtree:true});
+ window.addEventListener('hashchange',run);
+})();
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#4E6A87;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+<!-- LOUNGE TOOLS -->
+<style>
+#ltBtn{position:fixed;right:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9998;background:#0A6ED1;color:#fff;border:0;border-radius:4px;font:700 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer}
+#ltBack{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:10000;opacity:0;pointer-events:none;transition:opacity .2s}
+#ltBack.on{opacity:1;pointer-events:auto}
+#ltPanel{position:fixed;top:0;right:0;bottom:0;width:min(620px,100vw);background:#FAFBFD;z-index:10001;transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column;box-shadow:-4px 0 16px rgba(0,0,0,.2)}
+#ltPanel.on{transform:none}
+#ltHead{background:#4E6A87;color:#fff;padding:10px 12px 0;font-family:'Noto Sans KR',system-ui,sans-serif}
+#ltHead .r{display:flex;justify-content:space-between;align-items:center}
+#ltHead b{font-size:15px}
+#ltHead .x{background:rgba(255,255,255,.18);border:0;color:#fff;border-radius:4px;padding:6px 10px;font:600 13px/1 inherit;cursor:pointer}
+#ltTabs{display:flex;gap:2px;margin-top:8px;overflow-x:auto}
+#ltTabs button{flex:none;border:0;background:transparent;color:#E3ECF5;font:600 13.5px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 12px;border-radius:6px 6px 0 0;cursor:pointer}
+#ltTabs button.on{background:#FAFBFD;color:#0854A0}
+#ltBody{flex:1;position:relative}
+#ltBody iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:none;background:#fff}
+#ltBody iframe.on{display:block}
+@media print{#ltBtn,#ltPanel,#ltBack{display:none!important}}
+</style>
+<button id="ltBtn" type="button" aria-haspopup="dialog">📚 학습 자료</button>
+<div id="ltBack"></div>
+<aside id="ltPanel" role="dialog" aria-label="학습 자료" aria-hidden="true">
+ <div id="ltHead"><div class="r"><b>학습 자료</b><button class="x" id="ltX" type="button">닫기 ✕</button></div><div id="ltTabs"></div></div>
+ <div id="ltBody"></div>
+</aside>
+<script>
+(function(){var T=[["테이블 · CDS", "tables-cds.html#co"], ["BAPI · API", "tables-cds.html#co-bapi"], ["IMG 설정", "img-guide.html#co"], ["용어집", "co-glossary.html"]],cur=0,tabs=document.getElementById('ltTabs'),body=document.getElementById('ltBody'),P=document.getElementById('ltPanel'),B=document.getElementById('ltBack');
+T.forEach(function(t,i){var b=document.createElement('button');b.type='button';b.textContent=t[0];b.onclick=function(){show(i)};tabs.appendChild(b);var f=document.createElement('iframe');f.title=t[0];f.dataset.src=t[1];body.appendChild(f)});
+function show(i){cur=i;[].forEach.call(tabs.children,function(b,j){b.classList.toggle('on',j===i)});[].forEach.call(body.children,function(f,j){if(j===i&&!f.src)f.src=f.dataset.src;f.classList.toggle('on',j===i)})}
+function open(){P.classList.add('on');B.classList.add('on');P.setAttribute('aria-hidden','false');show(cur)}
+function close(){P.classList.remove('on');B.classList.remove('on');P.setAttribute('aria-hidden','true')}
+document.getElementById('ltBtn').onclick=open;document.getElementById('ltX').onclick=close;B.onclick=close;
+document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});})();
+</script>
+<!-- /LOUNGE TOOLS -->
 </body>
 </html>

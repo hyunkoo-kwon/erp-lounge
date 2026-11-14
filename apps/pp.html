@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --shell:#354A5F; --brand:#0A6ED1; --brand2:#0854A0; --sel:#EBF5FE;
+  --shell:#4E6A87; --brand:#0A6ED1; --brand2:#0854A0; --sel:#EBF5FE;
   --ink:#1D2D3E; --sub:#556B82; --line:#D9DEE3; --soft:#F5F6F7;
   --ok:#107E3E; --okbg:#F1FDF6; --ng:#BB0000; --ngbg:#FFEBEB; --warn:#E9730C;
 }
@@ -144,22 +144,46 @@ tr.rcpt td{background:var(--okbg)}
 .score{position:sticky;top:52px;background:#fff;padding:8px 0;font-weight:700;color:var(--shell);z-index:5}
 footer{max-width:1100px;margin:0 auto;padding:0 18px 30px;color:var(--sub);font-size:12px}
 </style>
+<style id="white-shell">/* WHITE SHELL — SAP Horizon 느낌 흰색 상단 */
+.shell,body>header,nav.top{background:#fff!important;color:#1D2D3E!important;border-bottom:1px solid #E5E5E5!important;box-shadow:0 1px 3px rgba(0,0,0,.06)!important}
+nav.top{box-shadow:0 0 0 100vmax #fff,0 1px 3px rgba(0,0,0,.06)!important}
+body::before{background:#fff!important}
+.shell *,body>header *,nav.top *{color:inherit}
+.shell p,.shell small,body>header p,body>header small,nav.top small{color:#556B82!important}
+.shell .eyebrow,body>header .eyebrow{color:#0A6ED1!important}
+.shell h1,body>header h1,nav.top a.logo{color:#1D2D3E!important}
+body>header h1 span,body>header h1 em,body>header em{color:#0A6ED1!important}
+nav.top a{color:#0854A0!important}
+.shell a{color:#0A6ED1!important}
+.shell span.logo{color:#fff!important}
+body>header .hw>button,body>header #home{background:#EEF2F6!important;color:#1D2D3E!important}
+body>header .chip{background:#EEF2F6!important;color:#32363A!important}
+body>header .chip.on{background:#0A6ED1!important;color:#fff!important}
+body>header input{border:1px solid #CDD5DE!important}
+#seg{background:#EEF2F6!important}
+#seg button{color:#556B82!important}
+#seg button b{color:inherit!important}
+#seg button.on{background:#fff!important;color:#0854A0!important;box-shadow:0 1px 3px rgba(0,0,0,.12)!important}
+</style>
 </head>
 <body>
 <div class="shell"><div class="in">
-  <div class="eyebrow">SAP PP · GLOBAL BIKE · USD</div>
+  <div class="eyebrow">SAP PP · 실습 예시 · USD</div>
   <h1>SAP PP 실습 앱 — 계획에서 생산 입고까지</h1>
-  <p>수요관리 → MRP → 생산오더 → 출고·확인·입고 → 오더 결산 흐름을 눌러 보며 익힘 (S/4HANA 기준)</p>
+  <p>단계마다 콘텐츠로 개념을 잡고, 이어지는 IMG 설정으로 직접 구현해 봄</p>
 </div></div>
 <nav><div class="in" id="nav"></div></nav>
 <main id="main"></main>
-<footer>곰선비의 ERP 실무노트 · 학습용 예시 데이터(Global Bike 기준 가정, 자재번호·금액은 가상)</footer>
+<footer>곰선비의 ERP 실무노트 · 학습용 예시 데이터(가상 회사 기준, 자재번호·금액은 가상)</footer>
 
+<script src="course-kit.js"></script>
 <script>
-const TABS=[
- ["flow","생산 흐름"],["master","조직구조·기준정보"],["bom","BOM 전개 시뮬레이터"],["mrp","MRP 시뮬레이터"],
- ["cost","생산오더 원가 시뮬레이터"],["types","생산 유형 비교"],["cap","용량계획·일정"],["dict","T-code·테이블"],["quiz","퀴즈"]
-];
+const TABS=[["intro", "0 소개"], ["master", "1 조직구조·기준정보"], ["flow", "2 생산 흐름"], ["bom", "3 BOM 전개"], ["mrp", "4 MRP"], ["cap", "5 용량·일정"], ["cost", "6 생산오더 원가"], ["types", "심화 생산 유형"], ["dict", "T-code·테이블"], ["quiz", "퀴즈"]];
+const CH=[{"k": "intro", "n": "0", "t": "PP 모듈 소개", "lead": "PP가 무엇을 하고, ERP 안에서 어디와 연결되는지 먼저 봅니다."}, {"k": "master", "n": "1", "t": "조직구조 · 기준정보", "lead": "플랜트·MRP 관리자·작업장, 자재·BOM·라우팅·생산 버전."}, {"k": "flow", "n": "2", "t": "생산 프로세스", "lead": "수요 → MRP → 계획오더 → 생산오더 → 출고·실적·입고 → 결산."}, {"k": "bom", "n": "3", "t": "BOM 전개", "lead": "완제품 하나에 필요한 부품 수량을 계산합니다."}, {"k": "mrp", "n": "4", "t": "MRP", "lead": "재고와 수요를 비교해 무엇을 언제 얼마나 만들고 살지 제안합니다."}, {"k": "cap", "n": "5", "t": "용량계획 · 일정", "lead": "작업장 능력과 일정을 맞춥니다."}, {"k": "cost", "n": "6", "t": "생산오더 원가", "lead": "부품 출고·작업시간이 원가가 되고, 차이는 결산으로 넘어갑니다."}, {"k": "types", "n": "+", "t": "생산 유형 비교", "lead": "개별·반복·프로세스 생산의 차이입니다."}, {"k": "dict", "n": "", "t": "T-code · 테이블", "lead": ""}, {"k": "quiz", "n": "", "t": "퀴즈", "lead": ""}];
+const IMG={"master": [["플랜트 MRP 활성화 · 파라미터", "OPPQ", "Production > Material Requirements Planning > Plant Parameters > Carry Out Overall Maintenance of Plant Parameters", "DL00 MRP 활성", "공장별로 MRP를 켜고 기본값을 정합니다."], ["MRP 관리자", "OMD0", "Production > Material Requirements Planning > Master Data > Define MRP Controllers", "001 조립 담당", "계획 담당자를 정의합니다."], ["작업장 표준값 키", "OP19", "Production > Basic Data > Work Center > Routing Data > Define Standard Value Key", "설비시간 · 인건시간", "라우팅에 넣을 시간 항목을 정합니다."], ["생산 버전 관리 (마스터)", "C223", "(마스터 데이터) 생산 버전 일괄 관리", "완제품별 BOM + 라우팅 조합", "S/4HANA에서 MRP·원가계산이 생산 버전으로 BOM·라우팅을 찾습니다."]], "flow": [["생산오더 유형", "OPJH", "Production > Shop Floor Control > Master Data > Order > Define Order Types", "PP01 표준 생산오더", "번호 범위·결산 프로파일을 연결합니다."], ["오더 유형 종속 파라미터", "OPL8", "Production > Shop Floor Control > Master Data > Order > Define Order-Type-Dependent Parameters", "DL00 · PP01", "BOM·라우팅 선택, 원가계산 변형을 정합니다."], ["생산 일정 프로파일", "OPKP", "Production > Shop Floor Control > Master Data > Define Production Scheduling Profile", "릴리스 시 자동 일정", "오더 처리 자동화 수준을 정합니다."]], "bom": [["BOM 용도", "", "Production > Basic Data > Bill of Material > General Data > BOM Usage > Define BOM Usages", "1 생산", "같은 제품에 생산용·원가용 BOM을 구분할 수 있습니다."], ["BOM 품목 범주", "", "Production > Basic Data > Bill of Material > Item Data > Define Item Categories", "L 재고 품목 · N 비재고", "품목이 재고 관리 대상인지 정합니다."], ["변경 번호 사용", "", "Logistics - General > Engineering Change Management > Set Up Control Data", "유효 일자 관리", "설계 변경을 날짜로 관리합니다."]], "mrp": [["MRP 그룹", "OPPR", "Production > Material Requirements Planning > MRP Groups > Carry Out Overall Maintenance of MRP Groups", "0010 완제품", "자재 그룹별 계획 방식을 묶습니다."], ["MRP 유형", "OMDQ", "Production > Material Requirements Planning > Master Data > Check MRP Types", "PD MRP · VB 재주문점", "계획 방식을 정합니다."], ["특별 조달 유형", "", "Production > Material Requirements Planning > Master Data > Define Special Procurement Type", "공장 간 이전 · 외주", "다른 플랜트·외주로 조달하는 방법을 정합니다."], ["MRP 영역 활성화", "", "Production > Material Requirements Planning > General Settings > Activate MRP for MRP Areas", "저장위치 MRP 영역", "플랜트 안 일부 창고를 따로 계획합니다."]], "cap": [["일정 마진 키", "OPJK", "Production > Shop Floor Control > Operations > Scheduling > Define Scheduling Margin Key", "001 · 여유 1일", "오더 시작 전후 여유 기간을 정합니다."], ["용량 범주", "", "Production > Basic Data > Work Center > Capacity Planning > Define Capacity Category", "001 기계 · 002 인력", "작업장 능력의 종류를 정합니다."]], "cost": [["실적확인 파라미터", "OPK4", "Production > Shop Floor Control > Operations > Confirmation > Define Confirmation Parameters", "DL00 · PP01 — 활동량 제안, 백플러시", "실적확인 시간·부품 출고가 원가에 반영되게 합니다."], ["원가계산 변형", "OKKN", "Controlling > Product Cost Controlling > Product Cost Planning > Material Cost Estimate with Quantity Structure > Define Costing Variants", "PPC1 표준원가", "표준원가 계산 방식을 정합니다. CO와 함께 설정합니다."], ["결산 프로파일", "OKO7", "Controlling > Internal Orders > Actual Postings > Settlement > Maintain Settlement Profiles", "생산오더 → 자재", "오더 차이를 재고·차이 계정으로 넘깁니다."]]};
+const INTRO={"title": "SAP PP란", "lead": "PP(Production Planning)는 <b>무엇을, 언제, 얼마나, 어떤 공정으로 만들지</b> 계획하고 실행합니다. 생산 실적은 재고와 원가로 남습니다.", "cards": [["계획", "수요관리 → MRP. 계획오더와 구매요청을 제안합니다."], ["실행", "생산오더 → 부품 출고 → 실적확인 → 완제품 입고."], ["원가", "작업시간·부품이 오더 원가가 되고 차이는 결산합니다."]], "linkTitle": "PP는 어디와 연결되나", "links": [["MM", "MRP가 구매요청 생성, 부품 출고(261)·완제품 입고(101)"], ["SD", "판매 주문이 수요가 됨"], ["CO", "작업장 활동 단가, 생산오더 원가·차이·결산"], ["FI", "재고 전표, 차이 금액 전기"], ["QM", "공정·최종 검사"]]};
+CK.init("pp-img-done");
+function renderIntro(){return CK.intro(INTRO,CH,IMG)}
 const $=s=>document.querySelector(s);
 const fmt=n=>(Math.round(n*100)/100).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
 const fq=n=>(Math.round(n*1000)/1000).toLocaleString("en-US",{maximumFractionDigits:3});
@@ -196,7 +220,7 @@ function flDetail(i){const s=FL[i];$("#fld").innerHTML=`<h4>${i+1}. ${s.t} <span
 /* ---------------- MASTER ---------------- */
 const ORG={
  cl:["Client","클라이언트","SAP 시스템 안의 독립된 회사 묶음. 모든 데이터의 최상위 단위.","T000"],
- cc:["Company Code US00","회사코드","Global Bike Inc.(미국). 생산오더 원가와 재고 금액이 이 회사코드 장부에 기록됨.","T001"],
+ cc:["Company Code US00","회사코드","실습용 미국 법인. 생산오더 원가와 재고 금액이 이 회사코드 장부에 기록됨.","T001"],
  dl:["Plant DL00 Dallas","플랜트","생산 거점. MRP·BOM·라우팅·작업장이 모두 플랜트 단위로 정의됨. 재고 평가도 보통 플랜트 단위.","T001W"],
  rm:["SLoc RM00","저장위치","원자재 창고 (가정). 부품 출고 261의 출발지. 자재마스터 MRP 2의 생산 저장위치로 지정 가능.","T001L"],
  sf:["SLoc SF00","저장위치","반제품 창고 (가정). 프레임·휠 어셈블리 같은 중간 조립품 보관.","T001L"],
@@ -548,12 +572,12 @@ function renderQuiz(){
 function drawScore(){const n=Object.keys(qs).length,c=Object.values(qs).filter(Boolean).length;$("#qsc").textContent=`점수 ${c} / ${QZ.length}  ·  푼 문제 ${n}`;}
 
 /* ---------------- ROUTER ---------------- */
-const R={flow:[renderFlow,()=>flDetail(0)],master:[renderMaster,()=>orgDetail("dl")],bom:[renderBom,drawBom],mrp:[renderMrp,runMrp],cost:[renderCost,costReset],types:[renderTypes],cap:[renderCap,drawCap],dict:[renderDict,drawDict],quiz:[renderQuiz,drawScore]};
+const R={intro:[renderIntro],flow:[renderFlow,()=>flDetail(0)],master:[renderMaster,()=>orgDetail("dl")],bom:[renderBom,drawBom],mrp:[renderMrp,runMrp],cost:[renderCost,costReset],types:[renderTypes],cap:[renderCap,drawCap],dict:[renderDict,drawDict],quiz:[renderQuiz,drawScore]};
 $("#nav").innerHTML=TABS.map(t=>`<a href="#${t[0]}" data-t="${t[0]}">${t[1]}</a>`).join("");
 function go(){
- let t=location.hash.slice(1); if(!R[t]) t="flow";
+ let t=location.hash.slice(1); if(!R[t]) t="intro";
  document.querySelectorAll("nav a").forEach(a=>a.classList.toggle("on",a.dataset.t==t));
- $("#main").innerHTML=`<section class="on">${R[t][0]()}</section>`;
+ $("#main").innerHTML=`<section class="on">${CK.wrap(CH,IMG,t,R[t][0]())}</section>`;
  if(R[t][1]) R[t][1]();
  const a=document.querySelector(`nav a[data-t="${t}"]`); if(a) a.scrollIntoView({inline:"center",block:"nearest"});
 }
@@ -581,6 +605,69 @@ document.addEventListener("input",e=>{const t=e.target;
 document.addEventListener("change",e=>{if(e.target.id=="b_cs")drawBom();});
 go();
 </script>
-<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#354A5F;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+<style id="lounge-read">
+body{word-break:keep-all;overflow-wrap:break-word;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+p,li,dd,td,.lead{line-height:1.75}
+pre,code,textarea{line-height:1.65}
+</style>
+<script id="lounge-read-js">
+(function(){
+ var MIN=13, MINCODE=13.5, BODY=15;
+ function fix(root){
+  var els=(root||document.body).querySelectorAll('*');
+  for(var i=0;i<els.length;i++){var el=els[i];
+   if(el.dataset.lr)continue;
+   var t='';for(var c=el.firstChild;c;c=c.nextSibling)if(c.nodeType===3)t+=c.nodeValue;
+   if(!t.trim()){continue}
+   var cs=getComputedStyle(el),fs=parseFloat(cs.fontSize),ff=cs.fontFamily.toLowerCase();
+   var mono=/mono|consolas|courier|menlo|d2coding/.test(ff);
+   var min=mono?MINCODE:MIN;
+   if(el.tagName==='P'||el.tagName==='LI'||el.tagName==='DD'){min=Math.max(min,BODY-1)}
+   if(fs<min){el.style.fontSize=min+'px'}
+   el.dataset.lr='1';
+  }
+ }
+ var tm;function run(){clearTimeout(tm);tm=setTimeout(function(){fix()},30)}
+ if(document.readyState!=='loading')run();else document.addEventListener('DOMContentLoaded',run);
+ new MutationObserver(run).observe(document.documentElement,{childList:true,subtree:true});
+ window.addEventListener('hashchange',run);
+})();
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#4E6A87;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+<!-- LOUNGE TOOLS -->
+<style>
+#ltBtn{position:fixed;right:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9998;background:#0A6ED1;color:#fff;border:0;border-radius:4px;font:700 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer}
+#ltBack{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:10000;opacity:0;pointer-events:none;transition:opacity .2s}
+#ltBack.on{opacity:1;pointer-events:auto}
+#ltPanel{position:fixed;top:0;right:0;bottom:0;width:min(620px,100vw);background:#FAFBFD;z-index:10001;transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column;box-shadow:-4px 0 16px rgba(0,0,0,.2)}
+#ltPanel.on{transform:none}
+#ltHead{background:#4E6A87;color:#fff;padding:10px 12px 0;font-family:'Noto Sans KR',system-ui,sans-serif}
+#ltHead .r{display:flex;justify-content:space-between;align-items:center}
+#ltHead b{font-size:15px}
+#ltHead .x{background:rgba(255,255,255,.18);border:0;color:#fff;border-radius:4px;padding:6px 10px;font:600 13px/1 inherit;cursor:pointer}
+#ltTabs{display:flex;gap:2px;margin-top:8px;overflow-x:auto}
+#ltTabs button{flex:none;border:0;background:transparent;color:#E3ECF5;font:600 13.5px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 12px;border-radius:6px 6px 0 0;cursor:pointer}
+#ltTabs button.on{background:#FAFBFD;color:#0854A0}
+#ltBody{flex:1;position:relative}
+#ltBody iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:none;background:#fff}
+#ltBody iframe.on{display:block}
+@media print{#ltBtn,#ltPanel,#ltBack{display:none!important}}
+</style>
+<button id="ltBtn" type="button" aria-haspopup="dialog">📚 학습 자료</button>
+<div id="ltBack"></div>
+<aside id="ltPanel" role="dialog" aria-label="학습 자료" aria-hidden="true">
+ <div id="ltHead"><div class="r"><b>학습 자료</b><button class="x" id="ltX" type="button">닫기 ✕</button></div><div id="ltTabs"></div></div>
+ <div id="ltBody"></div>
+</aside>
+<script>
+(function(){var T=[["테이블 · CDS", "tables-cds.html#pp"], ["BAPI · API", "tables-cds.html#pp-bapi"], ["IMG 설정", "img-guide.html#pp"], ["용어집", "pp-glossary.html"]],cur=0,tabs=document.getElementById('ltTabs'),body=document.getElementById('ltBody'),P=document.getElementById('ltPanel'),B=document.getElementById('ltBack');
+T.forEach(function(t,i){var b=document.createElement('button');b.type='button';b.textContent=t[0];b.onclick=function(){show(i)};tabs.appendChild(b);var f=document.createElement('iframe');f.title=t[0];f.dataset.src=t[1];body.appendChild(f)});
+function show(i){cur=i;[].forEach.call(tabs.children,function(b,j){b.classList.toggle('on',j===i)});[].forEach.call(body.children,function(f,j){if(j===i&&!f.src)f.src=f.dataset.src;f.classList.toggle('on',j===i)})}
+function open(){P.classList.add('on');B.classList.add('on');P.setAttribute('aria-hidden','false');show(cur)}
+function close(){P.classList.remove('on');B.classList.remove('on');P.setAttribute('aria-hidden','true')}
+document.getElementById('ltBtn').onclick=open;document.getElementById('ltX').onclick=close;B.onclick=close;
+document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});})();
+</script>
+<!-- /LOUNGE TOOLS -->
 </body>
 </html>

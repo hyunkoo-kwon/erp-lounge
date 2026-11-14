@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>실습 환경 구축 가이드 — ABAP Cloud Developer Trial</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--shell:#4E6A87;--brand:#0A6ED1;--brand2:#0854A0;--sel:#EBF5FE;--ink:#32363A;--sub:#6A6D70;--line:#E5E5E5;--soft:#FAFBFD;--warn:#E9730C;--warnbg:#FEF7F1;--ok:#107E3E;--okbg:#F1FDF6}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;color:var(--ink);font-family:"Noto Sans KR","Malgun Gothic",system-ui,sans-serif;font-size:16px;line-height:1.75;word-break:keep-all}
+.shell{background:var(--shell);color:#fff}
+.shell .in{max-width:960px;margin:0 auto;padding:18px 20px 16px}
+.shell .eyebrow{font-size:12.5px;letter-spacing:.08em;color:#BCD4EA;font-weight:700}
+.shell h1{margin:2px 0 0;font-size:23px;font-weight:900}
+.shell p{margin:2px 0 0;color:#D5E1EC;font-size:14px}
+nav{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line)}
+nav .in{max-width:960px;margin:0 auto;display:flex;gap:2px;overflow-x:auto;padding:0 12px;scrollbar-width:none}
+nav a{flex:none;padding:12px;text-decoration:none;color:var(--sub);font-weight:500;font-size:14.5px;border-bottom:3px solid transparent;white-space:nowrap}
+nav a:hover{color:var(--brand)}
+main{max-width:960px;margin:0 auto;padding:24px 20px 120px}
+section{padding:8px 0 28px;border-bottom:1px solid var(--line);margin-bottom:24px;scroll-margin-top:56px}
+section:last-of-type{border-bottom:0}
+h2{font-size:21px;margin:0 0 6px;color:var(--shell);font-weight:900}
+h2 .n{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:4px;background:var(--brand);color:#fff;font-size:15px;margin-right:8px;vertical-align:2px}
+h3{font-size:16.5px;margin:20px 0 6px;color:var(--shell)}
+p{margin:6px 0}
+.lead{color:var(--sub)}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin:12px 0}
+.card{border-radius:4px;padding:14px 16px;background:#fff;box-shadow:0 0 .125rem rgba(0,0,0,.15),0 .125rem .5rem rgba(0,0,0,.1)}
+.card b{display:block;color:var(--shell);font-size:15px}
+.card span{color:var(--sub);font-size:14px}
+pre{position:relative;background:#1D2D3E;color:#E8EEF4;border-radius:4px;padding:14px 16px;overflow-x:auto;font-family:Consolas,"D2Coding",Menlo,monospace;font-size:14px;line-height:1.65;margin:10px 0}
+pre .c{color:#8FA3B8}
+.copy{position:absolute;top:8px;right:8px;border:1px solid #4A6178;background:#29394A;color:#D1E8FF;border-radius:4px;padding:3px 10px;font-size:12.5px;cursor:pointer;font-family:inherit}
+code{font-family:Consolas,Menlo,monospace;background:var(--sel);color:var(--brand2);padding:1px 6px;border-radius:3px;font-size:14px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+th{background:var(--shell);color:#fff;text-align:left;padding:8px 10px;font-weight:700}
+td{border-bottom:1px solid var(--line);padding:8px 10px;vertical-align:top}
+.tbl{overflow-x:auto;border-radius:4px;box-shadow:0 0 .125rem rgba(0,0,0,.15)}
+.note{border-left:3px solid var(--brand);background:var(--sel);padding:10px 14px;margin:12px 0;font-size:15px}
+.warn{border-left:3px solid var(--warn);background:var(--warnbg);padding:10px 14px;margin:12px 0;font-size:15px}
+ol.steps{padding-left:22px;margin:8px 0}
+ol.steps li{margin:6px 0}
+.check{list-style:none;padding:0;margin:10px 0}
+.check li{padding:8px 0 8px 32px;position:relative;border-bottom:1px solid var(--line)}
+.check li input{position:absolute;left:4px;top:13px;width:16px;height:16px;accent-color:var(--brand)}
+.src{font-size:13.5px;color:var(--sub)}
+.src a{color:var(--brand)}
+</style>
+<style id="white-shell">/* WHITE SHELL — SAP Horizon 느낌 흰색 상단 */
+.shell,body>header,nav.top{background:#fff!important;color:#1D2D3E!important;border-bottom:1px solid #E5E5E5!important;box-shadow:0 1px 3px rgba(0,0,0,.06)!important}
+nav.top{box-shadow:0 0 0 100vmax #fff,0 1px 3px rgba(0,0,0,.06)!important}
+body::before{background:#fff!important}
+.shell *,body>header *,nav.top *{color:inherit}
+.shell p,.shell small,body>header p,body>header small,nav.top small{color:#556B82!important}
+.shell .eyebrow,body>header .eyebrow{color:#0A6ED1!important}
+.shell h1,body>header h1,nav.top a.logo{color:#1D2D3E!important}
+body>header h1 span,body>header h1 em,body>header em{color:#0A6ED1!important}
+nav.top a{color:#0854A0!important}
+.shell a{color:#0A6ED1!important}
+.shell span.logo{color:#fff!important}
+body>header .hw>button,body>header #home{background:#EEF2F6!important;color:#1D2D3E!important}
+body>header .chip{background:#EEF2F6!important;color:#32363A!important}
+body>header .chip.on{background:#0A6ED1!important;color:#fff!important}
+body>header input{border:1px solid #CDD5DE!important}
+#seg{background:#EEF2F6!important}
+#seg button{color:#556B82!important}
+#seg button b{color:inherit!important}
+#seg button.on{background:#fff!important;color:#0854A0!important;box-shadow:0 1px 3px rgba(0,0,0,.12)!important}
+</style>
+</head>
+<body>
+<div class="shell"><div class="in">
+  <div class="eyebrow">ERP LOUNGE · 실습 환경</div>
+  <h1>실습 환경 구축 가이드</h1>
+  <p>내 PC에 SAP ABAP Cloud Developer Trial(Docker)을 설치하고 SAP GUI · ADT로 접속하기</p>
+</div></div>
+<nav><div class="in">
+  <a href="#req">1 준비</a><a href="#docker">2 Docker</a><a href="#run">3 설치·실행</a><a href="#gui">4 SAP GUI</a><a href="#adt">5 ADT</a><a href="#license">6 라이선스</a><a href="#trouble">7 문제 해결</a><a href="#module">모듈 실습</a><a href="#btp">대안 BTP</a>
+</div></nav>
+<main>
+
+<section id="req">
+  <h2><span class="n">1</span>준비물 확인</h2>
+  <p class="lead">메모리가 가장 중요합니다. 16GB는 최소, 32GB를 권장합니다.</p>
+  <div class="grid">
+    <div class="card"><b>CPU</b><span>4코어 이상</span></div>
+    <div class="card"><b>메모리</b><span>최소 16GB · 권장 32GB</span></div>
+    <div class="card"><b>디스크</b><span>여유 170GB 이상 (이미지 압축 약 23GB → 해제 후 53GB+)</span></div>
+    <div class="card"><b>운영체제</b><span>Windows(WSL 2) · macOS · Linux</span></div>
+  </div>
+  <div class="note">처음 내려받기에 시간이 오래 걸립니다. 유선 인터넷과 넉넉한 시간을 준비하세요.</div>
+</section>
+
+<section id="docker">
+  <h2><span class="n">2</span>Docker 준비</h2>
+  <h3>Windows</h3>
+  <ol class="steps">
+    <li>Docker Desktop을 설치하고, 엔진은 <b>WSL 2</b>를 씁니다 (Hyper-V 아님).</li>
+    <li>사용자 폴더(<code>C:\Users\내이름</code>)에 <code>.wslconfig</code> 파일을 만들고 아래 내용을 넣습니다.</li>
+  </ol>
+<pre><button class="copy">복사</button>[wsl2]
+memory=24GB
+localhostForwarding=true</pre>
+  <ol class="steps" start="3">
+    <li>PowerShell에서 <code>wsl --shutdown</code> 실행 후 Docker Desktop을 다시 켭니다.</li>
+    <li>Docker Desktop 설정에서 CPU 4 · 메모리 16GB 이상 · 디스크 170GB 이상을 줍니다.</li>
+  </ol>
+  <h3>macOS</h3>
+  <p>Docker Desktop 설정에서 CPU 4 · 메모리 16GB · 디스크 170GB를 할당합니다.</p>
+  <h3>Docker Hub 로그인</h3>
+  <p>이미지를 받으려면 Docker Hub 계정이 필요합니다.</p>
+<pre><button class="copy">복사</button>docker login</pre>
+</section>
+
+<section id="run">
+  <h2><span class="n">3</span>이미지 받기 · 처음 실행</h2>
+  <p class="lead"><code>&lt;TAGNAME&gt;</code>에는 Docker Hub의 <b>sapse/abap-cloud-developer-trial</b> 페이지에서 최신 태그를 확인해 넣습니다.</p>
+<pre><button class="copy">복사</button>docker pull sapse/abap-cloud-developer-trial:&lt;TAGNAME&gt;</pre>
+  <h3>Windows · macOS에서 처음 실행</h3>
+<pre><button class="copy">복사</button>docker run --stop-timeout 3600 -i --name a4h -h vhcala4hci -p 3200:3200 -p 3300:3300 -p 8443:8443 -p 30213:30213 -p 50000:50000 -p 50001:50001 sapse/abap-cloud-developer-trial:&lt;TAGNAME&gt; -skip-limits-check -agree-to-sap-license</pre>
+  <h3>Linux에서 처음 실행</h3>
+<pre><button class="copy">복사</button>docker run --stop-timeout 3600 -it --name a4h -h vhcala4hci sapse/abap-cloud-developer-trial:&lt;TAGNAME&gt; -agree-to-sap-license</pre>
+  <div class="warn"><b>호스트 이름은 반드시 <code>vhcala4hci</code></b> 입니다. 다른 이름이면 시스템이 시작되지 않습니다.</div>
+  <p>로그가 멈추고 CPU 사용량이 내려가며 메모리 증가가 멈출 때까지 기다린 뒤 접속합니다.</p>
+  <h3>포트 의미</h3>
+  <div class="tbl"><table>
+    <tr><th>포트</th><th>용도</th></tr>
+    <tr><td>3200</td><td>SAP GUI</td></tr><tr><td>3300</td><td>RFC</td></tr>
+    <tr><td>50000 / 50001</td><td>HTTP / HTTPS (ADT · Fiori)</td></tr>
+    <tr><td>30213</td><td>HANA</td></tr><tr><td>8443</td><td>Cloud Connector</td></tr>
+  </table></div>
+  <h3>끄고 다시 켜기</h3>
+<pre><button class="copy">복사</button><span class="c"># 끄기 (노트북을 그냥 끄면 작업이 날아갈 수 있음)</span>
+docker stop -t 7200 a4h
+
+<span class="c"># 다시 켜기</span>
+docker start -ai a4h</pre>
+</section>
+
+<section id="gui">
+  <h2><span class="n">4</span>SAP GUI로 접속</h2>
+  <p class="lead">SAP Logon에서 새 연결(사용자 지정 시스템)을 만들고 아래 값을 넣습니다.</p>
+  <div class="tbl"><table>
+    <tr><th>항목</th><th>값</th></tr>
+    <tr><td>Application Server</td><td><code>localhost</code> (3200 포트를 열었을 때)</td></tr>
+    <tr><td>Instance Number</td><td><code>00</code></td></tr>
+    <tr><td>System ID</td><td><code>A4H</code></td></tr>
+    <tr><td>Client</td><td><code>001</code> 개발 · <code>000</code> 관리</td></tr>
+    <tr><td>User</td><td><code>DEVELOPER</code></td></tr>
+    <tr><td>Password</td><td>버전마다 다릅니다 — 공식 문서(아래 출처)에서 사용 중인 버전의 초기 비밀번호를 확인하세요</td></tr>
+  </table></div>
+  <div class="note">처음에는 트랜잭션이 느립니다. 프로그램을 처음 열 때 로드가 생성되기 때문이며, 두 번째부터 빨라집니다.</div>
+</section>
+
+<section id="adt">
+  <h2><span class="n">5</span>ADT(Eclipse)로 접속</h2>
+  <p class="lead">CDS View · RAP 실습은 ADT에서 합니다.</p>
+  <ol class="steps">
+    <li>Eclipse를 설치하고, SAP Development Tools 업데이트 사이트에서 <b>ABAP Development Tools</b>를 설치합니다.</li>
+    <li>File → New → <b>ABAP Project</b>를 선택합니다.</li>
+    <li>SAP Logon에 만든 A4H 연결을 고르거나, 서버 <code>localhost</code> · 인스턴스 <code>00</code> · SID <code>A4H</code>로 직접 입력합니다.</li>
+    <li>Client <code>001</code>, User <code>DEVELOPER</code>로 로그인하면 프로젝트가 생깁니다.</li>
+  </ol>
+  <div class="note">ADT 설치 화면과 메뉴 이름은 Eclipse · ADT 버전에 따라 조금씩 다릅니다.</div>
+</section>
+
+<section id="license">
+  <h2><span class="n">6</span>라이선스 갱신 (3개월마다)</h2>
+  <p class="lead">이미지에 들어 있는 ABAP 라이선스는 3개월짜리입니다. 만료 전에 무료 데모 라이선스로 바꿉니다.</p>
+  <ol class="steps">
+    <li><code>SAP*</code> 사용자, 클라이언트 <code>000</code>으로 로그인합니다.</li>
+    <li>트랜잭션 <code>SLICENSE</code>에서 하드웨어 키를 복사합니다.</li>
+    <li>SAP의 <b>minisap</b> 사이트에서 시스템 <b>A4H</b>를 골라 라이선스 파일을 받습니다.</li>
+    <li><code>SLICENSE</code>로 돌아와 Install을 누릅니다.</li>
+    <li>로그오프 후 <code>DEVELOPER</code> / <code>001</code>로 다시 로그인해 <code>SLICENSE</code>에서 오래된 라이선스를 지웁니다.</li>
+  </ol>
+  <div class="warn">하드웨어 키가 자꾸 바뀌면 컨테이너를 만들 때 <code>--mac-address</code>로 MAC 주소를 고정합니다.</div>
+</section>
+
+<section id="trouble">
+  <h2><span class="n">7</span>자주 막히는 곳</h2>
+  <div class="tbl"><table>
+    <tr><th>증상</th><th>해결</th></tr>
+    <tr><td>insufficient system limits configuration</td><td>실행 명령 끝에 <code>-skip-limits-check</code>를 붙입니다 (Windows · macOS 필수)</td></tr>
+    <tr><td>컨테이너 이름 a4h 충돌</td><td><code>docker rm -f a4h</code>로 기존 컨테이너를 지운 뒤 다시 실행</td></tr>
+    <tr><td>시스템이 시작되지 않음</td><td>호스트 이름이 <code>vhcala4hci</code>인지 확인</td></tr>
+    <tr><td>vhcala4hci 주소로 접속 안 됨</td><td>hosts 파일에 <code>127.0.0.1  vhcala4hci</code> 추가</td></tr>
+    <tr><td>메모리 부족 · 매우 느림</td><td>.wslconfig 메모리와 Docker 메모리 할당을 늘립니다</td></tr>
+  </table></div>
+  <h3>설치 체크리스트</h3>
+  <ul class="check">
+    <li><input type="checkbox"> 메모리 16GB 이상 · 디스크 170GB 여유</li>
+    <li><input type="checkbox"> Docker Desktop(WSL 2) 설치 · 메모리 할당</li>
+    <li><input type="checkbox"> docker login 후 이미지 pull</li>
+    <li><input type="checkbox"> docker run 으로 첫 실행 (호스트 이름 vhcala4hci)</li>
+    <li><input type="checkbox"> SAP GUI 접속 (A4H · 00 · 001)</li>
+    <li><input type="checkbox"> ADT ABAP Project 연결</li>
+    <li><input type="checkbox"> 라이선스 갱신 일정 메모 (3개월)</li>
+  </ul>
+</section>
+
+<section id="module">
+  <h2><span class="n">M</span>모듈 실습 환경 (MM · SD · PP · FI · CO)</h2>
+  <p class="lead">위 ABAP Trial은 개발용이라 업무 모듈 설정과 데이터가 갖춰져 있지 않습니다. 구매·판매·생산·회계 흐름을 직접 돌려 보려면 업무 설정이 들어 있는 S/4HANA 시스템이 필요합니다.</p>
+  <h3>방법 1 · S/4HANA 30일 체험 (SAP Cloud Appliance Library)</h3>
+  <div class="grid">
+    <div class="card"><b>내 전용 시스템</b><span>모든 기능과 Customizing을 직접 보고 바꿀 수 있고 SAP GUI로 접속합니다</span></div>
+    <div class="card"><b>SAP 라이선스</b><span>30일간 무료 (체험 라이선스 내장)</span></div>
+    <div class="card"><b>클라우드 비용</b><span>AWS · Azure · GCP 계정 필요, 켜 둔 시간당 약 3–4 USD + 소액 저장 비용</span></div>
+    <div class="card"><b>준비 시간</b><span>가입 후 시스템 생성까지 약 2시간</span></div>
+  </div>
+  <ol class="steps">
+    <li>AWS · Azure · GCP 중 하나에 계정을 만듭니다.</li>
+    <li>SAP Cloud Appliance Library에 가입하고 SAP S/4HANA 30일 체험(Fully-Activated Appliance)을 고릅니다.</li>
+    <li>클라우드 계정을 연결해 인스턴스를 만듭니다. 화면에 비용 예측이 나옵니다.</li>
+    <li>실습할 때만 켜고, 끝나면 반드시 중지합니다. 자동 종료 설정을 걸어 두면 안전합니다.</li>
+  </ol>
+  <div class="warn"><b>비용 주의</b> · 30일이 지나면 시스템은 정지되지만 자동으로 삭제되지는 않아 클라우드 비용이 계속 나올 수 있습니다. 더 쓰지 않으면 꼭 Terminate(삭제)하세요. 30일 뒤에도 쓰려면 SAP 제품 라이선스와 CAL 구독이 필요합니다.</div>
+  <h3>방법 2 · 학교 · 기관 교육 시스템</h3>
+  <p>대학의 SAP 교육 프로그램 시스템은 수업 목적으로만 쓸 수 있고 상업적 강의에는 쓸 수 없습니다.</p>
+  <h3>방법 3 · 정식 교육 서버 임대</h3>
+  <p>여러 수강생이 함께 쓰는 서버가 필요하면 라이선스가 정리된 교육용 시스템을 임대합니다.</p>
+  <div class="note">시스템이 없어도 라운지의 <b>실습 앱 시뮬레이터</b>로 입고·송장 분개, 가격결정, MRP, 원가 배부 흐름을 먼저 익힐 수 있습니다. 시스템 실습은 그다음 단계로 하면 비용을 아낄 수 있습니다.</div>
+</section>
+
+<section id="btp">
+  <h2>대안 · SAP BTP ABAP 무료 체험</h2>
+  <p>PC 사양이 부족하면 SAP BTP 체험 계정으로 ADT 실습(CDS · RAP)을 할 수 있습니다. 설치는 필요 없지만, 체험 인스턴스를 모든 사용자가 함께 쓰므로 다른 사람에게 내 오브젝트가 보이고 SAP GUI 실습은 할 수 없습니다.</p>
+</section>
+
+<p class="src">출처: <a href="https://www.sap.com/korea/documents/2025/05/e0389287-077f-0010-bca6-c68f7e60039b.html" target="_blank" rel="noopener">SAP S/4HANA 30-day Trial Quick Start Guide</a> · <a href="https://pages.community.sap.com/topics/cloud-appliance-library/appliance-templates-faq/faq-trial-templates" target="_blank" rel="noopener">SAP CAL 체험 FAQ</a> · <a href="https://github.com/SAP-docs/abap-platform-trial-image" target="_blank" rel="noopener">SAP-docs/abap-platform-trial-image (GitHub)</a> · <a href="https://hub.docker.com/r/sapse/abap-cloud-developer-trial/tags" target="_blank" rel="noopener">Docker Hub 태그</a> · 2026-11-14 기준. ABAP Cloud Developer Trial은 교육·데모용 무료 제공판으로 SAP Community 지원만 제공됩니다.</p>
+</main>
+<script>
+document.addEventListener('click',e=>{const b=e.target.closest('.copy');if(!b)return;const t=b.parentElement.innerText.replace(/^복사\n?/,'').replace(/^(복사됨|복사 안 됨)\n?/,'');
+ try{navigator.clipboard.writeText(t).then(()=>{b.textContent='복사됨';setTimeout(()=>b.textContent='복사',1500)},()=>{b.textContent='길게 눌러 복사'})}catch(err){b.textContent='길게 눌러 복사'}});
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#4E6A87;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+</body>
+</html>

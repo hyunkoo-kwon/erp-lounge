@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>라운지 게시판 — ERP 라운지</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--shell:#4E6A87;--brand:#0A6ED1;--brand2:#0854A0;--sel:#EBF5FE;--ink:#32363A;--sub:#6A6D70;--line:#E5E5E5;--soft:#FAFBFD;--ok:#107E3E;--okbg:#F1FDF6;--ng:#BB0000;--warn:#E9730C}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--soft);color:var(--ink);font-family:"Noto Sans KR","Malgun Gothic",system-ui,sans-serif;font-size:15.5px;line-height:1.7;word-break:keep-all;overflow-wrap:break-word}
+button,input,select,textarea{font:inherit;color:inherit}
+.shell{background:var(--shell);color:#fff}
+.shell .in{max-width:860px;margin:0 auto;padding:16px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.shell h1{margin:0;font-size:20px;font-weight:900}
+.shell small{display:block;color:#D1E8FF;font-size:12.5px;font-weight:500}
+.shell .me{margin-left:auto;font-size:13.5px;color:#D1E8FF}
+.shell .me a{color:#fff}
+main{max-width:860px;margin:0 auto;padding:16px 18px 120px}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--line);overflow-x:auto;flex:1 1 100%}
+.tabs button{border:0;background:none;padding:10px 14px;font-weight:600;color:var(--sub);border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+.tabs button.on{color:var(--brand);border-bottom-color:var(--brand)}
+.search{flex:1 1 200px;position:relative}
+.search input{width:100%;padding:10px 12px;border:1px solid #89919A;border-radius:4px;background:#fff}
+.btn{border:1px solid var(--brand);background:#fff;color:var(--brand);border-radius:4px;padding:9px 16px;font-weight:700;cursor:pointer;font-size:14.5px}
+.btn:hover{background:var(--sel)}
+.btn.pri{background:var(--brand);color:#fff}
+.btn.pri:hover{background:var(--brand2)}
+.btn.del{border-color:var(--ng);color:var(--ng)}
+.btn:disabled{opacity:.6;cursor:default}
+.panel{background:#fff;border-radius:4px;box-shadow:0 0 .125rem rgba(0,0,0,.15),0 .125rem .5rem rgba(0,0,0,.08)}
+.row{display:grid;grid-template-columns:70px 1fr auto;gap:10px;align-items:center;padding:13px 16px;border-bottom:1px solid #EDEDED;cursor:pointer;text-decoration:none;color:inherit}
+.row:last-child{border-bottom:0}
+.row:hover{background:#F5FAFF}
+.cat{font-size:12px;font-weight:700;padding:3px 8px;border-radius:4px;text-align:center;white-space:nowrap}
+.c-공지{background:#4E6A87;color:#fff}.c-모집{background:var(--okbg);color:var(--ok);border:1px solid var(--ok)}.c-QnA{background:var(--sel);color:var(--brand2)}.c-자유{background:#F2F2F2;color:#555}
+.rt{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rt .cm{color:var(--brand);font-weight:700;margin-left:4px;font-size:13px}
+.rm{font-size:12.5px;color:var(--sub);white-space:nowrap;text-align:right}
+.empty{padding:40px 16px;text-align:center;color:var(--sub)}
+.banner{background:#FEF7F1;border-left:3px solid var(--warn);padding:10px 14px;margin:0 0 12px;font-size:14px;border-radius:0}
+.post{padding:20px 18px}
+.post h2{margin:6px 0 4px;font-size:20px;line-height:1.45}
+.meta{font-size:13px;color:var(--sub)}
+.body{white-space:pre-wrap;margin:16px 0;font-size:15.5px;line-height:1.85}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.cmts{border-top:1px solid var(--line);padding:16px 18px}
+.cmts h3{margin:0 0 10px;font-size:15.5px}
+.cmt{padding:10px 0;border-bottom:1px solid #F0F0F0}
+.cmt:last-child{border-bottom:0}
+.cmt b{font-size:14px}.cmt span{font-size:12.5px;color:var(--sub);margin-left:6px}
+.cmt p{margin:4px 0 0;white-space:pre-wrap;font-size:15px}
+.cmt .x{border:0;background:none;color:var(--ng);font-size:12.5px;cursor:pointer;margin-left:6px}
+.cform{display:flex;gap:8px;margin-top:12px}
+.cform textarea{flex:1;min-height:44px;padding:10px 12px;border:1px solid #89919A;border-radius:4px;resize:vertical}
+.form{padding:18px}
+.form label{display:block;font-size:13.5px;font-weight:600;margin:12px 0 4px}
+.form input,.form select,.form textarea{width:100%;padding:11px 12px;border:1px solid #89919A;border-radius:4px;background:#fff}
+.form textarea{min-height:220px;resize:vertical;line-height:1.75}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--brand);border-color:transparent}
+.err{color:var(--ng);font-size:13.5px;min-height:20px;margin:8px 0 0}
+.count{font-size:12.5px;color:var(--sub);text-align:right}
+@media(max-width:560px){.row{grid-template-columns:58px 1fr;}.rm{grid-column:2;text-align:left}.cform{flex-direction:column}}
+</style>
+<style id="white-shell">/* WHITE SHELL — SAP Horizon 느낌 흰색 상단 */
+.shell,body>header,nav.top{background:#fff!important;color:#1D2D3E!important;border-bottom:1px solid #E5E5E5!important;box-shadow:0 1px 3px rgba(0,0,0,.06)!important}
+nav.top{box-shadow:0 0 0 100vmax #fff,0 1px 3px rgba(0,0,0,.06)!important}
+body::before{background:#fff!important}
+.shell *,body>header *,nav.top *{color:inherit}
+.shell p,.shell small,body>header p,body>header small,nav.top small{color:#556B82!important}
+.shell .eyebrow,body>header .eyebrow{color:#0A6ED1!important}
+.shell h1,body>header h1,nav.top a.logo{color:#1D2D3E!important}
+body>header h1 span,body>header h1 em,body>header em{color:#0A6ED1!important}
+nav.top a{color:#0854A0!important}
+.shell a{color:#0A6ED1!important}
+.shell span.logo{color:#fff!important}
+body>header .hw>button,body>header #home{background:#EEF2F6!important;color:#1D2D3E!important}
+body>header .chip{background:#EEF2F6!important;color:#32363A!important}
+body>header .chip.on{background:#0A6ED1!important;color:#fff!important}
+body>header input{border:1px solid #CDD5DE!important}
+#seg{background:#EEF2F6!important}
+#seg button{color:#556B82!important}
+#seg button b{color:inherit!important}
+#seg button.on{background:#fff!important;color:#0854A0!important;box-shadow:0 1px 3px rgba(0,0,0,.12)!important}
+</style>
+</head>
+<body>
+<div class="shell"><div class="in">
+  <div><h1>라운지 게시판</h1><small>공지 · 모집 · Q&amp;A · 자유</small></div>
+  <div class="me" id="me"></div>
+</div></div>
+<main id="app"></main>
+
+<script src="../config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+const CATS=["전체","공지","모집","Q&A","자유"];
+const cfg=window.AUTH_CONFIG||{};
+let sb=null, user=null, cat="전체", q="", posts=[], live=false;
+try{ if(cfg.url&&cfg.anonKey&&window.supabase) sb=window.supabase.createClient(cfg.url,cfg.anonKey); }catch(e){ sb=null; }
+const SAMPLE=[
+ {id:-1,category:"공지",title:"ERP 라운지 게시판을 열었습니다",author:"운영자",created_at:"2026-11-14T09:00:00Z",body:"궁금한 점, 스터디 모집, 실무 이야기를 자유롭게 남겨 주세요.\n회사 기밀 정보는 빼고 올려 주세요.",comments:[]},
+ {id:-2,category:"모집",title:"SAP MM 입문 스터디 1기 모집",author:"운영자",created_at:"2026-11-13T09:00:00Z",body:"구매 → 입고 → 송장까지 흐름을 함께 공부합니다.",comments:[]},
+ {id:-3,category:"Q&A",title:"이동유형 101과 103은 회계상 무엇이 다른가요?",author:"예시 회원",created_at:"2026-11-12T09:00:00Z",body:"103은 보류재고 입고라 평가되지 않는다고 들었는데 맞나요?",comments:[{id:-31,author:"운영자",created_at:"2026-11-12T10:00:00Z",body:"맞습니다. 103은 금액 전기 없이 수량만 보류재고로 잡히고, 105로 해제할 때 재고와 GR/IR이 전기됩니다."}]}
+];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const cc=c=>"c-"+(c==="Q&A"?"QnA":c);
+const fmt=d=>{const t=new Date(d);return isNaN(t)?"":`${t.getFullYear()}.${String(t.getMonth()+1).padStart(2,"0")}.${String(t.getDate()).padStart(2,"0")}`;};
+const name=()=>user?((user.user_metadata&&user.user_metadata.name)||user.email.split("@")[0]):"";
+
+function renderMe(){ $("#me").innerHTML=user?`${esc(name())}님 · <a href="#" id="out">로그아웃</a>`:`<a href="../index.html#login">로그인 · 회원가입</a>`;
+  const o=$("#out"); if(o) o.onclick=async e=>{e.preventDefault(); await sb.auth.signOut(); user=null; renderMe(); route();}; }
+
+async function load(){
+  if(!sb){ posts=SAMPLE; live=false; return; }
+  const {data,error}=await sb.from("posts").select("id,category,title,author,created_at,user_id,comments(count)").order("created_at",{ascending:false}).limit(200);
+  if(error){ posts=SAMPLE; live=false; console.warn(error); return; }
+  posts=data.map(p=>({...p,cn:(p.comments&&p.comments[0]&&p.comments[0].count)||0})); live=true;
+}
+function listView(){
+  const list=posts.filter(p=>(cat==="전체"||p.category===cat)&&(!q||(p.title+" "+p.author).toLowerCase().includes(q.toLowerCase())));
+  $("#app").innerHTML=`${live?"":`<div class="banner">지금은 예시 글입니다. 게시판은 웹사이트 배포와 Supabase 연결 후 실제로 작동합니다.</div>`}
+   <div class="tools"><div class="tabs" id="tabs">${CATS.map(c=>`<button data-c="${esc(c)}" class="${c===cat?"on":""}">${esc(c)}</button>`).join("")}</div>
+   <div class="search"><input id="q" type="search" placeholder="제목 · 작성자 검색" value="${esc(q)}"></div><button class="btn pri" id="write">글쓰기</button></div>
+   <div class="panel">${list.length?list.map(p=>`<a class="row" href="#post-${p.id}"><span class="cat ${cc(p.category)}">${esc(p.category)}</span><span class="rt">${esc(p.title)}${(p.cn||(p.comments&&p.comments.length))?`<span class="cm">[${p.cn||p.comments.length}]</span>`:""}</span><span class="rm">${esc(p.author)} · ${fmt(p.created_at)}</span></a>`).join(""):`<div class="empty">글이 없습니다. 첫 글을 남겨 보세요.</div>`}</div>`;
+  $("#tabs").onclick=e=>{const b=e.target.closest("button"); if(!b)return; cat=b.dataset.c; listView();};
+  let t; $("#q").oninput=e=>{clearTimeout(t); t=setTimeout(()=>{q=e.target.value.trim(); listView(); const i=$("#q"); i.focus(); i.setSelectionRange(i.value.length,i.value.length);},200);};
+  $("#write").onclick=()=>{ location.hash="write"; };
+}
+async function postView(id){
+  let p, cmts=[];
+  if(!live){ p=SAMPLE.find(x=>x.id===id); cmts=p?p.comments:[]; }
+  else{ const r=await sb.from("posts").select("*").eq("id",id).single(); p=r.data;
+        const c=await sb.from("comments").select("*").eq("post_id",id).order("created_at"); cmts=c.data||[]; }
+  if(!p){ $("#app").innerHTML=`<div class="panel empty">글을 찾을 수 없습니다. <a href="#">목록으로</a></div>`; return; }
+  const mine=user&&p.user_id===user.id;
+  $("#app").innerHTML=`<div class="panel"><div class="post">
+    <span class="cat ${cc(p.category)}">${esc(p.category)}</span>
+    <h2>${esc(p.title)}</h2><div class="meta">${esc(p.author)} · ${fmt(p.created_at)}</div>
+    <div class="body">${esc(p.body)}</div>
+    <div class="acts"><a class="btn" href="#">목록</a>${mine?`<button class="btn del" id="del">삭제</button>`:""}</div></div>
+    <div class="cmts"><h3>댓글 ${cmts.length}</h3>${cmts.map(c=>`<div class="cmt"><b>${esc(c.author)}</b><span>${fmt(c.created_at)}</span>${user&&c.user_id===user.id?`<button class="x" data-cid="${c.id}">삭제</button>`:""}<p>${esc(c.body)}</p></div>`).join("")||`<div class="meta">아직 댓글이 없습니다.</div>`}
+    ${user?`<div class="cform"><textarea id="ctext" maxlength="2000" placeholder="댓글을 남겨 주세요"></textarea><button class="btn pri" id="csend">등록</button></div><p class="err" id="cerr"></p>`:`<p class="meta" style="margin-top:12px">댓글은 <a href="../index.html#login">로그인</a> 후 쓸 수 있습니다.</p>`}
+    </div></div>`;
+  const d=$("#del"); if(d) d.onclick=async()=>{ d.disabled=true; const {error}=await sb.from("posts").delete().eq("id",id); if(error){ d.disabled=false; d.textContent="삭제 실패"; return;} await load(); location.hash=""; };
+  const s=$("#csend"); if(s) s.onclick=async()=>{ const v=$("#ctext").value.trim(); if(!v){ $("#cerr").textContent="댓글 내용을 입력해 주세요."; return; } if(!live){ $("#cerr").textContent="게시판 연결 후 댓글을 쓸 수 있습니다."; return; }
+    s.disabled=true; const {error}=await sb.from("comments").insert({post_id:id,author:name(),body:v}); s.disabled=false; if(error){ $("#cerr").textContent="등록하지 못했습니다."; return; } postView(id); };
+  document.querySelectorAll(".cmt .x").forEach(b=>b.onclick=async()=>{ await sb.from("comments").delete().eq("id",b.dataset.cid); postView(id); });
+}
+function writeView(){
+  if(!user){ $("#app").innerHTML=`<div class="panel empty">글은 회원만 쓸 수 있습니다.<br><br><a class="btn pri" href="../index.html#login">로그인 · 회원가입</a> <a class="btn" href="#">목록</a></div>`; return; }
+  $("#app").innerHTML=`<div class="panel"><form class="form" id="wf" novalidate>
+    <label>분류<select id="wc">${CATS.slice(1).map(c=>`<option ${c==="Q&A"?"selected":""}>${esc(c)}</option>`).join("")}</select></label>
+    <label>제목<input id="wt" maxlength="120" placeholder="제목을 입력하세요"></label>
+    <label>내용<textarea id="wb" maxlength="5000" placeholder="회사 기밀 정보는 빼고 적어 주세요"></textarea></label>
+    <div class="count" id="wn">0 / 5000</div>
+    <p class="err" id="werr"></p>
+    <div class="acts"><button class="btn pri" id="wsend">등록</button><a class="btn" href="#">취소</a></div></form></div>`;
+  $("#wb").oninput=e=>{$("#wn").textContent=`${e.target.value.length} / 5000`;};
+  $("#wf").onsubmit=async e=>{ e.preventDefault(); const t=$("#wt").value.trim(), b=$("#wb").value.trim(), c=$("#wc").value;
+    if(!t){ $("#werr").textContent="제목을 입력해 주세요."; return; } if(!b){ $("#werr").textContent="내용을 입력해 주세요."; return; }
+    if(!live){ $("#werr").textContent="게시판 연결 후 글을 쓸 수 있습니다."; return; }
+    $("#wsend").disabled=true; const {data,error}=await sb.from("posts").insert({category:c,title:t,body:b,author:name()}).select("id").single();
+    $("#wsend").disabled=false;
+    if(error){ $("#werr").textContent=c==="공지"?"공지는 관리자만 쓸 수 있습니다.":"등록하지 못했습니다."; return; }
+    await load(); location.hash="post-"+data.id; };
+}
+async function route(){ const h=location.hash.slice(1);
+  if(h.startsWith("post-")) return postView(Number(h.slice(5)));
+  if(h==="write") return writeView();
+  listView(); }
+(async function init(){
+  if(sb){ const {data}=await sb.auth.getSession(); user=data.session?data.session.user:null;
+    sb.auth.onAuthStateChange((_e,s)=>{ user=s?s.user:null; renderMe(); }); }
+  renderMe(); await load(); route(); window.addEventListener("hashchange",route);
+})();
+})();
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#4E6A87;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+</body>
+</html>

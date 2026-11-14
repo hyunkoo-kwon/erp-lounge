@@ -1,13 +1,34 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>SAP ABAP Lab — 기초 · New Syntax · CDS · RAP</title>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><style id="white-shell">/* WHITE SHELL — SAP Horizon 느낌 흰색 상단 */
+.shell,body>header,nav.top{background:#fff!important;color:#1D2D3E!important;border-bottom:1px solid #E5E5E5!important;box-shadow:0 1px 3px rgba(0,0,0,.06)!important}
+nav.top{box-shadow:0 0 0 100vmax #fff,0 1px 3px rgba(0,0,0,.06)!important}
+body::before{background:#fff!important}
+.shell *,body>header *,nav.top *{color:inherit}
+.shell p,.shell small,body>header p,body>header small,nav.top small{color:#556B82!important}
+.shell .eyebrow,body>header .eyebrow{color:#0A6ED1!important}
+.shell h1,body>header h1,nav.top a.logo{color:#1D2D3E!important}
+body>header h1 span,body>header h1 em,body>header em{color:#0A6ED1!important}
+nav.top a{color:#0854A0!important}
+.shell a{color:#0A6ED1!important}
+.shell span.logo{color:#fff!important}
+body>header .hw>button,body>header #home{background:#EEF2F6!important;color:#1D2D3E!important}
+body>header .chip{background:#EEF2F6!important;color:#32363A!important}
+body>header .chip.on{background:#0A6ED1!important;color:#fff!important}
+body>header input{border:1px solid #CDD5DE!important}
+#seg{background:#EEF2F6!important}
+#seg button{color:#556B82!important}
+#seg button b{color:inherit!important}
+#seg button.on{background:#fff!important;color:#0854A0!important;box-shadow:0 1px 3px rgba(0,0,0,.12)!important}
+</style>
+</head><body>
+<title>SAP ABAP Programming — 기초 · New Syntax · CDS · RAP</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
 /* 레이아웃 : SAP Quartz 쉘 바 + 왼쪽 Easy Access 트리 + 오른쪽 레슨 ( F1 창 · 편집기 창 ) */
 :root {
-  --bg: #FFFFFF; --surface: #FFFFFF; --surface2: #F7F7F7; --fg: #32363A; --muted: #6A6D70; --line: #D9D9D9; --line2: #E5E5E5;
-  --shell: #354A5F; --shell-fg: #FFFFFF; --brand: #0A6ED1; --brand-soft: #EBF5FE; --brand-line: #91C8F6; --sel: #E5F0FA;
+  --bg: #FFFFFF; --surface: #FFFFFF; --surface2: #FAFBFD; --fg: #32363A; --muted: #6A6D70; --line: #D9D9D9; --line2: #E5E5E5;
+  --shell: #4E6A87; --shell-fg: #FFFFFF; --brand: #0A6ED1; --brand-soft: #EBF5FE; --brand-line: #91C8F6; --sel: #E5F0FA;
   --hdr: #EEF1F4; --stat: #F2F2F2; --code-bg: #FFFFFF; --code-ln: #9AA5B8;
   --kw: #0000FF; --str: #3C8C14; --cm: #808080; --num: #2E7BCF; --sym: #800080;
   --f-body: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
@@ -146,7 +167,7 @@ h2.crs-h { margin: 14px 0 -6px; padding-top: 14px; border-top: 1px solid var(--l
 
 <header class="shell">
   <button class="menu" id="menu" aria-label="목차 열기">☰</button>
-  <a class="brand" href="#home"><b>SAP ABAP Lab</b><span>기초 · New Syntax · CDS View · RAP</span></a>
+  <a class="brand" href="#home"><b>SAP ABAP Programming</b><span>기초 · New Syntax · CDS View · RAP</span></a>
   <div class="search">
     <span class="key">F1</span>
     <input id="q" type="search" autocomplete="off" placeholder="문법 검색 : REDUCE, VALUE, ASSOCIATION, EML …" aria-label="문법 검색">
@@ -290,7 +311,7 @@ function wireDebug() {
   draw();
 }
 function home() {
-  let h = `<div class="hero"><div class="crumb">SAP Easy Access</div><h1>SAP ABAP Lab</h1>
+  let h = `<div class="hero"><div class="crumb">SAP Easy Access</div><h1>SAP ABAP Programming</h1>
   <p class="sub">기초 · New Syntax · CDS View · RAP 네 과정을 F1 도움말 · 비교 · 예제로 익힌다. 예제는 SCARR · SFLIGHT · SPFLI 와 Travel 시나리오 기준.</p>
   <div class="legend"><span>오른쪽 위 검색창 ( F1 키 ) 으로 키워드를 찾는다</span><span>레슨마다 F1 화면 → 비교 → 설명 → 예제 순서</span><span>필수 · 심화 표시는 레슨 부제에</span></div></div>`;
   h += '<div class="grid courses">' + COURSES.map((c, k) => { const ls = inCourse(c); return `<a class="card" href="#${ls[0].id}"><span class="kind">과정 ${k + 1}</span><b>${esc(c.name)}</b><small>${esc(c.sub || '')}</small><span class="cnt">${ls.length} 레슨 · 첫 레슨 ${esc(ls[0].short || ls[0].title.split(' : ')[0])} →</span></a>`; }).join('') + '</div>';
@@ -353,5 +374,33 @@ document.getElementById('menu').onclick = () => document.getElementById('tree').
 route();
 </script>
 
-<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#354A5F;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+<style id="lounge-read">
+body{word-break:keep-all;overflow-wrap:break-word;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+p,li,dd,td,.lead{line-height:1.75}
+pre,code,textarea{line-height:1.65}
+</style>
+<script id="lounge-read-js">
+(function(){
+ var MIN=13, MINCODE=13.5, BODY=15;
+ function fix(root){
+  var els=(root||document.body).querySelectorAll('*');
+  for(var i=0;i<els.length;i++){var el=els[i];
+   if(el.dataset.lr)continue;
+   var t='';for(var c=el.firstChild;c;c=c.nextSibling)if(c.nodeType===3)t+=c.nodeValue;
+   if(!t.trim()){continue}
+   var cs=getComputedStyle(el),fs=parseFloat(cs.fontSize),ff=cs.fontFamily.toLowerCase();
+   var mono=/mono|consolas|courier|menlo|d2coding/.test(ff);
+   var min=mono?MINCODE:MIN;
+   if(el.tagName==='P'||el.tagName==='LI'||el.tagName==='DD'){min=Math.max(min,BODY-1)}
+   if(fs<min){el.style.fontSize=min+'px'}
+   el.dataset.lr='1';
+  }
+ }
+ var tm;function run(){clearTimeout(tm);tm=setTimeout(function(){fix()},30)}
+ if(document.readyState!=='loading')run();else document.addEventListener('DOMContentLoaded',run);
+ new MutationObserver(run).observe(document.documentElement,{childList:true,subtree:true});
+ window.addEventListener('hashchange',run);
+})();
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#4E6A87;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
 </body></html>

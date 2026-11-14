@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#354A5F">
+<meta name="theme-color" content="#FFFFFF">
 <meta name="description" content="아밥준 — SAP ABAP 단계별 문제풀이와 모듈 리포트 실전 문제 · 곰선비의 ERP 실무노트">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -13,7 +13,7 @@
 <title>아밥준 (SAP ABAP)</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#32363A;--sub:#6A6D70;--line:#E5E5E5;--bg:#F7F7F7;--card:#fff;--acc:#0A6ED1;--code:#1D2D3E;
+:root{--ink:#32363A;--sub:#6A6D70;--line:#E5E5E5;--bg:#FAFBFD;--card:#fff;--acc:#0A6ED1;--code:#1D2D3E;
 --AC:#107E3E;--WA:#BB0000;--CE:#0A6ED1;--RE:#7a4fbf;--TLE:#E9730C}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;-webkit-font-smoothing:antialiased}
@@ -25,13 +25,13 @@ nav.top{display:flex;justify-content:space-between;align-items:center;padding:14
 .logo span{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:14px;letter-spacing:0;background:var(--code);color:#fbbf24;padding:2px 6px;border-radius:5px;margin-right:4px}
 .links{display:flex;gap:14px;font-size:14px}
 .links a{color:var(--sub)} .links a.on{color:var(--ink);font-weight:700}
-nav.top{background:#354A5F;box-shadow:0 0 0 100vmax #354A5F;clip-path:inset(0 -100vmax);border-bottom:0;padding:12px 0}
+nav.top{background:#4E6A87;box-shadow:0 0 0 100vmax #4E6A87;clip-path:inset(0 -100vmax);border-bottom:0;padding:12px 0}
 nav.top .logo{color:#fff} nav.top .logo small{color:#D1E8FF}
 nav.top .logo span{background:#0A6ED1;color:#fff}
 nav.top .links a{color:#D1E8FF} nav.top .links a.on{color:#fff;border-bottom:2px solid #fff}
 nav.top a{color:#D1E8FF}
 table.list,.itab,.ans,.tip,.lvcard{border-radius:4px!important;box-shadow:0 0 .125rem rgba(0,0,0,.1),0 .125rem .5rem rgba(0,0,0,.08)}
-.list th{background:#F7F7F7}
+.list th{background:#FAFBFD}
 .hero{padding:10px 0 22px}
 .eyebrow{font-size:12px;font-weight:700;color:var(--acc);letter-spacing:.5px}
 h1{font-size:26px;font-weight:900;letter-spacing:-.6px;line-height:1.3;margin:4px 0 8px}
@@ -185,6 +185,27 @@ pre.msg{background:#fff7ed;border-color:#fed7aa;white-space:pre-wrap}
 .ed textarea:focus{outline:0}.ed:focus-within{outline:2px solid #0a6ed1;outline-offset:-1px}
 .ed textarea::selection{background:rgba(10,110,209,.25);-webkit-text-fill-color:transparent}
 .lvtabs.m5 .lt span{font-size:10px;white-space:nowrap;letter-spacing:-.6px}
+</style>
+<style id="white-shell">/* WHITE SHELL — SAP Horizon 느낌 흰색 상단 */
+.shell,body>header,nav.top{background:#fff!important;color:#1D2D3E!important;border-bottom:1px solid #E5E5E5!important;box-shadow:0 1px 3px rgba(0,0,0,.06)!important}
+nav.top{box-shadow:0 0 0 100vmax #fff,0 1px 3px rgba(0,0,0,.06)!important}
+body::before{background:#fff!important}
+.shell *,body>header *,nav.top *{color:inherit}
+.shell p,.shell small,body>header p,body>header small,nav.top small{color:#556B82!important}
+.shell .eyebrow,body>header .eyebrow{color:#0A6ED1!important}
+.shell h1,body>header h1,nav.top a.logo{color:#1D2D3E!important}
+body>header h1 span,body>header h1 em,body>header em{color:#0A6ED1!important}
+nav.top a{color:#0854A0!important}
+.shell a{color:#0A6ED1!important}
+.shell span.logo{color:#fff!important}
+body>header .hw>button,body>header #home{background:#EEF2F6!important;color:#1D2D3E!important}
+body>header .chip{background:#EEF2F6!important;color:#32363A!important}
+body>header .chip.on{background:#0A6ED1!important;color:#fff!important}
+body>header input{border:1px solid #CDD5DE!important}
+#seg{background:#EEF2F6!important}
+#seg button{color:#556B82!important}
+#seg button b{color:inherit!important}
+#seg button.on{background:#fff!important;color:#0854A0!important;box-shadow:0 1px 3px rgba(0,0,0,.12)!important}
 </style>
 </head>
 <body>
@@ -6994,7 +7015,7 @@ function home() {
   ${matrix()}
   <div class="lvgrid">${[1, 2, 3, 4, 5].map(l => { const ps = levelList(l); const d = ps.filter(p => DB.ac[p.id]).length; return `<a class="lvcard lc${l}" href="#lv${l}"><div class="lvc-h"><b>Lv.${l}</b><span>${LEVELS[l].name}</span></div><p>${LEVELS[l].desc}</p><div class="pbar"><i style="width:${pct(d, ps.length)}%"></i></div><em>${d} / ${ps.length}</em></a>`; }).join('')}</div>
   ${isIOS && !standalone() ? `<div class="ioshint">📱 아이폰에서 앱으로 쓰려면 Safari 아래쪽 <b>공유</b> 버튼 → <b>홈 화면에 추가</b>를 누르세요.</div>` : ''}
-  <p class="foot">© 주식회사 진일보 · 풀이 기록은 이 기기에만 저장됩니다</p>`;
+  <p class="foot">© 진일보 컨설팅 · 풀이 기록은 이 기기에만 저장됩니다</p>`;
   $('app').innerHTML = h;
 }
 const tabsOf = p => [...new Set([...(p.tables || []), ...(p.fields || []).map(f => f[0].split('-')[0])])].filter(t => DDIC[t]);
@@ -7296,6 +7317,34 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
 route();
 
 </script>
-<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#354A5F;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+<style id="lounge-read">
+body{word-break:keep-all;overflow-wrap:break-word;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+p,li,dd,td,.lead{line-height:1.75}
+pre,code,textarea{line-height:1.65}
+</style>
+<script id="lounge-read-js">
+(function(){
+ var MIN=13, MINCODE=13.5, BODY=15;
+ function fix(root){
+  var els=(root||document.body).querySelectorAll('*');
+  for(var i=0;i<els.length;i++){var el=els[i];
+   if(el.dataset.lr)continue;
+   var t='';for(var c=el.firstChild;c;c=c.nextSibling)if(c.nodeType===3)t+=c.nodeValue;
+   if(!t.trim()){continue}
+   var cs=getComputedStyle(el),fs=parseFloat(cs.fontSize),ff=cs.fontFamily.toLowerCase();
+   var mono=/mono|consolas|courier|menlo|d2coding/.test(ff);
+   var min=mono?MINCODE:MIN;
+   if(el.tagName==='P'||el.tagName==='LI'||el.tagName==='DD'){min=Math.max(min,BODY-1)}
+   if(fs<min){el.style.fontSize=min+'px'}
+   el.dataset.lr='1';
+  }
+ }
+ var tm;function run(){clearTimeout(tm);tm=setTimeout(function(){fix()},30)}
+ if(document.readyState!=='loading')run();else document.addEventListener('DOMContentLoaded',run);
+ new MutationObserver(run).observe(document.documentElement,{childList:true,subtree:true});
+ window.addEventListener('hashchange',run);
+})();
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#4E6A87;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
 </body>
 </html>

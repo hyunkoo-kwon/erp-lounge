@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>모듈별 IMG 설정 가이드 · ERP 라운지</title>
+<style>
+:root{--shell:#4E6A87;--brand:#0A6ED1;--brand2:#0854A0;--bg:#FAFBFD;--ink:#32363A;--sub:#6A6D70;--line:#E5E5E5;
+--sh:0 0 .125rem rgba(0,0,0,.15),0 .125rem .5rem rgba(0,0,0,.1);--sans:'Noto Sans KR','IBM Plex Sans KR',system-ui,sans-serif;--mono:ui-monospace,SFMono-Regular,Menlo,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:15px;line-height:1.7;word-break:keep-all;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+header{background:var(--shell);color:#fff;position:sticky;top:0;z-index:5}
+.hw{max-width:960px;margin:0 auto;padding:14px 20px 12px}
+.ht{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap}
+h1{font-size:19px}
+.ht p{font-size:13px;color:#D6E2EE}
+.search{position:relative;margin-top:10px}
+.search input{width:100%;border:0;border-radius:8px;padding:11px 14px;font:inherit;font-size:15px}
+.chips{display:flex;gap:6px;overflow-x:auto;margin-top:10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:0;border-radius:99px;padding:6px 13px;font-size:13.5px;font-weight:600;background:rgba(255,255,255,.18);color:#fff}
+.chip.on{background:#fff;color:var(--brand2)}
+main{max-width:960px;margin:0 auto;padding:18px 20px 140px}
+.intro{background:#fff;border-radius:8px;box-shadow:var(--sh);padding:14px 16px;font-size:14px;margin-bottom:16px}
+.intro b{color:var(--brand2)}
+.grp{margin:20px 0 8px;display:flex;align-items:baseline;gap:8px}
+.grp h2{font-size:16.5px}
+.grp span{font-size:13px;color:var(--sub)}
+.it{background:#fff;border-radius:8px;box-shadow:var(--sh);margin-bottom:8px;overflow:hidden}
+.ih{width:100%;display:flex;align-items:center;gap:10px;border:0;background:none;text-align:left;padding:12px 14px;color:var(--ink)}
+.ih .no{flex:none;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--brand);min-width:30px}
+.ih .tt{flex:1;min-width:0}
+.ih .tt b{display:block;font-size:15.5px;line-height:1.45}
+.ih .tt small{display:block;font-size:13px;color:var(--sub)}
+.tc{flex:none;font-family:var(--mono);font-size:12.5px;font-weight:700;background:#EBF5FE;color:var(--brand2);border-radius:4px;padding:2px 7px}
+.chev{flex:none;width:9px;height:9px;border-right:2px solid #8396A8;border-bottom:2px solid #8396A8;transform:rotate(45deg);transition:transform .2s;margin:0 4px}
+.it.open .chev{transform:rotate(-135deg)}
+.ib{display:none;padding:0 14px 14px 54px;font-size:14px}
+.it.open .ib{display:block}
+.path{font-family:var(--mono);font-size:12.5px;background:#F5F7F9;border-radius:6px;padding:8px 10px;color:#3F4A56;word-break:break-word;line-height:1.6}
+.sec{font-size:12px;font-weight:700;color:var(--brand);margin-top:10px}
+.link{display:inline-block;margin-top:8px;font-size:13px;font-weight:700;color:var(--brand)}
+.cp{border:1px solid var(--brand);background:#fff;color:var(--brand);border-radius:4px;font-size:12.5px;font-weight:700;padding:3px 9px;margin-top:8px}
+mark{background:#E5F0FA;color:var(--brand2);font-weight:700}
+.empty{text-align:center;color:var(--sub);padding:30px}
+footer .box{background:#fff;border-radius:8px;box-shadow:var(--sh);padding:14px 16px;font-size:13.5px;color:#3F4A56;margin-top:24px}
+#toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);background:#32363A;color:#fff;padding:9px 16px;border-radius:6px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:50}
+#toast.show{opacity:1;transform:translateX(-50%)}
+@media (max-width:560px){.ib{padding-left:14px}.ih .tt b{font-size:15px}}
+</style>
+<style id="white-shell">/* WHITE SHELL — SAP Horizon 느낌 흰색 상단 */
+.shell,body>header,nav.top{background:#fff!important;color:#1D2D3E!important;border-bottom:1px solid #E5E5E5!important;box-shadow:0 1px 3px rgba(0,0,0,.06)!important}
+nav.top{box-shadow:0 0 0 100vmax #fff,0 1px 3px rgba(0,0,0,.06)!important}
+body::before{background:#fff!important}
+.shell *,body>header *,nav.top *{color:inherit}
+.shell p,.shell small,body>header p,body>header small,nav.top small{color:#556B82!important}
+.shell .eyebrow,body>header .eyebrow{color:#0A6ED1!important}
+.shell h1,body>header h1,nav.top a.logo{color:#1D2D3E!important}
+body>header h1 span,body>header h1 em,body>header em{color:#0A6ED1!important}
+nav.top a{color:#0854A0!important}
+.shell a{color:#0A6ED1!important}
+.shell span.logo{color:#fff!important}
+body>header .hw>button,body>header #home{background:#EEF2F6!important;color:#1D2D3E!important}
+body>header .chip{background:#EEF2F6!important;color:#32363A!important}
+body>header .chip.on{background:#0A6ED1!important;color:#fff!important}
+body>header input{border:1px solid #CDD5DE!important}
+#seg{background:#EEF2F6!important}
+#seg button{color:#556B82!important}
+#seg button b{color:inherit!important}
+#seg button.on{background:#fff!important;color:#0854A0!important;box-shadow:0 1px 3px rgba(0,0,0,.12)!important}
+</style>
+</head>
+<body>
+<header><div class="hw">
+ <div class="ht"><div><h1>모듈별 IMG 설정 가이드</h1><p>SPRO 설정 순서 · 경로 · 트랜잭션 · 설계 결정과의 연결</p></div><p id="cnt"></p></div>
+ <div class="search"><input id="q" type="search" placeholder="활동·T-code·경로 검색 (예: OX10, 가격결정, 회계연도)" autocomplete="off"></div>
+ <div class="chips" id="chips"></div>
+</div></header>
+<main>
+ <div class="intro"><b>읽는 법</b> · 위에서 아래로 <b>설정 순서</b>입니다. 기업 구조(정의 → 할당)를 먼저 끝내야 모듈 설정이 가능합니다. 각 항목을 펼치면 IMG 경로와 함께, <b>케이스 스터디</b>의 어떤 결정이 이 설정으로 이어지는지 보여 줍니다.</div>
+ <div id="view"></div>
+ <footer><div class="box"><b>기준과 주의</b><br>
+ · IMG 경로는 SAP S/4HANA 온프레미스·Private Cloud의 SPRO(영문 메뉴) 기준이며 릴리스에 따라 위치·이름이 조금씩 다릅니다.<br>
+ · SAP S/4HANA Cloud Public Edition은 SPRO 대신 'Manage Your Solution' 앱의 구성 활동(SSCUI)으로 설정합니다.<br>
+ · T-code는 널리 쓰이는 것만 적었고, 확신이 없는 항목은 비워 두었습니다. 실제 시스템에서는 SPRO에서 경로로 찾는 것이 가장 정확합니다.<br>
+ · 실습은 개인 실습 시스템(설정 가이드 참고)에서 하세요. 운영·공유 시스템의 IMG 변경은 운송(Transport) 요청과 승인 절차를 따라야 합니다.</div></footer>
+</main>
+<div id="toast" role="status"></div>
+<script>
+/* [활동, T-code, IMG 경로(SPRO 이하), 설명, 설계스튜디오 연결(s1-1 형식, 선택)] */
+const M={
+"es":{n:"기업 구조",g:[
+ ["정의 (Definition)",[
+  ["회사코드 정의 · 복사","OX02 · EC01","Enterprise Structure > Definition > Financial Accounting > Edit, Copy, Delete, Check Company Code","법인 단위 재무제표를 만드는 회사코드를 만듭니다. 보통 기존 회사코드를 복사(EC01)한 뒤 수정합니다.","fi-org-1"],
+  ["관리회계 영역 정의","OKKP","Enterprise Structure > Definition > Controlling > Maintain Controlling Area","원가를 관리하는 범위. 통화·계정과목표·회계연도 변형을 함께 정합니다.","co-org"],
+  ["플랜트 정의","OX10","Enterprise Structure > Definition > Logistics - General > Define, copy, delete, check plant","공장(생산·재고 단위)을 만듭니다. 평택·구미처럼 공장마다 하나.","mm-org-1"],
+  ["저장위치 정의","OX09","Enterprise Structure > Definition > Materials Management > Maintain storage location","플랜트 안의 창고 칸. 재고 수량을 나눠 보관합니다.",""],
+  ["구매조직 정의","OX08","Enterprise Structure > Definition > Materials Management > Maintain purchasing organization","구매 조건을 협상·책임지는 조직입니다.",""],
+  ["판매조직 정의","OVX5","Enterprise Structure > Definition > Sales and Distribution > Define, copy, delete, check sales organization","판매를 책임지는 조직 단위입니다.","sd-org-1"],
+  ["유통경로 정의","OVXI","Enterprise Structure > Definition > Sales and Distribution > Define, copy, delete, check distribution channel","내수·수출처럼 고객에게 가는 경로입니다.","sd-org-1"],
+  ["제품군 정의","OVXB","Enterprise Structure > Definition > Logistics - General > Define, copy, delete, check division","제품 그룹 단위. 판매영역의 세 번째 요소입니다.",""],
+  ["출하지점 정의","OVXD","Enterprise Structure > Definition > Logistics Execution > Define, copy, delete, check shipping point","출하 작업을 하는 장소입니다.",""]]],
+ ["할당 (Assignment)",[
+  ["회사코드 → 관리회계 영역","OX19","Enterprise Structure > Assignment > Controlling > Assign company code to controlling area","어느 회사코드의 원가를 어느 관리회계 영역에서 볼지 연결합니다.","co-org"],
+  ["플랜트 → 회사코드","OX18","Enterprise Structure > Assignment > Logistics - General > Assign plant to company code","공장이 어느 법인 소속인지 연결합니다. 재고 금액이 이 회사코드 장부로 갑니다.","mm-org-1"],
+  ["구매조직 → 회사코드","OX01","Enterprise Structure > Assignment > Materials Management > Assign purchasing organization to company code","",""],
+  ["구매조직 → 플랜트","OX17","Enterprise Structure > Assignment > Materials Management > Assign purchasing organization to plant","이 구매조직이 어느 공장을 위해 살 수 있는지 정합니다.",""],
+  ["판매조직 → 회사코드","OVX3","Enterprise Structure > Assignment > Sales and Distribution > Assign sales organization to company code","매출이 어느 법인 장부로 가는지 정합니다.",""],
+  ["유통경로 → 판매조직","OVXK","Enterprise Structure > Assignment > Sales and Distribution > Assign distribution channel to sales organization","",""],
+  ["제품군 → 판매조직","OVXA","Enterprise Structure > Assignment > Sales and Distribution > Assign division to sales organization","",""],
+  ["판매영역 설정","OVXG","Enterprise Structure > Assignment > Sales and Distribution > Set up sales area","판매조직 + 유통경로 + 제품군 조합(판매영역)을 확정합니다.",""],
+  ["판매조직·유통경로 → 플랜트","OVX6","Enterprise Structure > Assignment > Sales and Distribution > Assign sales organization - distribution channel - plant","어느 공장 재고를 팔 수 있는지 정합니다.",""],
+  ["출하지점 → 플랜트","OVXC","Enterprise Structure > Assignment > Logistics Execution > Assign shipping point to plant","",""]]]
+]},
+"fi":{n:"FI 재무회계",g:[
+ ["기본 설정",[
+  ["원장·통화 유형 설정","FINSC_LEDGER","Financial Accounting > Financial Accounting Global Settings > Ledgers > Ledger > Define Settings for Ledgers and Currency Types","S/4HANA 단일 원장(ACDOCA)의 대표 원장과 통화를 정합니다.",""],
+  ["회계연도 변형 정의","OB29","Financial Accounting > Financial Accounting Global Settings > Ledgers > Fiscal Year and Posting Periods > Maintain Fiscal Year Variant","회계연도 기간 구성(12개월 + 특별기간)을 정합니다.",""],
+  ["회계연도 변형 → 회사코드","OB37","Financial Accounting > Financial Accounting Global Settings > Ledgers > Fiscal Year and Posting Periods > Assign Company Code to a Fiscal Year Variant","",""],
+  ["전기기간 변형 정의 · 할당","OBBO · OBBP","Financial Accounting > Financial Accounting Global Settings > Ledgers > Fiscal Year and Posting Periods > Posting Periods","전기 가능한 기간을 묶는 단위입니다.",""],
+  ["전기기간 열기 · 닫기","OB52","Financial Accounting > Financial Accounting Global Settings > Ledgers > Fiscal Year and Posting Periods > Posting Periods > Open and Close Posting Periods","월마다 결산 시 기간을 열고 닫습니다.",""],
+  ["계정과목표 정의","OB13","Financial Accounting > General Ledger Accounting > Master Data > G/L Accounts > Preparations > Edit Chart of Accounts List","",""],
+  ["계정과목표 → 회사코드","OB62","Financial Accounting > General Ledger Accounting > Master Data > G/L Accounts > Preparations > Assign Company Code to Chart of Accounts","같은 관리회계 영역에 넣을 회사코드는 계정과목표가 같아야 합니다.","co-org"],
+  ["필드 상태 변형","OBC4 · OBC5","Financial Accounting > Financial Accounting Global Settings > Ledgers > Fields > Define Field Status Variants","전표 입력 시 필수·선택·숨김 필드를 정합니다.",""]]],
+ ["전표 · 통제",[
+  ["전표 유형","OBA7","Financial Accounting > Financial Accounting Global Settings > Document > Document Types > Define Document Types for Entry View","SA(일반), KR(공급업체 송장) 등. 번호 범위와 연결됩니다.",""],
+  ["전표 번호 범위","FBN1","Financial Accounting > Financial Accounting Global Settings > Document > Document Number Ranges","",""],
+  ["허용 한도 그룹(직원별 전기 한도)","OBA4","Financial Accounting > Financial Accounting Global Settings > Document > Tolerance Groups > Define Tolerance Groups for Employees","직원별 전기 금액 한도와 차이 허용 범위입니다.",""],
+  ["세금 코드","FTXP","Financial Accounting > Financial Accounting Global Settings > Tax on Sales/Purchases > Calculation > Define Tax Codes for Sales and Purchases","부가세 매입·매출 코드입니다.",""],
+  ["환율 유형 · 환율","OB07 · OB08","SAP NetWeaver > General Settings > Currencies","수출 70%인 회사는 환율 유형(M 등)과 환율 관리가 중요합니다.",""]]],
+ ["채권 · 채무 · 자산",[
+  ["지급 조건","OBB8","Financial Accounting > Accounts Receivable and Accounts Payable > Business Transactions > Incoming Invoices/Credit Memos > Maintain Terms of Payment","",""],
+  ["자동 지급 프로그램","FBZP","Financial Accounting > Accounts Receivable and Accounts Payable > Business Transactions > Outgoing Payments > Automatic Outgoing Payments > Payment Method/Bank Selection for Payment Program","지급 방법·거래은행 선택 규칙입니다.",""],
+  ["감가상각표 복사","EC08","Financial Accounting > Asset Accounting > Organizational Structures > Copy Reference Chart of Depreciation/Depreciation Areas","",""],
+  ["자산 클래스","OAOA","Financial Accounting > Asset Accounting > Organizational Structures > Asset Classes > Specify Asset Classes","",""]]]
+]},
+"co":{n:"CO 관리회계",g:[
+ ["관리회계 영역",[
+  ["관리회계 영역 · 구성요소 활성화","OKKP","Controlling > General Controlling > Organization > Maintain Controlling Area","원가센터 표준 계층, 활성 구성요소(오더·수익성 분석 등)를 정합니다.","co-org"],
+  ["버전 설정","OKEQ","Controlling > General Controlling > Organization > Maintain Versions","실적(0) · 계획 버전을 관리합니다.",""],
+  ["원가센터 범주","OKA2","Controlling > Cost Center Accounting > Master Data > Cost Centers > Define Cost Center Categories","생산·관리·판매 등 원가센터 성격입니다.","co-md-1"]]],
+ ["간접비 · 오더",[
+  ["간접비 원가계산표(할증)","KZS2","Controlling > Product Cost Controlling > Cost Object Controlling > Product Cost by Order > Basic Settings > Overhead > Define Costing Sheets","간접비를 비율로 붙이는 규칙입니다.","co-tx-2"],
+  ["내부오더 유형","KOT2_OPA","Controlling > Internal Orders > Order Master Data > Define Order Types","",""],
+  ["결산 프로파일","OKO7","Controlling > Internal Orders > Actual Postings > Settlement > Maintain Settlement Profiles","오더 원가를 어디로 넘길지 정합니다.",""]]],
+ ["제품원가",[
+  ["자재원장 유형 할당 · 활성화","OMX1","Controlling > Product Cost Controlling > Actual Costing/Material Ledger > Activate Valuation Areas for Material Ledger","S/4HANA에서 자재원장은 필수입니다. 평가 영역(플랜트)마다 자재원장 유형을 할당하고 활성화합니다. 가격 결정 2(거래 기준) 또는 3(단일·다단계 실제원가)을 정합니다.","co-tx-2"],
+  ["실제원가 계산 활성화 (선택)","","Controlling > Product Cost Controlling > Actual Costing/Material Ledger > Actual Costing > Activate Actual Costing","실제원가 계산이 필요한 플랜트만 켜고, 생산 시작은 CKMSTART로 합니다. 켜면 월말 실제원가 결산(CKMLCP)이 추가됩니다.","co-tx-2"],
+  ["원가계산 유형","OKKI","Controlling > Product Cost Controlling > Product Cost Planning > Material Cost Estimate with Quantity Structure > Costing Variant: Components > Define Costing Types","",""],
+  ["평가 변형","OKK4","Controlling > Product Cost Controlling > Product Cost Planning > Material Cost Estimate with Quantity Structure > Costing Variant: Components > Define Valuation Variants","원자재는 어떤 가격으로, 활동은 어떤 단가로 평가할지 정합니다.","co-tx-2"],
+  ["원가계산 변형","OKKN","Controlling > Product Cost Controlling > Product Cost Planning > Material Cost Estimate with Quantity Structure > Define Costing Variants","표준원가 계산의 묶음 설정입니다.","co-tx-2"]]],
+ ["수익성 분석",[
+  ["운영 관심 영역","KEA0","Controlling > Profitability Analysis > Structures > Define Operating Concern","수익성 분석의 틀. 특성과 값 필드를 담습니다.","co-org-2"],
+  ["특성 정의","KEA5","Controlling > Profitability Analysis > Structures > Define Operating Concern > Maintain Characteristics","제품군·유통경로·고객처럼 마진을 쪼개 볼 기준입니다.","co-org-2"]]]
+]},
+"mm":{n:"MM 자재관리",g:[
+ ["자재 · 평가",[
+  ["평가 수준(플랜트 / 회사코드)","OX14","Enterprise Structure > Definition > Logistics - General > Define valuation level","재고 금액을 플랜트별로 볼지 정합니다. 사실상 한 번 정하면 못 바꿉니다.","mm-org-1"],
+  ["자재 유형","OMS2","Logistics - General > Material Master > Basic Settings > Material Types > Define Attributes of Material Types","원자재·반제품·완제품 등 유형별 화면과 가격 관리 방식입니다.","co-tx-2"],
+  ["자동 계정 결정","OMWB · OBYC","Materials Management > Valuation and Account Assignment > Account Determination > Account Determination Without Wizard > Configure Automatic Postings","입고·출고 때 어떤 G/L 계정으로 전기할지 정합니다. MM과 FI를 잇는 핵심 설정입니다.",""],
+  ["이동 유형","OMJJ","Materials Management > Inventory Management and Physical Inventory > Movement Types > Copy, Change Movement Types","101 입고, 261 생산 출고, 351 공장 간 이전 등입니다.","mm-img"]]],
+ ["구매",[
+  ["구매 문서 유형","","Materials Management > Purchasing > Purchase Order > Define Document Types","NB(표준), UB(재고이전) 등.","mm-img"],
+  ["구매 문서 번호 범위","","Materials Management > Purchasing > Purchase Order > Define Number Ranges","",""],
+  ["재고이전오더(STO) 설정","","Materials Management > Purchasing > Purchase Order > Set up Stock Transport Order","공장 간 이동 시 출하·입고 처리 방식을 정합니다.","mm-img"]]],
+ ["송장검증",[
+  ["허용 오차 키","OMR6","Materials Management > Logistics Invoice Verification > Invoice Block > Set Tolerance Limits","가격·수량 차이가 얼마 이상이면 지급 블록을 걸지 정합니다.",""]]]
+]},
+"sd":{n:"SD 영업관리",g:[
+ ["판매 문서",[
+  ["판매 문서 유형","VOV8","Sales and Distribution > Sales > Sales Documents > Sales Document Header > Define Sales Document Types","OR(표준 주문), QT(견적) 등.",""],
+  ["품목 범주","VOV7","Sales and Distribution > Sales > Sales Documents > Sales Document Item > Define Item Categories","",""],
+  ["품목 범주 결정","VOV4","Sales and Distribution > Sales > Sales Documents > Sales Document Item > Assign Item Categories","",""],
+  ["일정 라인 범주 · 결정","VOV6 · VOV5","Sales and Distribution > Sales > Sales Documents > Schedule Lines","",""],
+  ["파트너 결정","VOPAN","Sales and Distribution > Basic Functions > Partner Determination > Set Up Partner Determination","판매처·납품처·청구처 등 파트너 기능입니다.",""]]],
+ ["가격결정",[
+  ["조건 유형","V/06","Sales and Distribution > Basic Functions > Pricing > Pricing Control > Define Condition Types","",""],
+  ["액세스 시퀀스","V/07","Sales and Distribution > Basic Functions > Pricing > Pricing Control > Define Access Sequences","가격을 어떤 키(예: 판매조직·유통경로·고객·자재) 순서로 찾을지입니다.","sd-org-1"],
+  ["가격결정 절차","V/08","Sales and Distribution > Basic Functions > Pricing > Pricing Control > Define And Assign Pricing Procedures","",""],
+  ["가격결정 절차 결정","OVKK","Sales and Distribution > Basic Functions > Pricing > Pricing Control > Define And Assign Pricing Procedures > Define Pricing Procedure Determination","판매영역 + 문서 + 고객 조합으로 절차를 고릅니다.",""]]],
+ ["출하 · 청구 · 회계",[
+  ["납품 유형","0VLK","Logistics Execution > Shipping > Deliveries > Define Delivery Types","LF(출하) 등.",""],
+  ["출하 블록 사유","","Logistics Execution > Shipping > Deliveries > Define Reasons for Blocking in Shipping","L/C 확인 전 출하를 막는 표준 기능입니다.","sd-tx-1"],
+  ["대금청구 유형","VOFA","Sales and Distribution > Billing > Billing Documents > Define Billing Types","F2(청구), G2(대변) 등.",""],
+  ["복사 제어 (주문 → 출하 / 출하 → 청구)","VTLA · VTFL","Sales and Distribution > Sales > Maintain Copy Control for Sales Documents","문서 간 데이터를 어떻게 넘길지 정합니다.",""],
+  ["매출 계정 결정","VKOA","Sales and Distribution > Basic Functions > Account Assignment/Costing > Revenue Account Determination","청구 시 매출 G/L 계정을 정합니다. 내수/수출 매출 계정 분리도 여기서.","co-org-2"]]]
+]},
+"pp":{n:"PP 생산계획",g:[
+ ["MRP",[
+  ["플랜트 MRP 활성화 · 파라미터","OPPQ","Production > Material Requirements Planning > Plant Parameters > Carry Out Overall Maintenance of Plant Parameters","공장별 MRP 기본 설정입니다.","mm-org-1"],
+  ["MRP 그룹","OPPR","Production > Material Requirements Planning > MRP Groups > Carry Out Overall Maintenance of MRP Groups","",""],
+  ["MRP 관리자","OMD0","Production > Material Requirements Planning > Master Data > Define MRP Controllers","",""],
+  ["MRP 유형","OMDQ","Production > Material Requirements Planning > Master Data > Check MRP Types","PD(MRP), VB(재주문점) 등.",""]]],
+ ["생산오더",[
+  ["오더 유형","OPJH","Production > Shop Floor Control > Master Data > Order > Define Order Types","",""],
+  ["오더 유형 종속 파라미터","OPL8","Production > Shop Floor Control > Master Data > Order > Define Order-Type-Dependent Parameters","BOM·라우팅 선택, 원가계산 변형 연결 등.","co-tx-2"],
+  ["생산 일정 프로파일","OPKP","Production > Shop Floor Control > Master Data > Define Production Scheduling Profile","릴리스·자동 입고 등 오더 처리 방식입니다.",""],
+  ["실적확인 파라미터","OPK4","Production > Shop Floor Control > Operations > Confirmation > Define Confirmation Parameters","실적확인 때 활동량·자재 출고 처리 방식입니다. 원가 반영과 연결됩니다.","co-tx-2"]]]
+]}
+};
+const ORDER=["es","fi","co","mm","sd","pp"];
+const SD={s1:"CASE 1 조직 구조",s2:"CASE 2 관리회계",s3:"CASE 3 Fit-to-Standard",s4:"CASE 4 데이터",s5:"CASE 5 확장·연동"};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let mod="es",q="";const open=new Set();
+function hl(s){s=esc(s);if(!q)return s;const r=q.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return s.replace(new RegExp("("+esc(r)+")","gi"),"<mark>$1</mark>")}
+const ALL=[];ORDER.forEach(m=>{let n=0;M[m].g.forEach(([g,its])=>its.forEach(it=>{n++;ALL.push({m,g,no:n,a:it})}))});
+function chips(){$("#chips").innerHTML=`<button class="chip${mod==="all"?" on":""}" data-m="all">전체 ${ALL.length}</button>`+ORDER.map(m=>`<button class="chip${mod===m?" on":""}" data-m="${m}">${M[m].n} ${ALL.filter(x=>x.m===m).length}</button>`).join("")}
+function render(){
+ chips();
+ const ql=q.toLowerCase();
+ const rows=ALL.filter(x=>(mod==="all"||x.m===mod)&&(!ql||[x.a[0],x.a[1],x.a[2],x.a[3]].join(" ").toLowerCase().includes(ql)));
+ $("#cnt").textContent=`${rows.length}개 활동`;
+ if(!rows.length){$("#view").innerHTML=`<div class="empty">검색 결과가 없습니다.</div>`;return}
+ let h="",last="";
+ rows.forEach(x=>{const gk=x.m+"|"+x.g;if(gk!==last){h+=`<div class="grp"><h2>${mod==="all"?esc(M[x.m].n)+" · ":""}${esc(x.g)}</h2></div>`;last=gk}
+  const id=x.m+"-"+x.no,[n,tc,path,why,link]=x.a,o=open.has(id);
+  const lk=link?`<a class="link" href="design-studio.html#${link}">케이스 스터디에서 이 결정 연습하기 →</a>`:"";
+  h+=`<article class="it${o?" open":""}" data-id="${id}"><button class="ih" aria-expanded="${o}"><span class="no">${String(x.no).padStart(2,"0")}</span><span class="tt"><b>${hl(n)}</b>${why?`<small>${hl(why.split(".")[0])}</small>`:""}</span>${tc?`<span class="tc">${hl(tc)}</span>`:""}<span class="chev"></span></button>
+  <div class="ib"><div class="sec">IMG 경로 (SPRO)</div><div class="path">SPRO > ${hl(path)}</div><button class="cp" data-cp="${esc(path)}">경로 복사</button>${why?`<div class="sec">설명</div><div>${hl(why)}</div>`:""}${tc?`<div class="sec">트랜잭션</div><div>${hl(tc)}</div>`:`<div class="sec">트랜잭션</div><div style="color:var(--sub)">SPRO 경로로 찾기</div>`}${lk}</div></article>`});
+ $("#view").innerHTML=h;
+}
+let tt;function toast(m){const el=$("#toast");el.textContent=m;el.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("show"),1400)}
+$("#chips").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;mod=b.dataset.m;history.replaceState(null,"","#"+mod);render();window.scrollTo({top:0})};
+$("#view").addEventListener("click",async e=>{const c=e.target.closest("[data-cp]");if(c){try{await navigator.clipboard.writeText("SPRO > "+c.dataset.cp);toast("경로 복사됨")}catch(err){toast("복사할 수 없습니다")}return}
+ const h=e.target.closest(".ih");if(h){const a=h.parentElement,id=a.dataset.id,on=!a.classList.contains("open");a.classList.toggle("open",on);h.setAttribute("aria-expanded",on);on?open.add(id):open.delete(id)}});
+let qt;$("#q").addEventListener("input",e=>{clearTimeout(qt);qt=setTimeout(()=>{q=e.target.value.trim();if(q)mod="all";render()},120)});
+const h0=location.hash.replace("#","");if(M[h0]||h0==="all")mod=h0;
+render();
+</script>
+<a href="../index.html" style="position:fixed;left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9999;background:#4E6A87;color:#fff;font:600 13px/1 'Noto Sans KR',system-ui,sans-serif;padding:10px 14px;border-radius:4px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.25)">← ERP 라운지</a>
+<script>if(self!==top){document.querySelectorAll('a[href="../index.html"]').forEach(function(a){a.style.display="none"})}</script>
+</body>
+</html>
